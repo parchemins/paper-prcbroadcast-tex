@@ -3,15 +3,19 @@
 \begin{abstract}
   Causal broadcast constitutes the core communication primitive of many
   distributed systems. For decades, state-of-the-art approaches relied on
-  maintaining and transmitting vector clocks. The size of vector clocks increase
-  linearly with the number of processes that ever joined the systems. Causal
-  broadcast eventually became overcostly and inefficient in large and dynamic
-  systems.  A recent approach solved the main issue about generated traffic by
-  removing the need for transmitting vectors. However, the maintenance
-
+  maintaining and transmitting vector clocks. The size of vector clocks
+  increases linearly with the number of processes that ever entered the
+  system. Causal broadcast eventually became overcostly and inefficient in large
+  and dynamic systems.  A recent approach solved the issue about generated
+  traffic by removing the need for transmitting vectors. However, it still
+  maintains a vector locally. In this paper, we improve this causal broadcast by
+  removing the need for such vector. The proposed protocol safely purges the
+  local structure over time at cost of few control messages. As consequence,
+  causal broadcast can run in large and dynamic systems even on most humble
+  devices such as Raspberry Pi's.
 \end{abstract}
 
-
+\keywords{Causal broadcast, local space complexity}
 
 
 %%% Local Variables:
