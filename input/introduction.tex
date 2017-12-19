@@ -1,2 +1,66 @@
-
+ 
 \section{Introduction}
+
+Causal broadcast (\REF) constitutes the core communication primitive of many
+distributed systems (\REF). It ensures the reliable delivery of broadcast
+messages, exactly once, following Lamport's happen before
+relationship~\cite{lamport1978time}. If the sending of a message $m$ precedes
+the sending of a message $m'$ then all processes that deliver these two messages
+need to deliver $m$ before $m'$. Otherwise they deliver them in any order.
+
+In large and dynamic systems, processes cannot afford to maintain an up-to-date
+knowledge of the full membership. Instead, each process builds a partial view of
+neighbors to communicate with. Gossiping exploits these neighborhoods to
+efficiently broadcast a message to all processes. To broadcast a message, a
+process sends the message to its neighbors; each process receiving such message
+forwards it to its own neighbors. Processes receive the message either directly
+or transitively. Processes may receive a broadcast message multiples times from
+different sources.  To deliver each message exactly once, reliable broadcast
+must discard the additional copies of the original message at receipt. 
+
+In static systems where processes cannot join, leave, or self-reconfigure their
+neighborhood, the local structure that ensures exactly once delivery is
+lightweight.  Since each process forwards each message exactly once, each
+process knows that it will receive a number of copies of the original message
+equal to the number of their incoming links. Once it received that many copies,
+it safely purges its local structure from this message. It will never receive
+this message again.
+
+This does not hold in dynamic systems. When a process adds a neighbor to its
+partial view, the latter does not know if it should expect another message copy 
+from this new incoming link. \TODO{Need to be more accurate.}  To solve this,
+causal broadcast relies on reliable broadcast which takes a vector the size of
+which is linear with the number of processes that ever broadcast a message
+(\REF).
+
+% State-of-the-art causal broadcasts (\REF) reuse this vector of clocks. Each
+% message piggybacks such vector to ensure their causal delivery. A recent causal
+% broadcast (\REF) alleviates processes from the need for piggybacking vectors in
+% messages. However, it still requires to maintain the local vector to ensure that
+% it delivers each message exactly once.
+
+In this paper, we present a causal broadcast protocol that extends (\REF).  Our
+contribution is twofold:
+\begin{itemize}
+\item We describe a causal broadcast that piggybacks constant size control
+  information while maintaining a local structure that is safely purged over
+  time, and we prove it.
+\item We provide experiments that highlight \TODO{something}.
+\end{itemize}
+While (\REF) solves the issue about generated traffic, our approach solves the
+issue about local space consumption. As consequence, causal broadcast can run in
+large and dynamic systems even on most humble devices such as Raspberry Pi’s.
+
+
+
+The rest of this paper is organized as follows. Section~\ref{sec:motivations}
+shows the issue and motivates this work. Section~\ref{sec:proposal} presents the
+proposed causal broadcast and corresponding
+proofs. Section~\ref{sec:experimentation} highlights the pros and cons of our
+approach on experimental setups. We conclude in Section~\ref{sec:conclusion}.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

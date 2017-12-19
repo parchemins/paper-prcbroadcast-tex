@@ -1,0 +1,118 @@
+\documentclass{class-for-drafts}
+
+\usepackage{hyperref}
+%% url
+\usepackage{url}
+%% maths
+\usepackage{amsmath,amssymb}
+%%\usepackage{amsfonts}
+%% \usepackage{amsthm}
+%% algorithms
+%\usepackage{algorithm}
+\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
+\usepackage[ruled, linesnumbered, noend]{algorithm2e}
+
+\usepackage{lipsum}
+
+\usepackage{pifont}
+
+%% images
+\usepackage{graphicx}
+%\usepackage[dvipsnames]{xcolor}
+%% inparaenum
+%\usepackage{paralist}
+%\usepackage{enumitem}
+
+%% tables
+\usepackage{booktabs,multirow,tabularx,hhline}
+\usepackage{makecell}
+%% figures
+%\usepackage{caption}
+\usepackage{subfig}
+%\usepackage[font=small, skip=2pt]{caption}
+%\usepackage[font=small]{subfig}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.pathreplacing,decorations.pathmorphing,plotmarks,shapes,matrix}
+\tikzset{>={Latex[width=3pt,length=5pt]}}
+%% transform eps in pdf crossplateform
+\usepackage{epsfig}
+\usepackage{epstopdf}
+
+%% hyphenation
+\usepackage{hyphenat}
+\hyphenation{brow-sers brow-ser}
+
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+\newcommand{\REF}[0]{\textcolor{purple}{REF}}
+\newcommand{\COLOR}[1]{\textcolor{Black}{#1}}
+
+\usepackage{xspace}
+\newcommand{\SCAMP}[0]{\textsc{Scamp}\xspace}
+\newcommand{\CYCLON}[0]{\textsc{Cyclon}\xspace}
+\newcommand{\SPRAY}[0]{\textsc{Spray}\xspace}
+\newcommand{\LSEQ}[0]{\textsc{LSeq}\xspace}
+\newcommand{\CRATE}[0]{\textsc{Crate}\xspace}
+\newcommand{\PEERSIM}[0]{\textsc{PeerSim}\xspace}
+
+\newcommand{\CBROADCAST}[0]{\textup{PC-broadcast}\xspace}
+
+\usepackage{amsthm} %% proof env
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\EXAMPLE}[2]{\noindent \textbf{\emph{#1}} #2}
+\newcommand{\PAR}[2]{\noindent \textbf{#1} #2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document} 
+
+\title{The Last Linear Upper Bounds of Causal Broadcast}
+
+%\title{Making Causal Broadcast Cheaper Than Reliable Broadcast}
+
+\numberOfAuthors{1}
+
+\newcommand{\affLSNN}{L2SN, University of Nantes\\
+  2 rue de la Houssini{\`e}re\\
+  BP 92208, 44322 Nantes Cedex 3, France\\
+  \url{first.last@univ-nantes.fr}}
+
+% \newcommand{\affDoe}{Affiliations\\
+%   Street\\
+%   City, Country\\
+%   \url{first.last@anonymous.com}}
+
+\author{Brice N{\'e}delec, Pascal Molli, and Achour Most{\'e}faoui \aff \affLSNN}
+
+% \author{\IEEEauthorblockN{Brice N{\'e}delec}\IEEEauthorrefmark{1}, Pascal Molli\IEEEauthorrefmark{1} and Achour Most{\'e}faoui\IEEEauthorrefmark{1}\\\IEEEauthorblockA{\IEEEauthorrefmark{1}\affLSNN}}
+
+% \author{\IEEEauthorblockN{Jane Doe}\IEEEauthorrefmark{1}, \IEEEauthorblockN{John
+%     Doe}\IEEEauthorrefmark{1}\\\IEEEauthorblockA{\IEEEauthorrefmark{1}\affDoe}}
+
+\proceedings{}
+
+%\copyright{}
+
+\maketitle
+
+\input{input/abstract.tex}
+\input{input/introduction.tex}
+\input{input/motivations.tex}
+\input{input/proposal.tex}
+\input{input/experimentation.tex}
+\input{input/relatedwork.tex}
+\input{input/conclusion.tex}
+
+% \newpage
+\input{input/acknowledgment.tex}
+
+%\bibliographystyle{abbrv}
+\bibliography{bibliographie}
+  
+\end{document}
+
