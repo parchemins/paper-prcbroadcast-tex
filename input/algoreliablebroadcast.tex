@@ -1,0 +1,54 @@
+\SetKwProg{Function}{function}{}{}
+\SetKwProg{Upon}{upon}{}{}
+\SetKwProg{Initially}{INITIALLY:}{}{}
+\SetKwProg{Dissemination}{DISSEMINATION:}{}{}
+
+\small
+
+\DontPrintSemicolon
+\LinesNumbered
+
+\Initially {} {
+  $Q_o$ \tcp*{Set of processes, $p$'s outview}
+  $Q_i$ \tcp*{Set of processes, $p$'s inview}
+  $D \leftarrow \varnothing$ \tcp*{link $\in Q_i$ $\rightarrow$  messages to discard}
+}
+
+\BlankLine
+
+\Dissemination{}{
+  
+  \Function{\textup{R-broadcast}($m$)} { %\tcp*[f]{$b_p(m)$}} { 
+    $\textup{received}(m,\, \_)$ \;
+    \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
+    \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
+  }
+
+  \BlankLine
+  
+  \Upon{\textup{receive}($m,\, l$)}{
+    \If {$\textup{received}(m,\,l)$} {
+      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{fwd}}
+      \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
+    }
+  }
+
+  \BlankLine
+  
+  \Function{\textup{received}($m,\, l$)}{
+    \textbf{let} $hasReceived \leftarrow true$ \;
+    \If {$\not\exists q \in D$ \textbf{\textup{such that}} $m \in D[q]$} {
+      \lForEach {$q \in Q_i$} {$D[q] \leftarrow D[q] \cup m$}
+      $hasReceived \leftarrow false$ \;
+    }
+    $D[l] \leftarrow D[l] \setminus m$ \;
+    \Return $hasReceived$ \;
+  }
+  
+}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

@@ -33,14 +33,20 @@ causal broadcast relies on reliable broadcast which takes a vector the size of
 which is linear with the number of processes that ever broadcast a message
 (\REF).
 
+\TODO{We do reliable broadcast on top of causal broadcast. Did not make sense
+  before because the cost of causal broadcast was too high. Now that it's cheap,
+  we use it to enable reliability at marginal cost.}
+
 % State-of-the-art causal broadcasts (\REF) reuse this vector of clocks. Each
 % message piggybacks such vector to ensure their causal delivery. A recent causal
 % broadcast (\REF) alleviates processes from the need for piggybacking vectors in
 % messages. However, it still requires to maintain the local vector to ensure that
 % it delivers each message exactly once.
 
-In this paper, we present a causal broadcast protocol that extends (\REF).  Our
-contribution is twofold:
+In this paper, we present a causal broadcast protocol that extends
+(\REF). \TODO{Maybe more generic: on top of any causal broadcast? Along with
+  \CBROADCAST it removes the last linear complexity?} Our contribution is
+twofold:
 \begin{itemize}
 \item We describe a causal broadcast that piggybacks constant size control
   information while maintaining a local structure that is safely purged over
@@ -49,9 +55,7 @@ contribution is twofold:
 \end{itemize}
 While (\REF) solves the issue about generated traffic, our approach solves the
 issue about local space consumption. As consequence, causal broadcast can run in
-large and dynamic systems even on most humble devices such as Raspberry Pi’s.
-
-
+large and dynamic systems even on most humble devices such as Raspberry Pi's.
 
 The rest of this paper is organized as follows. Section~\ref{sec:motivations}
 shows the issue and motivates this work. Section~\ref{sec:proposal} presents the
