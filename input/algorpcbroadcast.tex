@@ -1,0 +1,116 @@
+\SetKwProg{Function}{function}{}{}
+\SetKwProg{Upon}{upon}{}{}
+\SetKwProg{Initially}{INITIALLY:}{}{}
+\SetKwProg{Safety}{SAFETY:}{}{}
+\SetKwProg{Dissemination}{DISSEMINATION:}{}{}
+
+\small
+
+\DontPrintSemicolon
+\LinesNumbered
+
+\Initially {} {
+  $Q_o$ \tcp*{Set of processes, $p$'s outview}
+  $Q_i$ \tcp*{Set of processes, $p$'s inview}
+  \BlankLine  
+  $B \leftarrow \varnothing$ \tcp*{link $\rightarrow$ buffered messages}
+  \BlankLine  
+  $S \leftarrow \varnothing$ \tcp*{Map of buffers $Q_i : M^* \times M^* \times bool$}
+}
+
+\BlankLine
+
+\Safety{}{
+  
+  \Upon{$\textup{open}_o(q)$} {
+    $Q_o \leftarrow Q_o \setminus q$ \;
+    $\textup{sendAlpha}(p,\,q)$ \tcp*{$\alpha$}
+  }
+  
+  \Upon{$\textup{open}_i(q)$} {
+    $Q_i \leftarrow Q_i \setminus q$ \;
+  }
+
+  \BlankLine
+  
+  \Upon{$\textup{receiveAlpha}(from,\,to)$ \tcp*[f]{$to=p$}} {
+    $S[from] \leftarrow \langle \varnothing,\, \varnothing,\, false \rangle$ \;
+    $\textup{sendBeta}(from,\,to)$ \tcp*{$\beta$}
+  }
+
+  \BlankLine
+
+  \Upon{$\textup{receiveBeta}(from,\,to)$ \tcp*[f]{$from=p$}} {
+    $B[to] \leftarrow \varnothing$ \;
+    $\textup{sendPing}(from,\, to)$ \tcp*{$\pi$}
+  }
+  
+  \BlankLine
+
+  \Upon{$\textup{receivePing}(from,\,to)$ \tcp*[f]{$to=p$}} {
+    \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
+    $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \;
+    $\textup{sendPong}(from,\, to)$ \tcp*{$\rho$}
+  }
+
+  \BlankLine
+
+  \Upon{$\textup{receivePong}(from,\,to)$ \tcp*[f]{$from=p$}} {
+    $\textup{sendBuffer}(from,\,to,\, B[to])$ \;
+    $B \leftarrow B \setminus to$ \;
+    $Q_o \leftarrow Q_o \cup to$
+  }
+
+  \BlankLine
+
+  \Upon{$\textup{receiveBuffer}(from,\, to,\, buf)$} {
+    \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
+    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
+    \lForEach {$m \in buf\setminus B_\alpha \setminus B_\pi$ } {$\textup{R-deliver}(m)$}
+    $D[from] \leftarrow B_\pi \setminus (buf\setminus B_\alpha)$ \;
+    $Q_i \leftarrow Q_i \cup from$ 
+  }
+  
+  \BlankLine
+
+  \Upon{$\textup{close}_o(q)$} {
+    $B \leftarrow B \setminus q$
+  }
+  \Upon{$\textup{close}_i(q)$} {
+    $S \leftarrow S \setminus q$
+  }
+
+  
+}
+
+\BlankLine
+
+\Dissemination{}{
+  
+  \Function{$\CBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
+    $\textup{buffering}(m)$ \;
+    $\textup{R-broadcast}(m)$
+  }
+
+  \BlankLine
+  
+  \Upon{$\textup{R-deliver}(m)$} {
+    $\textup{buffering}(m)$ \;
+    $\textup{FBC-deliver}(m)$
+  }
+
+  \Function{$\textup{buffering}(m)$}{ 
+    \lForEach {$q \in B$} {$B[q] \leftarrow B[q] \cup m$}
+    \ForEach {$q \in S$} {
+      \textbf{let} $\langle B_\alpha,\, B_\pi,\, receivedPi \rangle \leftarrow S[q]$ \;
+      \lIf {$receivedPi$} {$B_\pi \leftarrow B_\pi \cup m$}
+      \lElse {$B_\alpha \leftarrow B_\alpha \cup m$} 
+    }
+  }
+}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:
