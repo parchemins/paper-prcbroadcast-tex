@@ -2,6 +2,40 @@
 \section{Issues and Motivations}
 \label{sec:motivations}
 
+Causal broadcast is a communication primitive that allows a process to send
+messages to all processes of its distributed system. Message deliveries follow
+the happen before relationship. If the sending of a message $m$ precedes the
+sending of a message $m'$ then all processes that deliver these two messages
+need to deliver $m$ before $m'$. Otherwise they deliver them in any order. Each
+process may receive a message multiple times but it delivers it exactly once.
+
+Causal broadcast relies on reliable broadcast. First, it guarantees that all
+correct processes eventually receive broadcast messages. Gossiping constitutes
+an efficient mean to reliably disseminate messages to large systems. Each
+process maintains a partial view considerably smaller than the whole system
+membership. When a process broadcasts a message, it sends it to its partial
+view; each process that receives such message forwards it to its partial
+view. Broadcast messages reach all processes either directly or transitively.
+
+Second, reliable broadcast guarantees that each process delivers each broadcast
+message exactly once, in spite of multiple receipts that can occur. A
+lightweight implementation consists in recording the number of copies expected
+after the first receipt. When the expected number of copies falls to zero, the
+message will never be received again. Reliable broadcast purges its local
+structure from this element. \TODO{Figure.}
+
+Unfortunately, such implementation does not handle dynamic systems where
+processes can join, leave, or self-reconfigure their partial view at any
+time. \TODO{Figure.} 
+
+To solve this issue, state-of-the-art protocols maintain a local vector the size
+of which increases linearly with the number of processes that ever broadcast a
+message. They eventually become overcostly in dynamic settings.
+
+In this paper, we exploit and extend \PCBROADCAST to provide a causal broadcast
+middleware that is lightweight in terms of local memory consumption, and message
+overhead. The next section describes the proposed protocol.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../paper.tex"

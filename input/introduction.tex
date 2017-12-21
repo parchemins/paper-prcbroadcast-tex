@@ -45,7 +45,7 @@ which is linear with the number of processes that ever broadcast a message
 
 In this paper, we present a causal broadcast protocol that extends
 (\REF). \TODO{Maybe more generic: on top of any causal broadcast? Along with
-  \CBROADCAST it removes the last linear complexity?} Our contribution is
+  \PCBROADCAST it removes the last linear complexity?} Our contribution is
 twofold:
 \begin{itemize}
 \item We describe a causal broadcast that piggybacks constant size control
@@ -56,6 +56,10 @@ twofold:
 While (\REF) solves the issue about generated traffic, our approach solves the
 issue about local space consumption. As consequence, causal broadcast can run in
 large and dynamic systems even on most humble devices such as Raspberry Pi's.
+
+\TODO{Not only it's an improvement over causal broadcast but also over reliable
+  broadcast if one is okay to introduce a slight delay in messages.}
+
 
 The rest of this paper is organized as follows. Section~\ref{sec:motivations}
 shows the issue and motivates this work. Section~\ref{sec:proposal} presents the

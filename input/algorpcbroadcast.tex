@@ -87,7 +87,7 @@
 
 \Dissemination{}{
   
-  \Function{$\CBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
+  \Function{$\RPCBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
     $\textup{buffering}(m)$ \;
     $\textup{R-broadcast}(m)$
   }
@@ -96,7 +96,7 @@
   
   \Upon{$\textup{R-deliver}(m)$} {
     $\textup{buffering}(m)$ \;
-    $\textup{FBC-deliver}(m)$
+    $\textup{RPC-deliver}(m)$
   }
 
   \BlankLine
