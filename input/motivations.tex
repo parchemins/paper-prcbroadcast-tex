@@ -32,7 +32,7 @@ view. Broadcast messages reach all processes either directly or transitively.
     {\input{input/figgeneralpurgeC.tex}}
     \hspace{10pt}
     \subfloat[Part D][\label{fig:generalpurgeD}All processes receive a copy
-    of $a$. Process~B and Process~C do not expect additionnal copies of $a$. 
+    of $a$. Process~B and Process~C do not expect additional copies of $a$. 
     Process~A still expects a copy.]
     {\input{input/figgeneralpurgeD.tex}}
     \\
@@ -67,41 +67,56 @@ receives the last copy of $a$ and purges its structure.
 
 \begin{figure*}
   \begin{center}
-    \subfloat[Part A][\label{fig:generalproblemA}Process~A broadcasts $a$. It expects 
-    two copies of $a$.]
+    \subfloat[Part A][\label{fig:generalproblemA}Process~A broadcasts $a$.]
     {\input{input/figgeneralproblemA.tex}}
     \hspace{10pt}
-    \subfloat[Part B][\label{fig:generalproblemB}Process~A broadcasts $a$. It expects 
-    two copies of $a$.]
+    \subfloat[Part B][\label{fig:generalproblemB}Process~C receives,
+    delivers, and forwards $a$. It does not expect additional copies.]
     {\input{input/figgeneralproblemB.tex}}
     \hspace{10pt}
-    \subfloat[Part C][\label{fig:generalproblemC}Process~A broadcasts $a$. It expects 
-    two copies of $a$.]
+    \subfloat[Part C][\label{fig:generalproblemC}Process~B adds Process~C as neighbor.]
     {\input{input/figgeneralproblemC.tex}}    
     \hspace{10pt}
-    \subfloat[Part D][\label{fig:generalproblemD}Process~A broadcasts $a$. It expects 
-    two copies of $a$.]
+    \subfloat[Part D][\label{fig:generalproblemD}Process~B receives, delivers,
+    and forwards $a$. Among others, it sends a copy of $a$ to Process~C.]
     {\input{input/figgeneralproblemD.tex}}    
     \hspace{10pt}
-    \subfloat[Part E][\label{fig:generalproblemE}Process~A broadcasts $a$. It expects 
-    two copies of $a$.]
+    \subfloat[Part E][\label{fig:generalproblemE}Not only Process~C receives, delivers, 
+    and forwards $a$ a second time, but the number of expected copies becomes
+    inconsistent and may grow unbounded.]
     {\input{input/figgeneralproblemE.tex}}    
-    \caption{Meow.}
+    \caption{\label{fig:generalproblem}A broadcast relying on counters may
+      deliver messages multiple times leading to inconsistencies.}
   \end{center}
 \end{figure*}
 
 
 Unfortunately, such implementation does not handle dynamic systems where
 processes can join, leave, or self-reconfigure their partial view at any
-time. \TODO{Figure.} 
+time. Figure~\ref{fig:generalproblem} illustrates the issue. In
+Figure~\ref{fig:generalproblemA}, Process~A broadcasts $a$. It sends a copy of
+$a$ to its neighbors Process~B and Process~C. In
+Figure~\ref{fig:generalproblemB}, Process~C receives $a$ for the first time.  As
+consequence, it delivers and forwards it. Since Process~C has only 1 link
+towards it, it does not expect additional copies of $a$. In
+Figure~\ref{fig:generalproblemC}, Process~B adds Process~C as neighbors. In
+Figure~\ref{fig:generalproblemD}, Process~B receives, delivers, and forwards
+$a$. Since it added Process~C in its neighborhood, Process~B sends it a copy.
+In Figure~\ref{fig:generalproblemE}, Process~C receives $a$ again. Since it did
+not keep traces of its former receipt, Process~C believes that it receives $a$
+for the first time. Process~C delivers, and forwards $a$ again. In addition, the
+number of expected copies changes inconsistently. Processes may deliver messages
+multiple times. Messages may travel through the system forever.
 
-To solve this issue, state-of-the-art protocols maintain a local vector the size
-of which increases linearly with the number of processes that ever broadcast a
-message. They eventually become overcostly in dynamic settings.
+% To solve this issue, state-of-the-art protocols maintain a local vector the size
+% of which increases linearly with the number of processes that ever broadcast a
+% message. They eventually become overcostly in dynamic settings.
+
 
 In this paper, we exploit and extend \PCBROADCAST to provide a causal broadcast
 middleware that is lightweight in terms of local memory consumption, and message
-overhead. The next section describes the proposed protocol.
+overhead. \TODO{maybe more details.} The next section describes the proposed
+protocol.
 
 %%% Local Variables:
 %%% mode: latex

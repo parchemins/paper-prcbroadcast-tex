@@ -2,6 +2,12 @@
 \section{Proposal}
 \label{sec:proposal}
 
+In this section, we present \RPCBROADCAST, a causal broadcast protocol that
+removes the last linear upper bound in terms of number of processes that ever
+broadcast a message that remained on space complexity. \RPCBROADCAST exploits
+the improvement brought by \PCBROADCAST on generated traffic to reduce the space
+consumed by reliable broadcast, at marginal cost.
+
 \subsection{Model}
 
 \begin{algorithm}[h]
