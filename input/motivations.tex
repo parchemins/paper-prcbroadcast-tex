@@ -23,33 +23,73 @@ view. Broadcast messages reach all processes either directly or transitively.
     two copies of $a$.]
     {\input{input/figgeneralpurgeA.tex}}
     \hspace{10pt}
-    \subfloat[Part B][\label{fig:generalpurgeB}Process~B and Process~C receive $a$. 
-    They both expect another copy of $a$.]
+    \subfloat[Part B][\label{fig:generalpurgeB}Process~B and Process~C receive
+    and deliver $a$. They both expect an additional copy of $a$.]
     {\input{input/figgeneralpurgeB.tex}}
-    \hspace{10pt}
+    \\
     \subfloat[Part C][\label{fig:generalpurgeC}Process~B and Process~C forward $a$ 
     to their neighbors in a gossip fashion.]
     {\input{input/figgeneralpurgeC.tex}}
     \hspace{10pt}
-    \subfloat[Part D][\label{fig:generalpurgeD}Process~B and Process~C forward $a$ 
-    to their neighbors in a gossip fashion.]
+    \subfloat[Part D][\label{fig:generalpurgeD}All processes receive a copy
+    of $a$. Process~B and Process~C do not expect additionnal copies of $a$. 
+    Process~A still expects a copy.]
     {\input{input/figgeneralpurgeD.tex}}
-    \hspace{10pt}
-    \subfloat[Part E][\label{fig:generalpurgeE}Process~B and Process~C forward $a$ 
-    to their neighbors in a gossip fashion.]
+    \\
+    \subfloat[Part E][\label{fig:generalpurgeE}Process~A receives the last 
+    awaited copy of $a$. It purges its structure from this message.]
     {\input{input/figgeneralpurgeE.tex}}
-
-    \caption{meow.}
+    \caption{\label{fig:generalpurge}Broadcast that guarantees to deliver 
+      messages exactly once using counters.}
   \end{center}
 \end{figure*}
 
 
 Second, reliable broadcast guarantees that each process delivers each broadcast
-message exactly once, in spite of multiple receipts that can occur. A
-lightweight implementation consists in recording the number of copies expected
-after the first receipt. When the expected number of copies falls to zero, the
-message will never be received again. Reliable broadcast purges its local
-structure from this element. \TODO{Figure.}
+message exactly once, in spite of multiple receipts that can occur.
+Figure~\ref{fig:generalpurge} shows a lightweight implementation that consists
+in recording the number of copies expected after the first receipt. When the
+expected number of copies falls to zero, the message will never be received
+again. Reliable broadcast purges its local structure from this element. In
+Figure~\ref{fig:generalpurgeA}, Process~A broadcasts $a$ to Process~B and
+Process~C. Since it knows that each process forwards each message exactly once,
+it expects to receive 2 copies: one from Process~B, one from Process~C. In
+Figure~\ref{fig:generalpurgeB}, Process~B and Process~C receive and deliver
+$a$. They both expect another copy of $a$ from Process~C and Process~B
+respectively. Since this is their first receipt of $a$, Process~B and Process~C
+forward the message to their neighbors. In Figure~\ref{fig:generalpurgeD},
+Process~B and Process~C receives the awaited copy from each other. They will
+never receive such message again, so they remove it from the set of expected
+messages. Process~A receives a copy but does not purge its local structure, for
+it still expect an additional copy of the message. It decrements the counter
+corresponding to $a$. In Figure~\ref{fig:generalpurgeE}, Process~A finally
+receives the last copy of $a$ and purges its structure.
+
+\begin{figure*}
+  \begin{center}
+    \subfloat[Part A][\label{fig:generalproblemA}Process~A broadcasts $a$. It expects 
+    two copies of $a$.]
+    {\input{input/figgeneralproblemA.tex}}
+    \hspace{10pt}
+    \subfloat[Part B][\label{fig:generalproblemB}Process~A broadcasts $a$. It expects 
+    two copies of $a$.]
+    {\input{input/figgeneralproblemB.tex}}
+    \hspace{10pt}
+    \subfloat[Part C][\label{fig:generalproblemC}Process~A broadcasts $a$. It expects 
+    two copies of $a$.]
+    {\input{input/figgeneralproblemC.tex}}    
+    \hspace{10pt}
+    \subfloat[Part D][\label{fig:generalproblemD}Process~A broadcasts $a$. It expects 
+    two copies of $a$.]
+    {\input{input/figgeneralproblemD.tex}}    
+    \hspace{10pt}
+    \subfloat[Part E][\label{fig:generalproblemE}Process~A broadcasts $a$. It expects 
+    two copies of $a$.]
+    {\input{input/figgeneralproblemE.tex}}    
+    \caption{Meow.}
+  \end{center}
+\end{figure*}
+
 
 Unfortunately, such implementation does not handle dynamic systems where
 processes can join, leave, or self-reconfigure their partial view at any
