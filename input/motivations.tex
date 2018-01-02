@@ -17,6 +17,25 @@ membership. When a process broadcasts a message, it sends it to its partial
 view; each process that receives such message forwards it to its partial
 view. Broadcast messages reach all processes either directly or transitively.
 
+\begin{figure*}
+  \begin{center}
+    \subfloat[Part A][\label{fig:generalpurgeA}Process~A broadcasts $a$. It expects 
+    two copies of $a$.]
+    {\input{input/figgeneralpurgeA.tex}}
+    \hspace{10pt}
+    \subfloat[Part B][\label{fig:generalpurgeB}Process~B and Process~C receive $a$. 
+    They both expect another copy of $a$.]
+    {\input{input/figgeneralpurgeB.tex}}
+    \hspace{10pt}
+    \subfloat[Part C][\label{fig:generalpurgeC}Process~B and Process~C forward $a$ 
+    to their neighbors in a gossip fashion.]
+    {\input{input/figgeneralpurgeC.tex}}
+
+    \caption{meow.}
+  \end{center}
+\end{figure*}
+
+
 Second, reliable broadcast guarantees that each process delivers each broadcast
 message exactly once, in spite of multiple receipts that can occur. A
 lightweight implementation consists in recording the number of copies expected
