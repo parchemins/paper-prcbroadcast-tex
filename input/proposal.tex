@@ -28,8 +28,8 @@ other processes, nor other processes add links to this process, causal broadcast
 operation is that of reliable broadcast.
 
 When the process wants to add a link to another process for causal broadcast, it
-must make sure that this link is safe, i.e., it does not break the guaranty that
-the other process delivers each message exactly once in causal order.
+makes sure that this link cannot break the guaranty that the other process
+delivers each message exactly once in causal order.
 
 
 \begin{algorithm}[h]

@@ -3,6 +3,22 @@
 \label{sec:conclusion}
 
 
+In this paper, we proposed an original causal broadcast protocol that removes
+the last linear upper bound in terms of number of processes that ever broadcast
+a message that remained on local space complexity. This approach only uses
+buffers of messages that grow and shrink when processes add new neighbors. They
+eventually become empty when the system becomes static. To achieve this, our
+approach only uses small control messages of constant size. The number of
+control messages depends on the overlay network. Using routing strategies, this
+number remains small, hence generated traffic overhead remains small. This
+advantageous trade-off makes causal broadcast a lightweight and efficient
+middleware for group communication in distributed systems. This advantageous
+trade-off even makes \RPCBROADCAST a lightweight and efficient implementation
+for reliable broadcast. As consequence, causal broadcast and reliable broadcast
+can run in large and dynamic systems even on most humble devices such as
+Raspberry Pi’s.
+
+
 
 
 %%% Local Variables:
