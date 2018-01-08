@@ -115,8 +115,14 @@ multiple times. Messages may travel through the system forever.
 
 In this paper, we exploit and extend \PCBROADCAST to provide a causal broadcast
 middleware that is lightweight in terms of local memory consumption, and message
-overhead. \TODO{maybe more details.} The next section describes the proposed
-protocol.
+overhead. Table~\ref{table:complexity} shows its complexity. It keeps constant
+message overhead and constant delivery execution time while removing the linear
+dependency $N$ from the local space complexity. Its overhead in terms of number
+of control messages is twice that of \PCBROADCAST.
+%% It maintains a local structure that grows and shrinks over time when
+%% processes can join, leave, or self-reconfigure their neighborhood over time.
+%% \TODO{maybe more details.}
+The next section describes the proposed protocol.
 
 %%% Local Variables:
 %%% mode: latex

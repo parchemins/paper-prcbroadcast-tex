@@ -104,8 +104,8 @@
   \Function{$\textup{buffering}(m)$}{ 
     \lForEach {$q \in B$} {$B[q] \leftarrow B[q] \cup m$}
     \ForEach {$q \in S$} {
-      \textbf{let} $\langle B_\alpha,\, B_\pi,\, receivedPi \rangle \leftarrow S[q]$ \;
-      \lIf {$receivedPi$} {$B_\pi \leftarrow B_\pi \cup m$}
+      \textbf{let} $\langle B_\alpha,\, B_\pi,\, received_\pi \rangle \leftarrow S[q]$ \;
+      \lIf {$received_\pi$} {$B_\pi \leftarrow B_\pi \cup m$}
       \lElse {$B_\alpha \leftarrow B_\alpha \cup m$} 
     }
   }

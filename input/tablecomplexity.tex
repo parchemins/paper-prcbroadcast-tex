@@ -1,0 +1,19 @@
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\setlength{\tabcolsep}{4pt} % General space between cols (6pt standard)
+
+\small
+
+\begin{tabularx}{1.55\columnwidth}{@{}Xcccc@{}}
+  & \makecell{message\\overhead} &  \makecell{delivery\\execution time} & \makecell{local space\\consumption} & \makecell{number of control messages\\per added link} \\ \cmidrule{2-5}
+  vector-based~\cite{schwarz1994detecting} & $O(N)$ & $O(W.N)$ & $O(N+W.N)$ & $0$ \\ 
+  \PCBROADCAST (\REF) & $O(1)$ & $O(1)$ & $O(N + B + W)$ & $3$ to $2N^2$ \\ \hline\hline
+  \textbf{this paper} & $O(1)$ & $O(1)$ & $\mathbf{O(D + B + W)}$ & $\mathbf{6}$ to $\mathbf{4N^2}$ \\
+%  \bottomrule
+\end{tabularx}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

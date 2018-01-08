@@ -43,6 +43,18 @@ which is linear with the number of processes that ever broadcast a message
 % messages. However, it still requires to maintain the local vector to ensure that
 % it delivers each message exactly once.
 
+\begin{table*}
+  \begin{center}
+    \caption{\label{table:complexity} Complexity of causal broadcast algorithms
+      at each process. $N$ the number of processes that ever broadcast a
+      message. $W$ the number of messages received but not delivered yet. $B$
+      and $D$ are buffers of messages that increase when a link is added but
+      purged when the link becomes safe to use. $B$ and $D$ eventually becomes
+      empty when the system becomes static.}
+    \input{input/tablecomplexity.tex}
+  \end{center}
+\end{table*}
+
 In this paper, we present a causal broadcast protocol that extends
 (\REF). \TODO{Maybe more generic: on top of any causal broadcast? Along with
   \PCBROADCAST it removes the last linear complexity?} Our contribution is

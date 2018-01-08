@@ -10,12 +10,27 @@ consumed by reliable broadcast, at marginal cost.
 
 \subsection{Model}
 
+A distributed systems comprises a set of processes that can communicate with
+each other using messages.
+
+
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
   \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
 \end{algorithm}
 
 \subsection{Operation}
+
+Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed causal
+broadcast. It relies on an implementation of reliable broadcast shown in
+Algorithm~\ref{algo:reliablebroadcast}. When the process does not add links to
+other processes, nor other processes add links to this process, causal broadcast
+operation is that of reliable broadcast.
+
+When the process wants to add a link to another process for causal broadcast, it
+must make sure that this link is safe, i.e., it does not break the guaranty that
+the other process delivers each message exactly once in causal order.
+
 
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}
