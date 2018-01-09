@@ -108,6 +108,12 @@ for the first time. Process~C delivers, and forwards $a$ again. In addition, the
 number of expected copies changes inconsistently. Processes may deliver messages
 multiple times. Messages may travel through the system forever.
 
+Even if this implementation does not work in dynamic systems, it gives the hint
+that broadcast can guarantee reliability locally without maintaining costly data
+structures summarizing the global state of the system, e.g., using vector
+clocks.
+
+
 % To solve this issue, state-of-the-art protocols maintain a local vector the size
 % of which increases linearly with the number of processes that ever broadcast a
 % message. They eventually become overcostly in dynamic settings.
