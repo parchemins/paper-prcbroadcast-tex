@@ -10,14 +10,86 @@ consumed by reliable broadcast, at marginal cost.
 
 \subsection{Model}
 
-A distributed systems comprises a set of processes that can communicate with
-each other using messages.
+A distributed system comprises a set of processes that can communicate with each
+other using messages. Processes may not have full knowledge of the membership of
+the system. Instead, processes build and maintain overlay networks: each process
+updates a local partial view of logical communication channels, i.e., a set of
+processes to communicate with. The partial view is usually much smaller than the
+actual system size. We speak of overlay networks, networks, or distributed
+systems indifferently.
 
+\begin{definition}[Overlay network]
+  An overlay network comprises a set of processes that run a set of instructions
+  sequentially.  An overlay network also comprises a set of directed
+  links. \\
+  An overlay network is dynamic if the set of processes and the set of links is
+  mutable. Otherwise, the overlay network is static. \\
+  The set of links departing from a process is its neighborhood, or partial
+  view, or out-view. The set of links arriving to a process is its in-view. \\
+  A link from a process to another process allows the former to transmit
+  information to the latter. Processes transmit information using asynchronous
+  message passing.\\
+  Processes are faulty if they crash, otherwise they are correct. There are no
+  byzantine processes.
+\end{definition}
+
+Processes can communicate with each other using message passing. Process~A can
+send a message $m$ to Process~B $s_{AB}(m)$. Process~A can receive a message $m$
+from another process B $r_{AB}(m)$, or from any other process
+$r_A(m)$. Process~A can send a message $m$ to all other processes of the system,
+i.e., it broadcasts a message $b_A(m)$. Process~A can deliver a message
+$d_A(m)$.
+
+
+\begin{definition}[Uniform reliable broadcast] 
+  When a process broadcasts a message to all processes of the network, correct
+  processes eventually receive it. Uniform reliable broadcast guarantees 3
+  properties:
+  \begin{itemize}
+  \item Validity: If a correct process broadcasts a message, then it
+    eventually delivers it.
+  \item Uniform Agreement: If a process -- correct or not -- delivers a message,
+    then all correct processes eventually deliver it.
+  \item Uniform Integrity: A process delivers a message at most once, and only if
+    it was previously broadcast.
+  \end{itemize}
+\end{definition}
 
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
   \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
 \end{algorithm}
+
+Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a uniform
+reliable broadcast that purges its local structure over time but only in static
+networks. The implementation uses the in-view and exploits the property that
+each process sends each message exactly once to each neighbor in their
+out-view. It associates with each link from the in-view a set of awaited
+messages. When Process~A receives a message for the first time from Process~B,
+it awaits a copy of this message from all other processes in its in-view. Once
+it receives this copy, it removes the message from the set of awaited
+messages. Process~A will never receive a copy of this message from this
+link. Once it received all awaited copies, it will never receive a copy of this
+message. The principle of this implementation is similar to that of
+Figure~\ref{fig:generalpurge} to which it adds an awareness of links with
+awaited messages. Using this reliable broadcast implementation, each process
+delivers each message exactly once.
+
+In addition to reliable delivery, broadcast protocols can guarantee a delivery
+order of messages. To define a delivery order among messages, we define time in
+a logical sense using Lamport’s definition. 
+
+\begin{definition}[Happen before~\cite{lamport1978time}]
+  Happen before is a transitive, irreflexive, and antisymmetric relation that
+  defines a strict partial orders of events. The sending of a message always
+  precedes its receipt.
+\end{definition}
+
+\begin{definition}[Causal order]
+  The delivery order of messages follows the happen before relationships of the
+  corresponding broadcasts.
+\end{definition}
+
 
 \subsection{Operation}
 
