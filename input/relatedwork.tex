@@ -2,10 +2,39 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-Overhead: we must maintain an inview. We must send control messages. 
+% Overhead: we must maintain an inview. We must send control messages. 
 
-Major difference, vector track the origin of the message while we track the
-direct sender. 
+% Major difference, vector track the origin of the message while we track the
+% direct sender. 
+
+% We cannot antientropy with any process. (But its better that way).
+
+Causal broadcast relies on reliable broadcast. Reliable broadcast in dynamic
+systems either maintains
+\begin{inparaenum}[(i)]
+\item a set of received messages that increases linearly with the number of
+  broadcast messages (\REF), or
+\item a summary of received messages that increases linearly with the number of
+  processes that ever broadcast a message (\REF). 
+\end{inparaenum}
+This restricts the usage of causal broadcast and reliable broadcast. Most
+importantly, it dampens the usage of these broadcast protocols on humble devices
+where local memory consumption remains an important criteria. \\
+These structures allow each process to perform anti-entropy with another process
+at any time, i.e., the former identifies missing messages and already received
+messages. On the opposite, processes using \RPCBROADCAST cannot perform
+anti-entropy at any time. They do not maintain any structure collecting past
+messages. Instead, reliable broadcast exploits the causal order property of
+\RPCBROADCAST to perform anti-entropy in a window of time. As stated in
+Section~\ref{subsec:complexity}, this window of time and generated traffic
+remain small when the overlay network allows a form of routing. Afterwards,
+broadcast messages travel normally using this link and checking if received
+messages should be delivered is inexpensive.
+
+
+% It implicitly performs an anti-entropy between the two involved processes, for
+% the added neighbor becomes able to identify already received messages and new
+% messages among upcoming messages from the new link.
 
 %%% Local Variables:
 %%% mode: latex

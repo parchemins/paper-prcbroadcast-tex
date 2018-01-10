@@ -201,42 +201,54 @@ these messages to discard them when they arrive.
 \begin{figure*}
   \begin{center}
     \input{input/figtimelinerpcbroadcast.tex}
-    \caption{\label{fig:timeline}Timeline.}
+    \caption{\label{fig:timeline}Timeline of \RPCBROADCAST when Process~A adds a
+      link to Process~B in its out-view. We hide intermediate processes for the
+      purpose of clarity.}
   \end{center}
 \end{figure*}
 
-\subsection{Complexity}
+Similarly to \PCBROADCAST, the size of buffer may increases without limit when
+intermediate processes are faulty. Control messages never reach their
+destination. \PCBROADCAST handles such crashes using a timeout and retry
+policy. Such strategy fits \RPCBROADCAST.
 
+
+\subsection{Complexity}
+\label{subsec:complexity}
 
 In this section, we analyze the complexity of \RPCBROADCAST in terms of
 broadcast message overhead, delivery execution time, local space consumption,
 and number of control messages. 
 
-The broadcast message overhead is constant $O(1)$, for it only piggyback the
-control information to ensure reliable FIFO links. \\
-The delivery execution time, i.e., the time complexity of the receipt function,
-is constant $O(1)$, for it only checks if the message should be discarded or
-delivered. \\
-The local space consumption depends on the size of buffers. There are 4 buffers
-in total. $W$ is the size of buffers related to reliable FIFO links. A link may
-delay the delivery of messages to await some preceding messages. $B$ is the size
-of buffers of messages that increases when the process adds a neighbor in its
-out-view, and decreases when a link become safe. $B_\alpha$ and $B_\pi$ are the
-size of buffers of messages that increases when the process gets added as
-neighbor, and decreases when a links in its in-view become safe. The space
-complexity of \RPCBROADCAST is $O(W + B + B_\alpha + B_\pi)$. It grows and
-shrinks depending on the dynamicity of the system. If the system becomes static,
-the space complexity of \RPCBROADCAST is $O(W)$. If the system becomes
-quiescent, the space complexity of \RPCBROADCAST is $O(B + B_\alpha + B_\pi)$.
-If the system becomes both static and quiescent, \RPCBROADCAST does not consume
-space. \\
-The overhead in terms of number of control messages per added link in an
-out-view varies from $6$ to $4N^2$ depending on the overlay network. It achieves
-$6$ messages when Process~A adds Process~B using Process~C as mediator, and
-Process~B has Process~A in its out-view. It achieves $4N^2$ when Process~A adds
-Process~B without knowledge of any route. Process~A and Process~B fall back to
-reliable broadcast to disseminate control messages. \TODO{$N$ is the size of the
-  network.}
+\noindent The \textbf{broadcast message overhead} is constant $O(1)$, for it
+only piggyback the control information to ensure reliable FIFO links.
+
+\noindent The \textbf{delivery execution time}, i.e., the time complexity of the
+receipt function, is constant $O(1)$, for it only checks if the message should
+be discarded or delivered.
+
+\noindent The \textbf{local space consumption} depends on the size of
+buffers. There are 4 buffers in total. $W$ is the size of buffers related to
+reliable FIFO links. A link may delay the delivery of messages to await some
+preceding messages. $B$ is the size of buffers of messages that increases when
+the process adds a neighbor in its out-view, and decreases when a link become
+safe. $B_\alpha$ and $B_\pi$ are the size of buffers of messages that increases
+when the process gets added as neighbor, and decreases when a links in its
+in-view become safe. The space complexity of \RPCBROADCAST is
+$O(W + B + B_\alpha + B_\pi)$. It grows and shrinks depending on the dynamicity
+of the system. If the system becomes static, the space complexity of
+\RPCBROADCAST is $O(W)$. If the system becomes quiescent, the space complexity
+of \RPCBROADCAST is $O(B + B_\alpha + B_\pi)$.  If the system becomes both
+static and quiescent, \RPCBROADCAST does not consume
+space. 
+
+\noindent The overhead in terms of \textbf{number of control messages} per added
+link in an out-view varies from $6$ to $4N^2$ depending on the overlay
+network. It achieves $6$ messages when Process~A adds Process~B using Process~C
+as mediator, and Process~B has Process~A in its out-view. It achieves $4N^2$
+when Process~A adds Process~B without knowledge of any route. Process~A and
+Process~B fall back to reliable broadcast to disseminate control
+messages. \TODO{$N$ is the size of the network.}
 
 Overall, this analysis shows that \RPCBROADCAST proposes an advantageous
 tradeoff when the overlay network allows routing between the process that adds
