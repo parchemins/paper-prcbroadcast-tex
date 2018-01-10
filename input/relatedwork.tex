@@ -20,16 +20,16 @@ systems either maintains
 This restricts the usage of causal broadcast and reliable broadcast. Most
 importantly, it dampens the usage of these broadcast protocols on humble devices
 where local memory consumption remains an important criteria. \\
-These structures allow each process to perform anti-entropy with another process
-at any time, i.e., the former identifies missing messages and already received
-messages. On the opposite, processes using \RPCBROADCAST cannot perform
+These structures allow each process to perform anti-entropy with any other
+process at any time, i.e., the former identifies missing messages and already
+received messages. On the opposite, processes using \RPCBROADCAST cannot perform
 anti-entropy at any time. They do not maintain any structure collecting past
 messages. Instead, reliable broadcast exploits the causal order property of
 \RPCBROADCAST to perform anti-entropy in a window of time. As stated in
 Section~\ref{subsec:complexity}, this window of time and generated traffic
 remain small when the overlay network allows a form of routing. Afterwards,
 broadcast messages travel normally using this link and checking if received
-messages should be delivered is inexpensive.
+messages should be delivered or ignored is inexpensive.
 
 
 % It implicitly performs an anti-entropy between the two involved processes, for

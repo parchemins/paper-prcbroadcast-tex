@@ -183,27 +183,28 @@ message $\pi$ to Process~B using safe link. This corresponds to the ping phase
 of \PCBROADCAST.  Once Process~B receives $\pi$, it delivered and buffered all
 messages in $\mathcal{C}$ plus concurrent messages $\mathcal{D}$. $B_\alpha$
 contains all concurrent messages between $s_B(\beta_{BA})$ and
-$r_B(\pi_{AB})$. Most importantly, it contains the concurrent messages between
-$s_A(\pi_{AB})$ and $r_B(\pi_{AB})$. It also contains meaningless messages from
-$\mathcal{C}$.  Process~B stops to buffer messages in $B_\alpha$ and starts to
-register messages it delivers in $B_\pi$. It sends a fourth and last control
-message $\rho$ to Process~B using safe links. Once Process~A receives $\rho$, it
-delivered all concurrent messages $\mathcal{D}$ plus other concurrent messages
-$\mathcal{E}$. Process~A sends its buffer of messages $B$ using the new link
-$s_{AB}(B)$ and starts using this link normally. The new link is safe. When
-Process~B receives the buffer, it identifies the messages it never received
-$B\setminus B_\alpha \setminus B_\pi$ and delivers them in causal order. Also,
-when Process~B receives the buffer, it identifies the messages it already
-received but not delivered by Process~A, hence, that it will eventually receive
-again via the new link: $B_\pi \setminus (B \setminus B_\alpha)$.  It registers
-these messages to discard them when they arrive.
+$r_B(\pi_{AB})$. Most importantly, it contains the concurrent messages delivered
+by Process~B between $s_A(\pi_{AB})$ and $r_B(\pi_{AB})$. It also contains
+meaningless messages from $\mathcal{C}$.  Process~B stops to buffer messages in
+$B_\alpha$ and starts to register messages it delivers in $B_\pi$. It sends a
+fourth and last control message $\rho$ to Process~B using safe links. Once
+Process~A receives $\rho$, it delivered all concurrent messages $\mathcal{D}$
+plus other concurrent messages $\mathcal{E}$. Process~A sends its buffer of
+messages $B$ using the new link $s_{AB}(B)$ and starts using this link
+normally. The new link is safe. When Process~B receives the buffer, it
+identifies the messages it never received $B\setminus B_\alpha \setminus B_\pi$
+and delivers them in causal order. Also, when Process~B receives the buffer, it
+identifies the messages it already received but not delivered by Process~A,
+hence, that it will eventually receive again via the new link:
+$B_\pi \setminus (B \setminus B_\alpha)$.  It registers these messages to
+discard them when they arrive.
 
 \begin{figure*}
   \begin{center}
     \input{input/figtimelinerpcbroadcast.tex}
     \caption{\label{fig:timeline}Timeline of \RPCBROADCAST when Process~A adds a
       link to Process~B in its out-view. We hide intermediate processes for the
-      purpose of clarity.}
+      purpose of clarity. Messages arrive in causal order.}
   \end{center}
 \end{figure*}
 
