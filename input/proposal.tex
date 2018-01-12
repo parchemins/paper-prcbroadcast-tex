@@ -40,6 +40,14 @@ $r_A(m)$. Process~A can send a message $m$ to all other processes of the system,
 i.e., it broadcasts a message $b_A(m)$. Process~A can deliver a message
 $d_A(m)$.
 
+To characterize the order among events such as send, or receive, we define time
+in a logical sense using Lamport’s definition.
+
+\begin{definition}[Happen before~\cite{lamport1978time}]
+  Happen before is a transitive, irreflexive, and antisymmetric relation that
+  defines a strict partial orders of events. The sending of a message always
+  precedes its receipt. 
+\end{definition}
 
 \begin{definition}[Uniform reliable broadcast] 
   When a process broadcasts a message to all processes of the network, correct
@@ -53,6 +61,15 @@ $d_A(m)$.
   \item Uniform Integrity: A process delivers a message at most once, and only if
     it was previously broadcast.
   \end{itemize}
+\end{definition}
+
+From uniform integrity, we derive that despite multiple receipts, a process
+delivers a message once.
+
+\begin{definition}[Exactly once delivery]
+  A process may receive each broadcast message multiple times but delivers it
+  exactly once.
+  $\forall m, \{r_A(m)\}^+ \rightarrow d_A(m) \wedge d_A(m) \not\rightarrow d_A(m) \wedge d_A(m) \rightarrow \{r_A(m)\}^*$
 \end{definition}
 
 \begin{algorithm}[h]
@@ -75,23 +92,24 @@ Figure~\ref{fig:generalpurge} to which it adds an awareness of links with
 awaited messages. Using this reliable broadcast implementation, each process
 delivers each message exactly once.
 
+\begin{lemma}[At most once receipt of links]
+  Processes receive a message at most once from each link. 
+\end{lemma}
+
+\begin{proof}
+  Since processes deliver messages exactly once, and forward messages once per
+  delivery to their out-view, \TODO{Moar.}
+\end{proof}
+
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
-order of messages. To define a delivery order among messages, we define time in
-a logical sense using Lamport’s definition. 
-
-\begin{definition}[Happen before~\cite{lamport1978time}]
-  Happen before is a transitive, irreflexive, and antisymmetric relation that
-  defines a strict partial orders of events. The sending of a message always
-  precedes its receipt.
-\end{definition}
-
-Causal order enforces a delivery order among messages. It states that Process~A
-should deliver a message $m$ from Process~B after having delivered all messages
-delivered by Process~B before the sending of $m$.
+order of messages. We focus on causal order. Process~A should deliver a message
+$m$ from Process~B after having delivered all messages delivered by Process~B
+before the sending of $m$.
 
 \begin{definition}[Causal order]
   The delivery order of messages follows the happen before relationships of the
   corresponding broadcasts.
+  $d_A(m) \rightarrow b_A(m') \implies d_B(m) \rightarrow d_B(m')$
 \end{definition}
 
 \begin{definition}[Causal broadcast]
@@ -151,13 +169,19 @@ delivers each message exactly once in causal order.
 
 \begin{definition}[Safe link extension]
   In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
-  is safe if Process~B does not deliver the messages received via this new link
-  if it already delivered this message, and delivers it otherwise.
+  is safe if it guarantees to Process~A that messages received by Process~B via
+  this link are delivered exactly once.
+  % can differentiate messages it delivered from messages it
+  %  did not delivered when received via this link.
+  %  that will be received via this new link
+  
+  % does not deliver the messages received via this new link if it already
+  % delivered this message, and delivers it otherwise.
 \end{definition}
 
 This extension of the original definition implies that Process~B is able to
-distinguish messages it already delivered that are not received by Process~A
-from messages it receives for the first time by Process~A.
+distinguish messages it already delivered that are not yet delivered by
+Process~A from messages it receives for the first time by Process~A.
 
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}
