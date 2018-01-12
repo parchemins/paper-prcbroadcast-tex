@@ -46,7 +46,8 @@ in a logical sense using Lamport’s definition.
 \begin{definition}[Happen before~\cite{lamport1978time}]
   Happen before is a transitive, irreflexive, and antisymmetric relation that
   defines a strict partial orders of events. The sending of a message always
-  precedes its receipt. 
+  precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two messages are
+  concurrent if none happens before the other.
 \end{definition}
 
 \begin{definition}[Uniform reliable broadcast] 
@@ -92,14 +93,15 @@ Figure~\ref{fig:generalpurge} to which it adds an awareness of links with
 awaited messages. Using this reliable broadcast implementation, each process
 delivers each message exactly once.
 
-\begin{lemma}[At most once receipt of links]
-  Processes receive a message at most once from each link. 
-\end{lemma}
+% \begin{lemma}[Exactly once receipt of links]
+%   Processes receive a message exactly once from each link. 
+% \end{lemma}
 
-\begin{proof}
-  Since processes deliver messages exactly once, and forward messages once per
-  delivery to their out-view, \TODO{Moar.}
-\end{proof}
+% \begin{proof}
+%   Since processes deliver messages exactly once, and forward messages once per
+%   delivery to their out-view, a process cannot receive more than one copy per
+%   link of a message. 
+% \end{proof}
 
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
 order of messages. We focus on causal order. Process~A should deliver a message
@@ -122,11 +124,11 @@ systems. A process broadcasting a message sends the message to an out-view of
 safe links.
 
 \begin{definition}[\label{def:safe}Safe link] 
-  A link from Process A to Process B is safe if and only if Process B received
-  or will receive all messages delivered by Process A before receiving any
-  message that Process A will
+  A link from Process~A to Process~B is safe if and only if Process~B received
+  or will receive all messages delivered by Process~A before receiving any
+  message that Process~A will
   deliver: $safe(AB) \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
-  \implies r_B(m) \rightarrow r_{AB}(m')$
+  \implies r_B(m) \rightarrow r_{BA}(m')$
 \end{definition}
 
 Links start unsafe. \PCBROADCAST ensures that they are safe, i.e., they cannot
@@ -144,6 +146,11 @@ cause causal order violations, by sending control messages.
   messages delivered by Process~A before this ping phase:
   $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge r_A(\rho_{AB}) \implies
   r_B(m)$
+\end{lemma}
+
+\begin{lemma}[Buffer $B$ \TODO{Move, does not make sense here yet}]
+  $\forall m,\, s_A(\pi_{AB}) \rightarrow d_A(m) \wedge d_A(m) \rightarrow r_A(\rho_{AB})
+  \Longleftrightarrow m \in B$
 \end{lemma}
 
 In this paper, we extend the meaning of safe link to not only ensure causal
@@ -182,6 +189,20 @@ delivers each message exactly once in causal order.
 This extension of the original definition implies that Process~B is able to
 distinguish messages it already delivered that are not yet delivered by
 Process~A from messages it receives for the first time by Process~A.
+
+\begin{definition}[Expect \TODO{not here}]
+  When Process~B receives the buffer from Process~A, the link becomes safe.
+  Process~B expects from Process~A messages delivered by Process~B but not
+  delivered by Process~A at the moment of the sending.
+  $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
+\end{definition}
+
+\begin{definition}[Deliver \TODO{not here}]
+  When Process~B receives the buffer from Process~A, it delivers messages it did
+  not deliver that are delivered by Process~A at the moment of the sending.
+  $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
+  d_B(m)$
+\end{definition}
 
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}
