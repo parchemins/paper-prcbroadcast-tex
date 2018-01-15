@@ -148,10 +148,10 @@ cause causal order violations, by sending control messages.
   r_B(m)$
 \end{lemma}
 
-\begin{lemma}[Buffer $B$ \TODO{Move, does not make sense here yet}]
-  $\forall m,\, s_A(\pi_{AB}) \rightarrow d_A(m) \wedge d_A(m) \rightarrow r_A(\rho_{AB})
-  \Longleftrightarrow m \in B$
-\end{lemma}
+% \begin{lemma}[Buffer $B$ \TODO{Move, does not make sense here yet}]
+%   $\forall m,\, s_A(\pi_{AB}) \rightarrow d_A(m) \wedge d_A(m) \rightarrow r_A(\rho_{AB})
+%   \Longleftrightarrow m \in B$
+% \end{lemma}
 
 In this paper, we extend the meaning of safe link to not only ensure causal
 order but also exactly once delivery. This is more expensive to ensure, for it
@@ -203,6 +203,63 @@ Process~A from messages it receives for the first time by Process~A.
   $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
   d_B(m)$
 \end{definition}
+
+\begin{definition}[Buffering phase]
+  Process~B starts and stops buffering upon receipt of control messages from
+  Process~A. Control messages are $\alpha$, $\beta$, and $\gamma$. Process~A
+  sends $\alpha$ to Process~B using safe links. Process~B starts buffering on
+  receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
+  communication means. Process~A sends $\gamma$ to Process~B using safe
+  links. Process~B stops buffering on receipt of $\gamma$.
+  The buffer contains the messages delivered by Process~B: \\
+  $m \in B \Longleftrightarrow 
+  r_B(\alpha) \rightarrow d_B(m) \wedge d_B(m) \rightarrow r_B(\gamma)$
+\end{definition}
+
+The proposed broadcast interlaces 3 buffering phases. A control message $beta$
+becomes a control message $alpha$ of the next buffering phase. Assuming
+Process~A adds Process~B in its out-view, Process~A maintains 1 buffer to ensure
+causal order, and Process~B maintains 2 buffers to identify messages to deliver
+and to expect from Process~A. 
+
+\begin{lemma}[Messages of buffer]
+  The buffer includes messages delivered by Process~A but not delivered by
+  Process~B before the receipt of $\alpha$. This excludes messages delivered by
+  Process~A before the sending of $\alpha$ and messages delivered by Process~B
+  before the receipt of $\alpha$.\\
+  $\forall m,\,m',\,(m\neq m'),\,
+  s_A(\alpha) \rightarrow d_A(m) \wedge
+  d_A(m) \rightarrow s_A(\gamma) \wedge
+  d_B(m') \rightarrow r_B(\alpha) \implies m \in B$
+\end{lemma}
+
+\begin{proof}
+  Since control messages $\alpha$ and $\gamma$ travel by reliable FIFO links,
+  the receipt of all messages delivered by Process~A before the sending of
+  $\alpha$ precedes the receipt of $\alpha$ by Process~B:\\
+  $\forall m,\, d_A(m) \rightarrow s_A(\alpha) \implies d_B(m) \rightarrow
+  r_B(m) \implies m \not\in B$\\
+  \TODO{Not sure where we are going.}
+%%  $ m \not\in B \Longleftrightarrow d_B(m) \rightarrow r_B(\pi_1) \wedge r_B(\pi_2) \rightarrow d_B(m)$
+\end{proof}
+
+% \begin{definition}[meow \TODO{todo}]
+%   The buffer includes the following messages:
+
+%   Since control messages travel by reliable FIFO links, the buffer includes the
+%   following messages from Process~A:
+%   \begin{equation*}
+%     \forall m,\, s_A(\pi_1) \rightarrow d_A(m) \wedge d_A(m) \rightarrow s_A(\pi_2) \implies m \in B
+%   \end{equation*}
+%   The buffer excludes all other messages. It excludes messages delivered before
+%   and after the receipt of control messages:
+%   \begin{equation*}
+%   \end{equation*}
+%   It excludes messages delivered by Process~A:
+%   \begin{equation*}
+%     \forall m,\, d_A(m) \rightarrow s_A(\pi_1) \implies m\not\in B
+%   \end{equation*}
+% \end{definition}
 
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}
