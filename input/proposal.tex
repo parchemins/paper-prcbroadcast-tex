@@ -163,46 +163,45 @@ must account for concurrent messages. \TODO{More}
 
 \subsection{Operation}
 
+\begin{algorithm}[h]
+  \input{./input/algorpcbroadcast.tex}
+  \caption{\label{algo:rpcbroadcast}RPC-broadcast at Process $p$.}
+\end{algorithm}
+
 Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed causal
 broadcast. It relies on an implementation of reliable broadcast shown in
 Algorithm~\ref{algo:reliablebroadcast}. When the process does not add links to
 other processes, nor other processes add links to this process, causal broadcast
-operation is that of reliable broadcast.
+operation is that of reliable broadcast. 
 
-When the process wants to add a link to another process for causal broadcast, it
-makes sure that this link cannot break the guaranty that the other process
-delivers each message exactly once in causal order.
+In dynamic systems where processes can join, leave, or reconfigure their
+out-view at any time, \RPCBROADCAST ensures that links cannot violate causal
+broadcast properties. It extends Definition~\ref{def:safe} of safe links by
+adding a clause about exactly once delivery. 
 
+% When the process wants to add a link to another process for causal broadcast, it
+% makes sure that this link cannot break the guaranty that the other process
+% delivers each message exactly once in causal order. It extends the meaning of
+% safe links stated by Definition~\ref{def:safe}.
 
-\begin{definition}[Safe link extension]
+\begin{definition}[\label{def:extension}Safe link extension]
   In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
   is safe if it guarantees to Process~A that messages received by Process~B via
   this link are delivered exactly once.
-  % can differentiate messages it delivered from messages it
-  %  did not delivered when received via this link.
-  %  that will be received via this new link
-  
-  % does not deliver the messages received via this new link if it already
-  % delivered this message, and delivers it otherwise.
 \end{definition}
 
-This extension of the original definition implies that Process~B is able to
-distinguish messages it already delivered that are not yet delivered by
-Process~A from messages it receives for the first time by Process~A.
+Definition~\ref{def:extension} implies that Process~B manages to distinguish
+messages it delivered that are not delivered by Process~A from messages it did
+not delivered that are just delivered by Process~A. The former constitutes
+messages Process~B expects to receive from the link while the latter constitutes
+messages Process~B receives for the first time and should
+deliver. Algorithm~\ref{algo:reliablebroadcast} maintains this knowledge over
+receipts. However, it may fail when processes add neighbors in their out-view
+(see Figure~\ref{fig:generalproblem}).
 
-\begin{definition}[Expect \TODO{not here}]
-  When Process~B receives the buffer from Process~A, the link becomes safe.
-  Process~B expects from Process~A messages delivered by Process~B but not
-  delivered by Process~A at the moment of the sending.
-  $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
-\end{definition}
-
-\begin{definition}[Deliver \TODO{not here}]
-  When Process~B receives the buffer from Process~A, it delivers messages it did
-  not deliver that are delivered by Process~A at the moment of the sending.
-  $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
-  d_B(m)$
-\end{definition}
+\RPCBROADCAST solves this problem by delaying the use of links for broadcast
+until they become safe. It builds temporary buffers to retrieve the knowledge
+about expected messages and new messages.
 
 \begin{definition}[Buffering phase]
   Process~B starts and stops buffering upon receipt of control messages from
@@ -215,12 +214,6 @@ Process~A from messages it receives for the first time by Process~A.
   $m \in B \Longleftrightarrow 
   r_B(\alpha) \rightarrow d_B(m) \wedge d_B(m) \rightarrow r_B(\gamma)$
 \end{definition}
-
-The proposed broadcast interlaces 3 buffering phases. A control message $beta$
-becomes a control message $alpha$ of the next buffering phase. Assuming
-Process~A adds Process~B in its out-view, Process~A maintains 1 buffer to ensure
-causal order, and Process~B maintains 2 buffers to identify messages to deliver
-and to expect from Process~A. 
 
 \begin{lemma}[Messages of buffer]
   The buffer includes messages delivered by Process~A but not delivered by
@@ -243,63 +236,6 @@ and to expect from Process~A.
 %%  $ m \not\in B \Longleftrightarrow d_B(m) \rightarrow r_B(\pi_1) \wedge r_B(\pi_2) \rightarrow d_B(m)$
 \end{proof}
 
-% \begin{definition}[meow \TODO{todo}]
-%   The buffer includes the following messages:
-
-%   Since control messages travel by reliable FIFO links, the buffer includes the
-%   following messages from Process~A:
-%   \begin{equation*}
-%     \forall m,\, s_A(\pi_1) \rightarrow d_A(m) \wedge d_A(m) \rightarrow s_A(\pi_2) \implies m \in B
-%   \end{equation*}
-%   The buffer excludes all other messages. It excludes messages delivered before
-%   and after the receipt of control messages:
-%   \begin{equation*}
-%   \end{equation*}
-%   It excludes messages delivered by Process~A:
-%   \begin{equation*}
-%     \forall m,\, d_A(m) \rightarrow s_A(\pi_1) \implies m\not\in B
-%   \end{equation*}
-% \end{definition}
-
-\begin{algorithm}[h]
-  \input{./input/algorpcbroadcast.tex}
-  \caption{\label{algo:rpcbroadcast}RPC-broadcast at Process $p$.}
-\end{algorithm}
-
-Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed
-reliable causal broadcast. Similarly to \PCBROADCAST, it follows the behavior of
-reliable broadcast when the out-view does not change. 
-
-Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST when
-Process~A adds Process~B in its out-view, it removes it from links used for
-causal broadcast. Process~A sends a first control message $\alpha$ to Process~B
-using safe links. Process~B receives $\alpha$ after all messages $\mathcal{A}$
-delivered by Process~A before the sending of $\alpha$ plus other concurrent
-messages $\mathcal{B}$. Process~B sends a second control message using safe
-links to Process~A. Process~B starts to register messages it delivers in a
-buffer $B_\alpha$.  Once Process~A receives $\beta$, it received $\mathcal{B}$
-plus other concurrent messages $\mathcal{C}$. Process~A starts to register
-messages it delivers in a buffer $B$. $B_\alpha$ and $B$ do not contain messages
-from $\mathcal{A}$ and $\mathcal{B}$. Then, Process~A sends a third control
-message $\pi$ to Process~B using safe link. This corresponds to the ping phase
-of \PCBROADCAST.  Once Process~B receives $\pi$, it delivered and buffered all
-messages in $\mathcal{C}$ plus concurrent messages $\mathcal{D}$. $B_\alpha$
-contains all concurrent messages between $s_B(\beta_{BA})$ and
-$r_B(\pi_{AB})$. Most importantly, it contains the concurrent messages delivered
-by Process~B between $s_A(\pi_{AB})$ and $r_B(\pi_{AB})$. It also contains
-meaningless messages from $\mathcal{C}$.  Process~B stops to buffer messages in
-$B_\alpha$ and starts to register messages it delivers in $B_\pi$. It sends a
-fourth and last control message $\rho$ to Process~B using safe links. Once
-Process~A receives $\rho$, it delivered all concurrent messages $\mathcal{D}$
-plus other concurrent messages $\mathcal{E}$. Process~A sends its buffer of
-messages $B$ using the new link $s_{AB}(B)$ and starts using this link
-normally. The new link is safe. When Process~B receives the buffer, it
-identifies the messages it never received $B\setminus B_\alpha \setminus B_\pi$
-and delivers them in causal order. Also, when Process~B receives the buffer, it
-identifies the messages it already received but not delivered by Process~A,
-hence, that it will eventually receive again via the new link:
-$B_\pi \setminus (B \setminus B_\alpha)$.  It registers these messages to
-discard them when they arrive.
 
 \begin{figure*}
   \begin{center}
@@ -310,7 +246,72 @@ discard them when they arrive.
   \end{center}
 \end{figure*}
 
-Similarly to \PCBROADCAST, the size of buffer may increases without limit when
+
+\RPCBROADCAST interlaces 3 buffering phases. A control message $\beta$ becomes a
+control message $\alpha$ of the next buffering phase. It must travel by safe
+links. Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST on a
+timeline when Process~A wants to add Process~B in its out-view. 
+\begin{enumerate}[leftmargin=*]
+\item Process~A starts a first buffering phase. It sends a first control message
+  $\alpha$ to Process~B using safe links. 
+\item Process~B receives $\alpha$ after all messages $\mathcal{A}$ delivered by
+  Process~A before the sending of $\alpha$ plus other concurrent messages
+  $\mathcal{B}$.  Process~B starts to register messages it delivers in a buffer
+  $B_\alpha$.  Process~B starts a second buffering phase. It sends a second
+  control message using safe links to Process~A.
+\item Once Process~A receives $\beta$, it received $\mathcal{B}$ plus other
+  concurrent messages $\mathcal{C}$. Process~A starts to register messages it
+  delivers in a buffer $B$. $B_\alpha$ and $B$ do not contain messages from
+  $\mathcal{A}$ and $\mathcal{B}$.
+  Then, Process~A starts a third buffering phase. It sends a third control
+  message $\pi$ to Process~B using safe link. This corresponds to the ping phase
+  of \PCBROADCAST.
+\item Once Process~B receives $\pi$, it ends the first buffering phase.
+  Process~B stops buffering messages in $B_\alpha$. Process~B delivered and
+  buffered all messages in $\mathcal{C}$ plus concurrent messages
+  $\mathcal{D}$. $B_\alpha$ contains all concurrent messages between
+  $s_B(\beta_{BA})$ and $r_B(\pi_{AB})$. Most importantly, it contains the
+  concurrent messages delivered by Process~B between $s_A(\pi_{AB})$ and
+  $r_B(\pi_{AB})$. It also contains meaningless messages from $\mathcal{C}$.
+  Process~B also starts to register messages it delivers in $B_\pi$.
+  Process~B sends a fourth and last control message $\rho$ to Process~B
+  using safe links. 
+\item Once Process~A receives $\rho$, it ends the second buffering
+  phase. Process~A delivered all concurrent messages $\mathcal{D}$ plus other
+  concurrent messages $\mathcal{E}$. Process~A sends its buffer of messages $B$
+  using the new link $s_{AB}(B)$ and starts using this link normally. The new
+  link is safe.
+\item Once Process~B receives the buffer, it ends the third buffering
+  phase. Using $B$, $B_\alpha$, and $B_\pi$, Process~B is able to identify
+  messages expected from Process~A and new messages from Process~A.
+
+\begin{definition}[To expect]
+  When Process~B receives the buffer from Process~A, the link becomes safe.
+  Process~B expects from Process~A messages delivered by Process~B but not
+  delivered by Process~A at the moment of the sending.
+  $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
+\end{definition}
+
+The set of expected messages is $B_\pi \setminus (B \setminus B_\alpha)$.  It
+registers these messages to discard them when they arrive.
+
+\begin{definition}[To deliver]
+  When Process~B receives the buffer from Process~A, it delivers messages it did
+  not deliver that are delivered by Process~A at the moment of the sending.
+  $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
+  d_B(m)$
+\end{definition}
+
+The set of messages to deliver is $B\setminus B_\alpha \setminus B_\pi$. It
+delivers them in causal order.
+\end{enumerate}
+
+% Process~A maintains 1 buffer to ensure causal order that starts upon receipt of
+% $\beta$ and stops upon receipt of $\rho$; and Process~B maintains 2 buffers to
+% identify messages to deliver and to expect from Process~A.
+
+
+Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
 intermediate processes are faulty. Control messages never reach their
 destination. \PCBROADCAST handles such crashes using a timeout and retry
 policy. Such strategy fits \RPCBROADCAST.
