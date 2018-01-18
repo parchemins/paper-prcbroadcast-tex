@@ -54,7 +54,7 @@ in a logical sense using Lamport’s definition.
   When a process broadcasts a message to all processes of the network, correct
   processes eventually receive it. Uniform reliable broadcast guarantees 3
   properties:
-  \begin{itemize}
+  \begin{itemize}[leftmargin=*]
   \item Validity: If a correct process broadcasts a message, then it
     eventually delivers it.
   \item Uniform Agreement: If a process -- correct or not -- delivers a message,
@@ -70,7 +70,9 @@ delivers a message once.
 \begin{definition}[Exactly once delivery]
   A process may receive each broadcast message multiple times but delivers it
   exactly once.
-  $\forall m, \{r_A(m)\}^+ \rightarrow d_A(m) \wedge d_A(m) \not\rightarrow d_A(m) \wedge d_A(m) \rightarrow \{r_A(m)\}^*$
+%  $\forall m, \{r_A(m)\}^+ \rightarrow d_A(m) \wedge d_A(m) \not\rightarrow d_A(m) \wedge d_A(m) \rightarrow \{r_A(m)\}^*$ \\
+  $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$\\
+%  \TODO{which formula is better?}
 \end{definition}
 
 \begin{algorithm}[h]
@@ -82,26 +84,39 @@ Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a uniform
 reliable broadcast that purges its local structure over time but only in static
 networks. The implementation uses the in-view and exploits the property that
 each process sends each message exactly once to each neighbor in their
-out-view. It associates with each link from the in-view a set of awaited
-messages. When Process~A receives a message for the first time from Process~B,
-it awaits a copy of this message from all other processes in its in-view. When
-it receives such copy, it removes the message from the set of awaited messages
-of the corresponding link. Process~A will never receive a copy of this message
-from this link. Once it received all awaited copies, it will never receive a
-copy of this message. The principle of this implementation is similar to that of
-Figure~\ref{fig:generalpurge} to which it adds an awareness of links with
-awaited messages. Using this reliable broadcast implementation, each process
-delivers each message exactly once.
+out-view. 
+% As long as each link did not convey the 
+% Each process will receive a copy from each link in its in-view exactly
+% once. Afterwards, they purge their structure for they will never receive such
+% message again.
+It associates with each link from the in-view a set of awaited messages. When
+Process~A receives a message for the first time from Process~B, it awaits a copy
+of this message from all other processes in its in-view. When it receives such
+copy, it removes the message from the set of awaited messages of the
+corresponding link. Process~A will never receive a copy of this message from
+this link again. Once it received all awaited copies, it will never receive a
+copy of this message at all. The principle of this implementation is similar to
+that of Figure~\ref{fig:generalpurge} to which it adds an awareness of links
+with awaited messages. Each process remembers each broadcast message as long as
+it is susceptible to arrive again.
 
-% \begin{lemma}[Exactly once receipt of links]
-%   Processes receive a message exactly once from each link. 
-% \end{lemma}
+\begin{definition}[Remember]
+  Each process keeps received messages until they receive them from their whole
+  in-view. Processes do not deliver remembered messages.
+  $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
+\end{definition}
 
-% \begin{proof}
-%   Since processes deliver messages exactly once, and forward messages once per
-%   delivery to their out-view, a process cannot receive more than one copy per
-%   link of a message. 
-% \end{proof}
+\begin{theorem}[Remembering ensures exactly once delivery]
+  \TODO{Assuming exactly once delivery?} Delivering broadcast messages when they
+  are not remembered ensures exactly once delivery.
+\end{theorem}
+
+\begin{proof}
+  \TODO{Meow}
+\end{proof}
+
+% Using this reliable broadcast implementation, each process delivers each message
+% exactly once.
 
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
 order of messages. We focus on causal order. Process~A should deliver a message
@@ -118,10 +133,9 @@ before the sending of $m$.
   Causal broadcast is a uniform reliable broadcast ensuring causal order.
 \end{definition}
 
-\PCBROADCAST (\REF) is a causal broadcast that uses \TODO{reliable ?} FIFO
-links, control messages, and buffers to ensure causal order in dynamic
-systems. A process broadcasting a message sends the message to an out-view of
-safe links.
+\PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, control
+messages, and buffers to ensure causal order in dynamic systems. A process
+broadcasting a message sends the message to an out-view of safe links.
 
 \begin{definition}[\label{def:safe}Safe link] 
   A link from Process~A to Process~B is safe if and only if Process~B received
@@ -131,8 +145,10 @@ safe links.
   \implies r_B(m) \rightarrow r_{BA}(m')$
 \end{definition}
 
-Links start unsafe. \PCBROADCAST ensures that they are safe, i.e., they cannot
-cause causal order violations, by sending control messages.
+Links start unsafe, for messages traveling by the new links may arrive before
+preceding messages that took longer paths. \PCBROADCAST ensures that they are
+safe, i.e., they cannot cause causal order violations, by sending control
+messages.
 
 \begin{definition}[Ping phase]
   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
@@ -148,14 +164,25 @@ cause causal order violations, by sending control messages.
   r_B(m)$
 \end{lemma}
 
+\PCBROADCAST ensures that all preceding messages arrive before new messages by
+acknowledging the receipt of most messages while buffering messages concurrent
+to the acknowledgment.
+
+
 % \begin{lemma}[Buffer $B$ \TODO{Move, does not make sense here yet}]
 %   $\forall m,\, s_A(\pi_{AB}) \rightarrow d_A(m) \wedge d_A(m) \rightarrow r_A(\rho_{AB})
 %   \Longleftrightarrow m \in B$
 % \end{lemma}
 
+However, this is insufficient to ensure exactly once delivery. The issue is
+identical to that depicted in Figure~\ref{fig:generalproblem}. Process~B adds
+Process~C in its out-view but Process~C already forgot about the message $a$
+while Process~B received it. This leads to double delivery of $a$ and subsequent
+inconsistencies.
+
 In this paper, we extend the meaning of safe link to not only ensure causal
-order but also exactly once delivery. This is more expensive to ensure, for it
-must account for concurrent messages. \TODO{More}
+order but also exactly once delivery. This is more expensive to ensure in terms
+of control messages, for it must account for concurrent messages. \TODO{More} 
 
 %broadcast requires more ping phases and
 %more buffers.
