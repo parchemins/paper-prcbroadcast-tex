@@ -112,7 +112,9 @@ it is susceptible to arrive again.
 \end{theorem}
 
 \begin{proof}
-  \TODO{Meow}
+  We must show that a process that forgets a message $m$ before its receipt from
+  the whole in-view may deliver it multiple times. \TODO{Not
+    enough}. \TODO{Meow.}
 \end{proof}
 
 % Using this reliable broadcast implementation, each process delivers each message
@@ -141,7 +143,7 @@ broadcasting a message sends the message to an out-view of safe links.
   A link from Process~A to Process~B is safe if and only if Process~B received
   or will receive all messages delivered by Process~A before receiving any
   message that Process~A will
-  deliver: $safe(AB) \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
+  deliver. $safe(AB) \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
   \implies r_B(m) \rightarrow r_{BA}(m')$
 \end{definition}
 
@@ -159,7 +161,7 @@ messages.
 
 \begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts]
   A ping phase from Process~A to Process~B acknowledges the receipt by B of all
-  messages delivered by Process~A before this ping phase:
+  messages delivered by Process~A before this ping phase.
   $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge r_A(\rho_{AB}) \implies
   r_B(m)$
 \end{lemma}
@@ -180,9 +182,12 @@ Process~C in its out-view but Process~C already forgot about the message $a$
 while Process~B received it. This leads to double delivery of $a$ and subsequent
 inconsistencies.
 
-In this paper, we extend the meaning of safe link to not only ensure causal
-order but also exactly once delivery. This is more expensive to ensure in terms
-of control messages, for it must account for concurrent messages. \TODO{More} 
+In this paper, we exploit causal communication to implement a stronger meaning
+of safe link at marginal cost. A link becomes safe when it cannot violate both
+causal delivery and exactly once delivery.  This is more expensive to ensure in
+terms of control messages, for it must account for concurrent messages between
+involved processes. The rest of this section describes the operation of our
+proposal and its complexity.
 
 %broadcast requires more ping phases and
 %more buffers.
@@ -237,7 +242,7 @@ about expected messages and new messages.
   receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
   communication means. Process~A sends $\gamma$ to Process~B using safe
   links. Process~B stops buffering on receipt of $\gamma$.
-  The buffer contains the messages delivered by Process~B: \\
+  The buffer contains the messages delivered by Process~B. \\
   $m \in B \Longleftrightarrow 
   r_B(\alpha) \rightarrow d_B(m) \wedge d_B(m) \rightarrow r_B(\gamma)$
 \end{definition}
