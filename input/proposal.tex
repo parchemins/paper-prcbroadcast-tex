@@ -68,10 +68,12 @@ From uniform integrity, we derive that despite multiple receipts, a process
 delivers a message once.
 
 \begin{definition}[Exactly once delivery]
-  A process may receive each broadcast message multiple times but delivers it
-  exactly once.
+  Each process receives each broadcast message at least once. A process may
+  receive a broadcast message multiple times but delivers it exactly once. \\
 %  $\forall m, \{r_A(m)\}^+ \rightarrow d_A(m) \wedge d_A(m) \not\rightarrow d_A(m) \wedge d_A(m) \rightarrow \{r_A(m)\}^*$ \\
-  $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$\\
+  $\forall A,\,B,\, b_A(m) \implies r_B(m)$ \\
+  $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$ \\
+  $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$\\  
 %  \TODO{which formula is better?}
 \end{definition}
 
@@ -392,7 +394,7 @@ only piggyback the control information to ensure reliable FIFO links.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
 receipt function, is constant $O(1)$, for it only checks if the message should
-be discarded or delivered.
+be discarded or delivered. \TODO{Maybe O(P).}
 
 \noindent The \textbf{local space consumption} depends on the size of
 buffers. There are 4 buffers in total. $W$ is the size of buffers related to
