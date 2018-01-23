@@ -195,10 +195,12 @@ proposal and its complexity.
 
 \subsection{Operation}
 
+
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}
   \caption{\label{algo:rpcbroadcast}RPC-broadcast at Process $p$.}
 \end{algorithm}
+
 
 Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed causal
 broadcast. It relies on an implementation of reliable broadcast shown in
@@ -324,19 +326,48 @@ timeline when Process~A wants to add Process~B in its out-view.
   $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
 \end{definition}
 
+\begin{lemma}[\label{lemma:expected}All expected messages eventually arrive]
+  Once a link from Process~A to Process~B becomes safe, Process~B eventually
+  receives all expected messages via this link.
+\end{lemma}
+
+\begin{proof}
+  \TODO{To do.}
+\end{proof}
+
 The set of expected messages is $B_\pi \setminus (B \setminus B_\alpha)$.  It
-registers these messages to discard them when they arrive.
+registers these messages to discard them when they
+arrive. Theorem~\ref{lemma:expected} states that all expected messages eventually
+arrive. Consequently, processes eventually discard each message of this set
+until it is fully purged. 
 
 \begin{definition}[To deliver]
   When Process~B receives the buffer from Process~A, it delivers messages it did
-  not deliver that are delivered by Process~A at the moment of the sending.
+  not deliver that are delivered by Process~A at the moment of the sending. \\
   $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
   d_B(m)$
 \end{definition}
 
+\begin{lemma}[\label{lemma:delivered}All undelivered messages are delivered]
+  A link from Process~A to Process~B becomes safe once it delivered all messages
+  to deliver via this link. 
+\end{lemma}
+
+\begin{proof}
+  \TODO{Todotoo.}
+\end{proof}
+
 The set of messages to deliver is $B\setminus B_\alpha \setminus B_\pi$. It
 delivers them in causal order.
 \end{enumerate}
+
+\begin{theorem}[Three interlaced buffering phases ensures link safety]
+  \TODO{Meow.}
+\end{theorem}
+
+\begin{proof}
+  Resulting from Lemma~\ref{lemma:expected} and Lemma~\ref{lemma:delivered}.
+\end{proof}
 
 % Process~A maintains 1 buffer to ensure causal order that starts upon receipt of
 % $\beta$ and stops upon receipt of $\rho$; and Process~B maintains 2 buffers to
