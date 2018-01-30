@@ -15,7 +15,12 @@ Causal broadcast relies on reliable broadcast.
 % gossips to -- a subset of random processes among all processes of the
 % system. Processes receiving the rumour spreads it to a random
 % processes. Infected process
-Reliable broadcast in dynamic systems either maintains
+Contrarily to former reliable broadcast protocols (\REF), \RPCBROADCAST belongs
+to deterministic approaches. While non-deterministic approaches guarantee that
+all processes receive each message with high probability, deterministic
+approaches rely on a peer-sampling protocol that build overlay networks without
+partitions to guarantee that all processes receive each message. \\
+Deterministic reliable broadcast in dynamic systems either maintains
 \begin{inparaenum}[(i)]
 \item a set of received messages that increases linearly with the number of
   broadcast messages (\REF), or

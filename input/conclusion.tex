@@ -23,24 +23,10 @@ messages out of \RPCBROADCAST. Using \RPCBROADCAST, each process experiences a
 flatten version of the partial order. However, several applications (\REF)
 require more than causal order, they also need to identify concurrent
 messages. \RPCBROADCAST discards a lot of information by ignoring multiple
-receipts. Analyzing the receipt order could provide insight on the partial
-order. Instead of using vector clocks the cost of which increases with the
-number of processes that ever broadcast, the cost would depend on the actual
+receipts altogether. Analyzing the receipt order could provide insight on the
+partial order. Instead of using vector clocks the cost of which increases with
+the number of processes that ever broadcast, the cost could depend on the actual
 concurrency of the system.
-
-% Analysing the receipt order of messages in \RPCBROADCAST could provide
-% additional information on the upstream.
-
-
-% State-of-the-art relies on vector clocks to capture concurrency. The size of
-% vectors increases linearly with the number of processes that ever broadcast. In
-% other terms, scenarios without concurrent messages still pay the full price of
-% concurrency tracking. By analysing the order of receipts in \RPCBROADCAST, we
-% want to retrieve the partial order at limited cost.
-
-
-%\TODO{Moar.}
-
 
 %%% Local Variables:
 %%% mode: latex
