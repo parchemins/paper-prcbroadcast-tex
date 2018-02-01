@@ -20,15 +20,16 @@
 \Dissemination{}{
   
   \Function{$\textup{R-broadcast}(m)$} { %\tcp*[f]{$b_p(m)$}} { 
-    $\textup{received}(m,\, \_)$ \;
-    \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
-    \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
+    % $\textup{received}(m,\, \_)$ \;
+    % \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
+    % \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
+    $\textup{receive}(m,\, \_)$ \;
   }
 
   \BlankLine
   
   \Upon{$\textup{receive}(m,\, l)$}{
-    \If {$\textup{received}(m,\,l)$} {
+    \If {$\neg\textup{received}(m,\,l)$} {
       \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{fwd}}
       \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
     }

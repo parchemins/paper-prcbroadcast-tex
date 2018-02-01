@@ -1,0 +1,32 @@
+
+\begin{tikzpicture}[scale=1]
+  
+  \small
+  
+  \newcommand\X{210/5pt};
+  \newcommand\Y{30pt};
+
+  
+  \draw[fill=white] (0*\X, 0*\Y) node{\textbf{A}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  % \draw (-5+0*\X, 0*\Y) node[left]{$E: \{a:2\}$};
+  \draw[fill=white] (1*\X, -1*\Y) node{\textbf{B}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  % \draw (1*\X, 5-1*\Y) node[above]{$\pi$};
+  \draw (5+ 1*\X, -5-1*\Y) node[below right]{$B_\beta: [b_1,\,b_2 ]$};
+  % \draw (1*\X, -5-1*\Y) node[below]{$E: \varnothing$\vphantom{$\{$}};
+  \draw[fill=white] (2*\X,  0*\Y) node{\textbf{C}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  \draw(2*\X, 5+0*\Y) node[above]{$\pi$};
+  \draw (5+2*\X, 0*\Y) node[right, align=left]{$B_\alpha: \{c_1,\, c_2\}$\\
+  $B_\pi: \{ b_1,\, c_3 \}$};
+  
+  \draw[->](5+0*\X, 0*\Y) -- node[sloped, above]{~~~~~~~~~~ $c_2$} (-5+1*\X, -1*\Y); %% A->B
+  \draw[<-](5+0*\X, -5+0*\Y) -- node[below, sloped]{~~~~~~~~ $b_2$} (-5+1*\X, -5-1*\Y); %% A<-B
+  
+  \draw[->](5+0*\X, 5+0*\Y) -- node[above]{$c_2$ ~~~~~~} (-5+2*\X, 5+0*\Y); % A->C
+  \draw[<-](5+0*\X,  1.25+ 0*\Y) -- node[below]{~~~ $\rho$ ~~ $b_1$ $c_3$} (-5+2*\X,  1.25+ 0*\Y); % A<-C
+  
+  \draw[->,dashed](5+1*\X, -1*\Y) -- (-5+2*\X, 0*\Y); %% B<-C
+  % \draw[->, dashed](5+1*\X, -5-1*\Y) -- (-5+2*\X, -5+0*\Y); %% B->C
+
+
+
+\end{tikzpicture}

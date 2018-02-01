@@ -375,11 +375,67 @@ delivers them in causal order.
 % $\beta$ and stops upon receipt of $\rho$; and Process~B maintains 2 buffers to
 % identify messages to deliver and to expect from Process~A.
 
+\begin{figure*}
+  \begin{center}
+    \subfloat[Part A][Process~B adds a link to Process~C. \RPCBROADCAST ensures its
+    safety. Process~B sends a first control message $\alpha$ to Process~C using
+    Process~A as mediator.]
+    {\input{input/figsolveA.tex}}
+    \hspace{10pt}
+    \subfloat[Part B][Process~A receives $\alpha$ and routes it to Process~C.]
+    {\input{input/figsolveB.tex}}
+    \hspace{10pt}
+    \subfloat[Part C][Process~C receives $\alpha$ and answers by sending $\beta$ 
+    to Process~B using Process~A as mediator. Then, Process~C broadcasts
+    $c_1$ and registers it in $B_\alpha$.]
+    {\input{input/figsolveC.tex}}
+    \hspace{10pt}
+    \subfloat[Part D][Process~A receives $\beta$ and routes it to Process~B. 
+    Process~A receives $c_1$ and forwards it to both its neighbors.]
+    {\input{input/figsolveD.tex}}
+    \hspace{10pt}
+    \subfloat[Part E][Process~C receives and discards $c_1$. 
+    Process~B receives $c_1$ and forwards it to its neigbhor.
+    Process~B reiceves $\beta$ and replies $\pi$ to Process~C using Process~A 
+    as mediator. Process~B broadcasts $b_1$ and registers it in $B_\beta$.]
+    {\input{input/figsolveE.tex}}
+    \hspace{10pt}
+    \subfloat[Part F][Process~A receives $c_1$ and discards it.
+    Process~A receives $\pi$ and routes it to Process~C. Process~A receives $b_1$
+    and forwards it to its neighbors. Process~C broadcasts $c_2$ and registers it 
+    in $B_\alpha$]
+    {\input{input/figsolveF.tex}}
+    \hspace{10pt}
+    \subfloat[Part G][Process~A receives $c_2$ and forwards it to its neighbors.
+    Process~B broadcasts $b_2$ and registers it in $B_\beta$. Process~C receives
+    $\pi$ and replies $\rho$ to Process~B using Process~A as mediator. Then it 
+    receives and forwards $b_1$. Then it broadcasts $c_3$. It registers $b_1$ 
+    and $c_3$ in $B_\pi$.]
+    {\input{input/figsolveG.tex}}
+    \hspace{10pt}
+    \subfloat[Part H][Process~A receives and discards $b_1$. 
+    Process~A receives and routes $\rho$ to Process~B. 
+    Process~A receives and  forwards $b_2$ then $c_3$. Process~B receives, forwards, 
+    and registers $c_2$. Then Process~B receives $rho$ and sends $B_\beta$ to Process~C
+    using the new link.]
+    {\input{input/figsolveH.tex}}
+    \hspace{10pt}
+    \subfloat[Part I][Process~A receives and discards $b_1$. 
+    Process~A receives and routes $\rho$ to Process~B. 
+    Process~A receives and  forwards $b_2$ then $c_3$. Process~B receives, forwards, 
+    and registers $c_2$. Then Process~B receives $rho$ and sends $B_\beta$ to Process~C
+    using the new link.]
+    {\input{input/figsolveI.tex}}
+  \end{center}
+\end{figure*}
+
+
 
 Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
 intermediate processes are faulty. Control messages never reach their
 destination. \PCBROADCAST handles such crashes using a timeout and retry
-policy. Such strategy fits \RPCBROADCAST.
+policy. Such strategy fits \RPCBROADCAST.  \TODO{Receiving may ignore all
+  incoming messages.}
 
 
 \subsection{Complexity}
