@@ -420,12 +420,16 @@ delivers them in causal order.
     using the new link.]
     {\input{input/figsolveH.tex}}
     \hspace{10pt}
-    \subfloat[Part I][Process~A receives and discards $b_1$. 
-    Process~A receives and routes $\rho$ to Process~B. 
-    Process~A receives and  forwards $b_2$ then $c_3$. Process~B receives, forwards, 
-    and registers $c_2$. Then Process~B receives $rho$ and sends $B_\beta$ to Process~C
-    using the new link.]
-    {\input{input/figsolveI.tex}}
+    \subfloat[Part I][Once Process~A sent $B_\beta$, the new link is safe.
+    Process~C receives $B_\beta$. Process~C does not deliver $b_1$ and $c_2$, for it
+    already delivered them. Process~C delivers $b_2$ and
+    expects another copy from Process~A, for it constitutes a new message. 
+    Process~C expects to eventually receive $c_3$ from Process~B.]
+    {\input{input/figsolveI.tex}}\\
+    %\hspace{10pt}
+    \subfloat[Part J][Process~C categorizes each message of $B_\beta$ using its two 
+    own buffers $B_\alpha$ and $B_\pi$.]
+    {\input{input/figsolveJ.tex}}
   \end{center}
 \end{figure*}
 
