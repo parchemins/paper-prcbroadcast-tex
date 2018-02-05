@@ -13,16 +13,17 @@
 
 When links are bidirectional, \RPCBROADCAST must ensure their safety in both
 directions. Instead of performing twice \RPCBROADCAST's operation, we extend its
-behavior. Control messages serve two purposes. For instance, control messages
-$\beta$ are also control messages $\alpha$.  Figure~\ref{fig:bibroadcast} shows
-that \RPCBROADCAST ensures the safety of bidirectional links at marginal cost
+behavior to handle bidirectional safety at once. Some control messages serve two
+purposes. For instance, control messages $\beta$ are also control messages
+$\alpha$. Some buffers have two purposes. For instance, the buffer $B_\beta$ of
+the process adding a link is also a buffer $B_\alpha$.
+Figure~\ref{fig:bibroadcast} depicts the small change in the operation of
+\RPCBROADCAST. It ensures safety of bidirectional links at marginal cost
 compared to its unidirectional version. The buffer $B_\beta$ of Process~A
 becomes its buffer $B_\alpha$. The buffer $B_\pi$ of Process~B becomes a buffer
 $B_\beta$ that will be sent using the new link upon receipt of the buffer of
 Process~A. Between the sending of its buffer and the receipt of the buffer of
 Process~B, Process~A maintains an additional buffer $B_\pi$.
-
-Instead of performing twice the operation of \RPCBROADCAST
 
 %%% Local Variables:
 %%% mode: latex
