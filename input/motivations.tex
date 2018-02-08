@@ -3,15 +3,16 @@
 \label{sec:motivations}
 
 Causal broadcast is a communication primitive that allows a process to send
-messages to all processes of its distributed system. Message deliveries follow
-the happen before relationship. If the sending of a message $m$ precedes the
-sending of a message $m'$ then all processes that deliver these two messages
-need to deliver $m$ before $m'$. Otherwise they deliver them in any order. Each
-process may receive a message multiple times but it delivers it exactly once.
+messages to all processes of its distributed system (\REF). Message deliveries
+follow the happen before relationship (\REF). If the sending of a message $m$
+precedes the sending of a message $m'$ then all processes that deliver these two
+messages need to deliver $m$ before $m'$. Otherwise they deliver them in any
+order. Each process may receive a message multiple times but it delivers it
+exactly once.
 
-Causal broadcast relies on reliable broadcast. First, it guarantees that all
+Causal broadcast has properties about reliability. First, it guarantees that all
 correct processes eventually receive broadcast messages. Gossiping constitutes
-an efficient mean to reliably disseminate messages to large systems. Each
+an efficient mean to reliably disseminate messages to large systems (\REF). Each
 process maintains a partial view considerably smaller than the whole system
 membership. When a process broadcasts a message, it sends it to its partial
 view; each process that receives such message forwards it to its partial
@@ -53,25 +54,27 @@ view. Broadcast messages reach all processes either directly or transitively.
 \end{algorithm}
 
 
-Second, reliable broadcast guarantees that each process delivers each broadcast
-message exactly once, in spite of multiple receipts that can occur.
-Figure~\ref{fig:generalpurge} shows a lightweight implementation that consists
-in recording the number of copies expected after the first receipt. When the
-expected number of copies falls to zero, the message will never be received
-again. Reliable broadcast purges its local structure from this element. In
+Second, it guarantees that each process delivers each broadcast message exactly
+once, in spite of multiple receipts that can occur.
+Figure~\ref{fig:generalpurge} shows a scenario involving 3 processes using the
+lightweight implementation of broadcast in
+Algorithm~\ref{algo:counterrbroadcast}. The idea consists in recording the
+number of copies expected after the first receipt. When the expected number of
+copies falls to zero, the process will never receive this message
+again. Consequently, it safely purges its local structure from this element. In
 Figure~\ref{fig:generalpurgeA}, Process~A broadcasts $a$ to Process~B and
 Process~C. Since it knows that each process forwards each message exactly once,
 it expects to receive 2 copies: one from Process~B, one from Process~C. In
 Figure~\ref{fig:generalpurgeB}, Process~B and Process~C receive and deliver
-$a$. They both expect another copy of $a$ from Process~C and Process~B
-respectively. Since this is their first receipt of $a$, Process~B and Process~C
-forward the message to their neighbors. In Figure~\ref{fig:generalpurgeD},
-Process~B and Process~C receives the awaited copy from each other. They will
-never receive such message again, so they remove it from the set of expected
-messages. Process~A receives a copy but does not purge its local structure, for
-it still expect an additional copy of the message. It decrements the counter
-corresponding to $a$. In Figure~\ref{fig:generalpurgeE}, Process~A finally
-receives the last copy of $a$ and purges its structure.
+$a$. Process~B does not expect copies of this message. Process~C expects an
+additional copy of this message from Process~B.  Since this is their first
+receipt of $a$, Process~B and Process~C deliver and forward $a$ to their
+neighbors. In Figure~\ref{fig:generalpurgeD}, Process~C receives the awaited
+copy of $a$. It will never receive such message again, so it removes it from its
+set of expected messages $E$. Process~A receives a copy but does not purge its
+local structure, for it still expect an additional copy of the message. It
+decrements the counter corresponding to $a$. In Figure~\ref{fig:generalpurgeE},
+Process~A finally receives the last copy of $a$ and purges its structure.
 
 \begin{figure*}
   \begin{center}
@@ -101,7 +104,7 @@ receives the last copy of $a$ and purges its structure.
 
 Unfortunately, such implementation does not handle dynamic systems where
 processes can join, leave, or self-reconfigure their partial view at any
-time. Figure~\ref{fig:generalproblem} illustrates the issue. In
+time. Figure~\ref{fig:generalproblem} illustrates one of the issues. In
 Figure~\ref{fig:generalproblemA}, Process~A broadcasts $a$. It sends a copy of
 $a$ to its neighbors Process~B and Process~C. In
 Figure~\ref{fig:generalproblemB}, Process~C receives $a$ for the first time.  As
