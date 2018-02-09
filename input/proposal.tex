@@ -69,13 +69,19 @@ delivers a message once.
 
 \begin{definition}[Exactly once delivery]
   Each process receives each broadcast message at least once. A process may
-  receive a broadcast message multiple times but delivers it exactly once. \\
-%  $\forall m, \{r_A(m)\}^+ \rightarrow d_A(m) \wedge d_A(m) \not\rightarrow d_A(m) \wedge d_A(m) \rightarrow \{r_A(m)\}^*$ \\
-  $\forall A,\,B,\, b_A(m) \implies r_B(m)$ \\
-  $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$ \\
-  $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$\\  
-%  \TODO{which formula is better?}
+  \begin{enumerate}
+  \item $\forall A,\,B,\, b_A(m) \implies r_B(m)$
+  \item $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$
+  \item \label{enum:uniqueness}
+    $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$
+  \end{enumerate}
 \end{definition}
+
+Property~\ref{enum:uniqueness} suggests the use of a data structure ensuring
+uniqueness of messages such as sets or vectors. The data structure allows
+processes to remember about prior receipts of messages in order to discard
+double receipts.
+
 
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
@@ -83,37 +89,58 @@ delivers a message once.
 \end{algorithm}
 
 Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a uniform
-reliable broadcast that purges its local structure over time but only in static
-networks. The implementation uses the in-view and exploits the property that
-each process sends each message exactly once to each neighbor in their
-out-view. 
+reliable broadcast ensuring uniqueness of delivery in static systems. It
+features a data structure that can be safely purged over time. Similarly to
+Algorithm~\ref{algo:counterrbroadcast}, it uses the in-view and exploits the
+property that each process sends each message exactly once to each neighbor in
+their out-view.
 % As long as each link did not convey the 
 % Each process will receive a copy from each link in its in-view exactly
 % once. Afterwards, they purge their structure for they will never receive such
 % message again.
-It associates with each link from the in-view a set of awaited messages. When
-Process~A receives a message for the first time from Process~B, it awaits a copy
-of this message from all other processes in its in-view. When it receives such
-copy, it removes the message from the set of awaited messages of the
-corresponding link. Process~A will never receive a copy of this message from
-this link again. Once it received all awaited copies, it will never receive a
-copy of this message at all. The principle of this implementation is similar to
-that of Figure~\ref{fig:generalpurge} to which it adds an awareness of links
-with awaited messages. Each process remembers each broadcast message as long as
-it is susceptible to arrive again.
+Instead of using counters, it associates with each link from the in-view a set
+of expected messages. When Process~A receives a message for the first time from
+Process~B, it awaits a copy of this message from all other processes in its
+in-view. When it receives such copy, it removes the message from the set of
+awaited messages of the corresponding link. Process~A will never receive a copy
+of this message from this link again. Once it received all awaited copies, it
+will never receive a copy of this message at all.
+% The principle of this implementation is similar to that of
+% Figure~\ref{fig:generalpurge} to which it adds an awareness of links with
+% awaited messages. 
+Each process remembers each broadcast message as long as it is susceptible to
+arrive again.
 
 \begin{definition}[Remember]
-  Each process keeps received messages until they receive them from their whole
-  in-view. Processes do not deliver remembered messages.
+  A process remembers a message after its first receipt until its last receipt,
+  i.e., once the process received the message from its whole in-view.
   $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
 \end{definition}
 
 \begin{theorem}[Remembering ensures exactly once delivery]
-  \TODO{Assuming exactly once delivery?} Delivering broadcast messages when they
-  are not remembered ensures exactly once delivery.
+  Delivering broadcast messages when they are not remembered ensures exactly
+  once delivery.
+  $(\forall m,\, r_B(m) \wedge \neg remember_B(m) \Longleftrightarrow d_B(m))
+  \implies (\forall m,\,m',\, d_B(m) \rightarrow d_B(m') \implies m \neq m')$
 \end{theorem}
 
 \begin{proof}
+  We must show that delivering messages while they are not remembered implies
+  uniqueness of delivery. \\ 
+  
+  Assuming that each process delivers and forwards each broadcast message
+  exactly once, each link conveys each broadcast message exactly once.  Each
+  link conveys distinct messages:
+  $\forall m,\,m' ,\, r_{AB}(m) \rightarrow r_{AB}(m') \implies m \neq m'$.
+  
+  \TODO{Heeeeere.}
+  
+  In addition, the first receipt of a message $m$ marks other links in the
+  in-view with this awaited message. $\forall m,\, r_AB(m) \implies $
+
+  % In addition, the first receipt by a link marks other links in the in-view.
+
+  
   We must show that a process that forgets a message $m$ before its receipt from
   the whole in-view may deliver it multiple times. \TODO{Not
     enough}. \TODO{Meow.}
@@ -337,7 +364,7 @@ timeline when Process~A wants to add Process~B in its out-view.
   \TODO{To do.}
 \end{proof}
 
-The set of expected messages is $B_\pi \setminus (B \setminus B_\alpha)$.  It
+The set of expected messages is $B_\pi \setminus (B_\beta \setminus B_\alpha)$.  It
 registers these messages to discard them when they
 arrive. Theorem~\ref{lemma:expected} states that all expected messages eventually
 arrive. Consequently, processes eventually discard each message of this set
@@ -359,7 +386,7 @@ until it is fully purged.
   \TODO{Todotoo.}
 \end{proof}
 
-The set of messages to deliver is $B\setminus B_\alpha \setminus B_\pi$. It
+The set of messages to deliver is $B_\beta\setminus B_\alpha \setminus B_\pi$. It
 delivers them in causal order.
 \end{enumerate}
 

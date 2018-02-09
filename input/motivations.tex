@@ -57,8 +57,8 @@ view. Broadcast messages reach all processes either directly or transitively.
 Second, it guarantees that each process delivers each broadcast message exactly
 once, in spite of multiple receipts that can occur.
 Figure~\ref{fig:generalpurge} shows a scenario involving 3 processes using the
-lightweight implementation of broadcast in
-Algorithm~\ref{algo:counterrbroadcast}. The idea consists in recording the
+lightweight implementation of reliable broadcast in
+Algorithm~\ref{algo:counterrbroadcast}.  The idea consists in recording the
 number of copies expected after the first receipt. When the expected number of
 copies falls to zero, the process will never receive this message
 again. Consequently, it safely purges its local structure from this element. In
@@ -96,8 +96,9 @@ Process~A finally receives the last copy of $a$ and purges its structure.
     and forwards $a$ a second time, but it has cascading effects in the network.
     The expected number of copies becomes inconsistent and may grow unbounded.]
     {\input{input/figgeneralproblemE.tex}}    
-    \caption{\label{fig:generalproblem}A broadcast relying on counters may
-      deliver messages multiple times leading to inconsistencies.}
+    \caption{\label{fig:generalproblem}In dynamic systems, the reliable
+      broadcast using counters may deliver messages multiple times leading to
+      inconsistencies.}
   \end{center}
 \end{figure*}
 
