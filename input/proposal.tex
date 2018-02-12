@@ -167,12 +167,11 @@ the in-view a set of expected messages.
   receiving multiple copies.
 \end{proof}
 
-Algorithms~\ref{algo:reliablebroadcast} and~\ref{algo:counterrbroadcast}
-guarantee exactly once delivery of messages in static systems. However, as soon
-as the system becomes dynamic, this property may be violated (see
-Figure~\ref{fig:generalproblem}). In this paper, we exploit message ordering to
-solve this issue.
-
+Algorithms~\ref{algo:counterrbroadcast} and~\ref{algo:reliablebroadcast}
+guarantee exactly once delivery of messages in static systems. The local data
+structure is safely purged over receipts. However, as soon as the system becomes
+dynamic, this property may be violated (see Figure~\ref{fig:generalproblem}). In
+this paper, we exploit message ordering to solve this issue.
 
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
 order of messages. We focus on causal order. Process~A should deliver a message
@@ -193,7 +192,7 @@ before the sending of $m$.
 messages, and buffers to ensure causal order in dynamic systems. A process
 broadcasting a message sends the message to an out-view of safe links.
 
-\begin{definition}[\label{def:safe}Safe link] 
+\begin{definition}[\label{def:safe}Safe link (\REF)]  
   A link from Process~A to Process~B is safe if and only if Process~B received
   or will receive all messages delivered by Process~A before receiving any
   message that Process~A will
@@ -206,14 +205,14 @@ preceding messages that took longer paths. \PCBROADCAST ensures that they are
 safe, i.e., they cannot cause causal order violations, by sending control
 messages.
 
-\begin{definition}[Ping phase]
+\begin{definition}[Ping phase (\REF)]
   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
   using safe links. When Process~B receives this ping, it replies to
   Process~A. Replies $\rho$ travel using any communication mean. Ping phase ends
   when Process~A receives the reply of Process~B.
 \end{definition}
 
-\begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts]
+\begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts (\REF)]
   A ping phase from Process~A to Process~B acknowledges the receipt by B of all
   messages delivered by Process~A before this ping phase.
   $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge r_A(\rho_{AB}) \implies
@@ -246,6 +245,15 @@ proposal and its complexity.
 %broadcast requires more ping phases and
 %more buffers.
 
+\subsection{Problem statement}
+
+The scientific problem is about being able to divide the messages of the buffer
+into 3 categories:
+\begin{itemize}
+\item messages delivered by Process~A but not delivered by Process~B;
+\item messages delivered by both;
+\item messages not delivered by Process~A but delivered by Process~B.
+\end{itemize}
 
 \subsection{Operation}
 
