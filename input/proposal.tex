@@ -79,8 +79,28 @@ delivers a message once.
 
 Property~\ref{enum:uniqueness} suggests the use of a data structure ensuring
 uniqueness of messages such as sets or vectors. The data structure allows
-processes to remember about prior receipts of messages in order to discard
+processes to remember about prior delivery of messages in order to discard
 double receipts.
+
+\begin{definition}[Remembering]
+  A process starts to remember a message at its delivery:
+  $remember_A(m) \equiv d_A(m)$.  A process delivers only messages not yet
+  remembered: \\ $\not\exists m,\, remember_A(m) \rightarrow d_A(m)$.
+\end{definition}
+
+\begin{theorem}[\label{theo:rememberinganduniqueness}
+  Remembering ensures delivery uniqueness]
+  A process delivering messages it does not remember delivers each message
+  exactly once.
+\end{theorem}
+
+\begin{proof}
+  A process receiving a message either delivered this message or not. In the
+  former case, it already remembers the message, hence discards it. In the
+  latter case, it delivers the message for the first time and starts to remember
+  it. Subsequent receipts fall in the former case. Consequently, a process
+  delivers each message once and only once.
+\end{proof}
 
 
 \begin{algorithm}[h]
@@ -90,64 +110,69 @@ double receipts.
 
 Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a uniform
 reliable broadcast ensuring uniqueness of delivery in static systems. It
-features a data structure that can be safely purged over time. Similarly to
-Algorithm~\ref{algo:counterrbroadcast}, it uses the in-view and exploits the
-property that each process sends each message exactly once to each neighbor in
-their out-view.
-% As long as each link did not convey the 
-% Each process will receive a copy from each link in its in-view exactly
-% once. Afterwards, they purge their structure for they will never receive such
-% message again.
-Instead of using counters, it associates with each link from the in-view a set
-of expected messages. When Process~A receives a message for the first time from
-Process~B, it awaits a copy of this message from all other processes in its
-in-view. When it receives such copy, it removes the message from the set of
-awaited messages of the corresponding link. Process~A will never receive a copy
-of this message from this link again. Once it received all awaited copies, it
-will never receive a copy of this message at all.
-% The principle of this implementation is similar to that of
-% Figure~\ref{fig:generalpurge} to which it adds an awareness of links with
-% awaited messages. 
-Each process remembers each broadcast message as long as it is susceptible to
-arrive again.
+features a data structure that remembers messages for a finite period of time.
+This structure is eventually and safely purged over time of delivered messages.
+The idea consists in discarding obsolete messages, i.e., messages that will
+never be received any longer.
 
-\begin{definition}[Remember]
-  A process remembers a message after its first receipt until its last receipt,
-  i.e., once the process received the message from its whole in-view.
-  $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
-\end{definition}
-
-\begin{theorem}[Remembering ensures exactly once delivery]
-  Delivering broadcast messages when they are not remembered ensures exactly
-  once delivery.
-  $(\forall m,\, r_B(m) \wedge \neg remember_B(m) \Longleftrightarrow d_B(m))
-  \implies (\forall m,\,m',\, d_B(m) \rightarrow d_B(m') \implies m \neq m')$
+\begin{theorem}[Bound on remembering]
+  Remembering a message from its delivery to its last receipt is necessary
+  and sufficient to ensure delivery uniqueness.
 \end{theorem}
 
 \begin{proof}
-  We must show that delivering messages while they are not remembered implies
-  uniqueness of delivery. \\ 
-  
-  Assuming that each process delivers and forwards each broadcast message
-  exactly once, each link conveys each broadcast message exactly once.  Each
-  link conveys distinct messages:
-  $\forall m,\,m' ,\, r_{AB}(m) \rightarrow r_{AB}(m') \implies m \neq m'$.
-  
-  \TODO{Heeeeere.}
-  
-  In addition, the first receipt of a message $m$ marks other links in the
-  in-view with this awaited message. $\forall m,\, r_AB(m) \implies $
-
-  % In addition, the first receipt by a link marks other links in the in-view.
-
-  
-  We must show that a process that forgets a message $m$ before its receipt from
-  the whole in-view may deliver it multiple times. \TODO{Not
-    enough}. \TODO{Meow.}
+  Assuming series of $k$ receipts of a same message $m$ at Process~A:
+  $r^1_A(m) \rightarrow r^2_A(m) \wedge r^2_A(m) \rightarrow r^3_A(m) \wedge \ldots \wedge
+  r^{k-1}_A(m) \rightarrow r^k_A(m)$. \\
+  We must show that if Process~A remembers $m$ from its delivery until its
+  $k^{th}$ receipt, then Process~A delivers $m$ once. The proof is similar to
+  that of Theorem~\ref{theo:rememberinganduniqueness}. After the $k^{th}$
+  receipt, Process~A never receives -- hence delivers -- $m$ again. Remembering
+  $m$ until the $k^{th}$ receipt is sufficient.\\
+  We also must show that if Process~A does not strictly remember $m$ from its
+  delivery to its $k^{th}$ receipt, then Process~A delivers $m$ multiple
+  times. Process~A delivers and remembers $m$ after its first receipt. Let
+  $1\leq j<k$. Process~A stops remembering $m$ after the $j^{th}$ receipt. When
+  Process~A receives $m$ for the $(j+1)^{th}$ time, it considers it as a new
+  message and delivers it again. This issue may repeat multiple times leading to
+  that many deliveries of $m$.
 \end{proof}
 
-% Using this reliable broadcast implementation, each process delivers each message
-% exactly once.
+Algorithm~\ref{algo:reliablebroadcast} keeps track of expected messages until
+remembering these messages becomes obsolete.  Similarly to
+Algorithm~\ref{algo:counterrbroadcast}, it uses the in-view and exploits the
+property that each process sends each message exactly once to each neighbor in
+their out-view.  Instead of using counters, it associates with each link from
+the in-view a set of expected messages.
+
+\begin{definition}[Per link remembering]
+  A process remembers a message from its delivery to its last receipt, i.e.,
+  once the process received the message from its whole in-view.
+  $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
+\end{definition}
+
+\begin{lemma}[Per link remembering ensures delivery uniqueness]
+  Assuming a static network where processes cannot join, nor leave, nor
+  self-reconfigure their partial views, per link remembering ensures uniqueness
+  of delivery.
+\end{lemma}
+
+\begin{proof}
+  When a process receives a message $m$ for the first time, it expects to
+  receive one copy of $m$ for each other neighbor in its in-view. Assuming $k$
+  neighbors in its in-view, the process remembers $m$ until it receives $k$
+  copies in total. Assuming that each process delivers -- hence forwards -- each
+  message exactly once, the former process does not receive more than $k$ copies
+  of $m$. Consequently, each process deliver each message exactly once despite
+  receiving multiple copies.
+\end{proof}
+
+Algorithms~\ref{algo:reliablebroadcast} and~\ref{algo:counterrbroadcast}
+guarantee exactly once delivery of messages in static systems. However, as soon
+as the system becomes dynamic, this property may be violated (see
+Figure~\ref{fig:generalproblem}). In this paper, we exploit message ordering to
+solve this issue.
+
 
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
 order of messages. We focus on causal order. Process~A should deliver a message
@@ -422,8 +447,8 @@ delivers them in causal order.
     {\input{input/figsolveD.tex}}
     \hspace{10pt}
     \subfloat[Part E][Process~C receives and discards $c_1$. 
-    Process~B receives $c_1$ and forwards it to its neigbhor.
-    Process~B reiceves $\beta$ and replies $\pi$ to Process~C using Process~A 
+    Process~B receives $c_1$ and forwards it to its neighbor.
+    Process~B receives $\beta$ and replies $\pi$ to Process~C using Process~A 
     as mediator. Process~B broadcasts $b_1$ and registers it in $B_\beta$.]
     {\input{input/figsolveE.tex}}
     \hspace{10pt}
