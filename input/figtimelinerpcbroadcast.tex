@@ -8,8 +8,8 @@
   \newcommand\YB{-60pt};
 
 
-  \draw[->](0*\X, \YA) -- (8*\X, \YA);
-  \draw[->](0*\X, \YB) -- (8*\X, \YB);
+  \draw[->, thick](0*\X, \YA) -- (8*\X, \YA);
+  \draw[->, thick](0*\X, \YB) -- (8*\X, \YB);
   
   \draw[fill=white] (0*\X, \YA) node{\textbf{\textup{A}}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
   \draw[fill=white] (0*\X, \YB) node{\textbf{\textup{B}}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
@@ -17,7 +17,7 @@
   \draw ( 1*\X, \YA ) node[above]{$\mathcal{A}$};
   \draw ( 1*\X, \YB ) node[below]{$\mathcal{B}$};
 
-  \draw[->] ( 2*\X, \YA ) -- node[sloped, above]{$\alpha$} (3*\X, \YB)
+  \draw[densely dashed,->] ( 2*\X, \YA ) -- node[sloped, above]{$\alpha$} (3*\X, \YB)
   node[below left]{$\mathcal{A}$};
 
   \draw[decorate,decoration={brace,amplitude=6pt,mirror,raise=4pt}] (3*\X,
@@ -26,7 +26,7 @@
 
   \draw ( 3*\X, \YA ) node[above]{$\mathcal{C}$};
 
-  \draw[->] ( 3*\X, \YB ) -- node[sloped, above]{$\beta$} (4*\X, \YA)
+  \draw[densely dashed,->] ( 3*\X, \YB ) -- node[sloped, above]{$\beta$} (4*\X, \YA)
   node[above left]{$\mathcal{B}$};
 
   \draw[decorate,decoration={brace,amplitude=6pt,raise=4pt}] (4*\X,
@@ -36,7 +36,7 @@
   
   \draw ( 4*\X, \YB ) node[below]{$\mathcal{D}$};
 
-  \draw[->] ( 4*\X, \YA ) -- node[sloped, above]{$\pi$} (5*\X, \YB)
+  \draw[densely dashed,->] ( 4*\X, \YA ) -- node[sloped, above]{$\pi$} (5*\X, \YB)
   node[below left]{$\mathcal{C}$};
 
   \draw[decorate,decoration={brace,amplitude=6pt,mirror,raise=4pt}] (5*\X,
@@ -46,12 +46,12 @@
 
   \draw ( 5*\X, \YA ) node[above]{$\mathcal{E}$};
 
-  \draw[->] ( 5*\X, \YB ) -- node[sloped, above]{$\rho$} (6*\X, \YA)
+  \draw[densely dashed,->] ( 5*\X, \YB ) -- node[sloped, above]{$\rho$} (6*\X, \YA)
   node[above left]{$\mathcal{D}$};
   
   \draw (6*\X, \YB) node[below]{$\mathcal{F}$};
 
-  \draw[->, dashed] ( 6*\X, \YA ) -- node[sloped, above]{$B_\beta$} (7*\X, \YB);
+  \draw[->, very thick] ( 6*\X, \YA ) -- node[sloped, above]{$\bm{B_\beta}$} (7*\X, \YB);
 %  node[below left]{$\mathcal{E}$};
 
 

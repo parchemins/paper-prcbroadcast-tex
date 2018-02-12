@@ -9,8 +9,8 @@
   & \makecell{message\\overhead} &  \makecell{delivery\\execution time} & \makecell{local space\\consumption} & \makecell{number of control messages\\per added link} \\ \cmidrule{2-5}
   reliable broadcast (\REF) & $O(1)$ & $O(1)$ & $O(N)$ & $0$ \\
   vector-based causal broadcast~\cite{schwarz1994detecting} & $O(N)$ & $O(W.N)$ & $O(N+W.N)$ & $0$ \\ 
-  \PCBROADCAST (\REF) & $O(1)$ & $O(1)$ & $O(N + B + W)$ & $3$ to $2N^2$ \\ \hline\hline
-  \textbf{this paper (\RPCBROADCAST)} & $O(1)$ & $O(1)$ & $\mathbf{O(D + B + W)}$ & $\mathbf{6}$ to $\mathbf{4N^2}$ \\
+  \PCBROADCAST (\REF) & $O(1)$ & $O(1)$ & $O(N + B + W)$ & $3$ to $2P^2$ \\ \hline\hline
+  \textbf{this paper (\RPCBROADCAST)} & $O(1)$ & $O(1)$ & $\mathbf{O(D + B + W)}$ & $\mathbf{6}$ to $\mathbf{4P^2}$ \\
 %  \bottomrule
 \end{tabularx}
 

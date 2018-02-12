@@ -247,13 +247,20 @@ proposal and its complexity.
 
 \subsection{Problem statement}
 
+\TODO{Not good, for expected message are local...}
+
 The scientific problem is about being able to divide the messages of the buffer
 into 3 categories:
-\begin{itemize}
+\begin{itemize}[leftmargin=*]
 \item messages delivered by Process~A but not delivered by Process~B;
 \item messages delivered by both;
 \item messages not delivered by Process~A but delivered by Process~B.
 \end{itemize}
+
+\begin{figure}
+  \input{input/figproblemstatement.tex}
+  \caption{\label{fig:problemstatement} For each message in the buffer, the protocol must be able to identify its category. \TODO{Not good because of expected messages.}}
+\end{figure}
 
 \subsection{Operation}
 
@@ -516,7 +523,7 @@ only piggyback the control information to ensure reliable FIFO links.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
 receipt function, is constant $O(1)$, for it only checks if the message should
-be discarded or delivered. \TODO{Maybe O(P).}
+be discarded or delivered. \TODO{Maybe $O(Q_i)$?}
 
 \noindent The \textbf{local space consumption} depends on the size of
 buffers. There are 4 buffers in total. $W$ is the size of buffers related to
@@ -534,12 +541,12 @@ static and quiescent, \RPCBROADCAST does not consume
 space. 
 
 \noindent The overhead in terms of \textbf{number of control messages} per added
-link in an out-view varies from $6$ to $4N^2$ depending on the overlay
-network. It achieves $6$ messages when Process~A adds Process~B using Process~C
-as mediator, and Process~B has Process~A in its out-view. It achieves $4N^2$
-when Process~A adds Process~B without knowledge of any route. Process~A and
-Process~B fall back to reliable broadcast to disseminate control
-messages. \TODO{$N$ is the size of the network.}
+link in an out-view varies from $6$ to $4P^2$ depending on the overlay network;
+$P$ being the number of processes in the system. It achieves $6$ messages when
+Process~A adds Process~B using Process~C as mediator, and Process~B has
+Process~A in its out-view. It achieves $4P^2$ when Process~A adds Process~B
+without knowledge of any route. Process~A and Process~B fall back to reliable
+broadcast to disseminate control messages.
 
 Overall, this analysis shows that \RPCBROADCAST proposes an advantageous
 tradeoff when the overlay network allows routing between the process that adds
@@ -550,7 +557,7 @@ peer-sampling protocols achieves $8$ control messages per added link. Several
 other peer-sampling protocols build addressable overlay networks which allows
 routing with a logarithmic number of hops compared to the actual network size
 (\REF). An \RPCBROADCAST built on top of these peer-sampling protocols achieves
-$O(4\log(N))$ control messages per added link.
+$O(4\log(P))$ control messages per added link.
 
 Assuming such overlay network, \RPCBROADCAST constitutes a lightweight and
 efficient middleware for reliable broadcast and causal broadcast in large and

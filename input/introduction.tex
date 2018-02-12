@@ -51,10 +51,11 @@ requires an overcostly distributed consensus (\REF).
   \begin{center}
     \caption{\label{table:complexity} Complexity of causal broadcast algorithms
       at each process. $N$ the number of processes that ever broadcast a
-      message. $W$ the number of messages received but not delivered yet. $B$
-      and $D$ are buffers of messages that increase when a link is added but
-      purged when the link becomes safe to use. $B$ and $D$ eventually becomes
-      empty when the system becomes static. \TODO{Different $N$}}
+      message. $P$ the number of processes in the system. $W$ the number of 
+      messages received but not delivered yet. $B$ and $D$ are buffers of
+      messages that increase when a link is added but purged when the link
+      becomes safe to use. $B$ and $D$ eventually becomes empty when the system
+      becomes static.}
     \input{input/tablecomplexity.tex}
   \end{center}
 \end{table*}

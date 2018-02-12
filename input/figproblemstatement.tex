@@ -1,0 +1,48 @@
+
+\begin{tikzpicture}[scale=1]
+
+  \small
+  
+  \newcommand\X{210/5pt};
+  \newcommand\Y{30pt};
+  
+  \newcommand\RADX{1.8};
+  \newcommand\RADY{1.8};
+
+  \newcommand\OFFX{15pt};
+
+  \draw[->, thick] (0.5*\RADX*\X, -2*\RADY*\Y) node[below]{buffer} -- (0.5*\RADX*\X, -1*\RADY*\Y);
+  \draw[->, thick] (0.5*\RADX*\X, -1.5*\RADY*\Y) -- (0.2*\RADX*\X, -1*\RADY*\Y);
+  \draw[->, thick] (0.5*\RADX*\X, -1.5*\RADY*\Y) -- (0.8*\RADX*\X, -1*\RADY*\Y);
+  
+  \draw (0*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
+  \draw (0*\X, -\OFFX+\RADY*\Y) node[below left, align=left]
+  {\textbf{\uline{Delivered}}\\\textbf{\uline{by Process~A}}};
+
+  \draw (\OFFX-\RADX*\X, -\OFFX+0pt) node[right, align=left] {
+    \textbf{To deliver}%\tiny
+    % $B_\beta \setminus B_\alpha \setminus B_\pi$\\%\tiny
+    % $[b_1,\,b_2,\,c_2]\setminus\{c_1,\,c_2\}\setminus\{b_1,\,c_3\}$\\%\tiny
+    % $[b_1,\,b_2] \setminus \{b_1,\,c_3\}$\\%\tiny
+    % $[b_2]$
+  };
+  \draw (-\OFFX+2*\RADX*\X, -\OFFX+0pt) node[left, align=right] {
+    \textbf{To remember}%\tiny
+    % $B_\pi \setminus (B_\beta \setminus B_\alpha)$\\%\tiny
+    % $\{b_1,\,c_3\} \setminus ([b_1,\,b_2,\,c_2] \setminus\{c_1,\,c_2\})$\\%\tiny
+    % $\{b_1,\,c_3\} \setminus [b_1,\,b_2]$\\%\tiny
+    % $\{c_3\}$
+  };
+  \draw (0.5*\RADX*\X, -\OFFX+0pt) node[align=center] {
+    \textbf{To ignore}%\tiny
+    % $B_\beta \setminus B_\alpha \wedge B_\pi$\\%\tiny
+    % $[b_1,\,b_2,\,c_2] \setminus \{c_1,\,c_2\} \wedge \{ b_1,\,c_3\}$\\%\tiny
+    % $[b_1,\,b_2] \wedge \{ b_1, \, c_3 \}$\\%\tiny
+    % $\{ b_1 \}$
+  };
+  \draw (\RADX*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
+  \draw (\RADX*\X, -\OFFX+\RADY*\Y) node[below right, align=right]
+  {\textbf{\uline{Delivered}}\\\textbf{\uline{by Process~B}}};
+
+
+\end{tikzpicture}
