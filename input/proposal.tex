@@ -176,7 +176,8 @@ this paper, we exploit message ordering to solve this issue.
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
 order of messages. We focus on causal order. Process~A should deliver a message
 $m$ from Process~B after having delivered all messages delivered by Process~B
-before the sending of $m$.
+before the sending of $m$. This order will prove useful to ensure the receipt of
+set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
 
 \begin{definition}[Causal order]
   The delivery order of messages follows the happen before relationships of the
@@ -188,9 +189,21 @@ before the sending of $m$.
   Causal broadcast is a uniform reliable broadcast ensuring causal order.
 \end{definition}
 
+\begin{figure}
+  \begin{center}
+    \input{input/figtimelinepcbroadcast.tex}
+    \caption{\label{fig:timelinepcbroadcast}Process~A ensures the safety of a
+      link to Process~B. $\pi$ travels using safe links through intermediary
+      processes that are hidden for the sake of clarity. $\rho$ reaches
+      Process~A by any communication mean. Process~A sends the array of buffered
+      messages via the new link. The link becomes safe.}
+  \end{center}
+\end{figure}
+
 \PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, control
 messages, and buffers to ensure causal order in dynamic systems. A process
-broadcasting a message sends the message to an out-view of safe links.
+broadcasting a message sends the message to an out-view of safe links that
+cannot lead to causal order violations.
 
 \begin{definition}[\label{def:safe}Safe link (\REF)]  
   A link from Process~A to Process~B is safe if and only if Process~B received
@@ -201,9 +214,10 @@ broadcasting a message sends the message to an out-view of safe links.
 \end{definition}
 
 Links start unsafe, for messages traveling by the new links may arrive before
-preceding messages that took longer paths. \PCBROADCAST ensures that they are
-safe, i.e., they cannot cause causal order violations, by sending control
-messages.
+preceding messages that took longer paths. \PCBROADCAST ensures safety by
+sending control messages. Figure~\ref{fig:timelinepcbroadcast} shows the
+operation. Process~A sends a control message $\pi$ to Process~B using safe links
+and awaits its answer. This is a ping phase.
 
 \begin{definition}[Ping phase (\REF)]
   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
@@ -221,13 +235,8 @@ messages.
 
 \PCBROADCAST ensures that all preceding messages arrive before new messages by
 acknowledging the receipt of most messages while buffering messages concurrent
-to the acknowledgment.
-
-
-% \begin{lemma}[Buffer $B$ \TODO{Move, does not make sense here yet}]
-%   $\forall m,\, s_A(\pi_{AB}) \rightarrow d_A(m) \wedge d_A(m) \rightarrow r_A(\rho_{AB})
-%   \Longleftrightarrow m \in B$
-% \end{lemma}
+to the acknowledgment. Processes receive all messages at least once and
+following causal order.
 
 However, this is insufficient to ensure exactly once delivery. The issue is
 identical to that depicted in Figure~\ref{fig:generalproblem}. Process~B adds
@@ -253,19 +262,21 @@ scientific problem consists in:
 \begin{itemize}[leftmargin=*]
 \item Identifying the array of messages from the buffer that are delivered by
   Process~A but not delivered by Process~B;
-\item Identifying the messages from the buffer that are delivered by Process~A
-  and Process~B;
-\item Identifying the messages delivered by Process~B that Process~B will
+\item Identifying the set of message messages from the buffer that are delivered
+  by Process~A and Process~B;
+\item Identifying the set of messages delivered by Process~B that Process~B will
   receive by this safe link.
 \end{itemize}
 These are the array of messages to deliver, the set of messages to ignore, and
 the set of messages to expect, respectively.
 
 \begin{figure}
-  \input{input/figproblemstatement.tex}
-  \caption{\label{fig:problemstatement}For each message in the buffer, Process~B
-    must identify its category and assign awaited messages on the new safe
-    link.}
+  \begin{center}
+    \input{input/figproblemstatement.tex}
+    \caption{\label{fig:problemstatement}For each message in the buffer,
+      Process~B must identify its category and assign awaited messages on the
+      new safe link.}
+  \end{center}
 \end{figure}
 
 Figure~\ref{fig:problemstatement} depicts the scientific problem. The buffer of
@@ -286,7 +297,7 @@ and provides its complexity analysis.
 
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}
-  \caption{\label{algo:rpcbroadcast}RPC-broadcast at Process $p$.}
+  \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
 \end{algorithm}
 
 

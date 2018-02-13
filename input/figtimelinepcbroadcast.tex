@@ -1,0 +1,73 @@
+
+\begin{tikzpicture}[scale=0.6]
+
+  \small
+  
+  \newcommand\X{1.45*\columnwidth/8pt};
+  \newcommand\YA{0pt};
+  \newcommand\YB{-60pt};
+
+
+  \draw[->](2*\X, \YA) -- (9*\X, \YA);
+  \draw[->](2*\X, \YB) -- (9*\X, \YB);
+  
+  \draw[fill=white] (2*\X, \YA) node{\textbf{\textup{A}}}
+  +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  \draw[fill=white] (2*\X, \YB)  node{\textbf{\textup{B}}}
+  +(-5pt, -5pt) rectangle +(5pt, 5pt);
+
+  % \draw ( 1*\X, \YA ) node[above]{$\mathcal{A}$};
+  % \draw ( 1*\X, \YB ) node[below]{$\mathcal{B}$};
+
+%  \draw[->] ( 2*\X, \YA ) -- node[sloped, above]{$\alpha$} (3*\X, \YB);
+  % node[below left]{$\mathcal{A}$};
+
+  % \draw[decorate,decoration={brace,amplitude=6pt,mirror,raise=4pt}] (3*\X,
+  % -5+\YB) -- node[anchor=north, yshift=-10pt]{$B_{B\alpha}$}
+  % (5*\X, -5+\YB);
+
+  % \draw ( 3*\X, \YA ) node[above]{$\mathcal{C}$};
+
+  % \draw[->] ( 3*\X, \YB ) -- node[sloped, above]{$\beta$} (4*\X, \YA);
+  % node[above left]{$\mathcal{B}$};
+
+  \draw[decorate,decoration={brace,amplitude=6pt,raise=4pt}] (4*\X,
+  5+\YA) -- node[anchor=south, yshift=10pt]{$B$}
+  (6*\X, 5+\YA);
+
+  % \draw[decorate,thick,decoration={brace,amplitude=6pt,raise=4pt}] (6*\X,
+  % 5+\YA) -- node[anchor=south, yshift=10pt]{$\bm{B_{A\pi}}$}
+  % (8*\X, 5+\YA);
+  
+  
+  % \draw ( 4*\X, \YB ) node[below]{$\mathcal{D}$};
+
+  \draw[->, densely dashed] ( 4*\X, \YA ) -- node[sloped, above]{$\pi$} (5*\X, \YB);
+  % node[below left]{$\mathcal{C}$};
+
+  % \draw[decorate,decoration={brace,amplitude=6pt,mirror,raise=4pt}] (5*\X,
+  % -5+\YB) -- node[anchor=north, yshift=-10pt]{$B_{B\pi} \bm{= B_{B\beta}}$}
+  % (7*\X, -5+\YB);
+
+
+  % \draw ( 5*\X, \YA ) node[above]{$\mathcal{E}$};
+
+  \draw[->, densely dashed, decorate, decoration={snake, amplitude=0.3mm}] ( 5*\X, \YB ) -- node[sloped, above]{$\rho$} (6*\X, \YA);
+  % node[above left]{$\mathcal{D}$};
+  
+  % \draw (6*\X, \YB) node[below]{$\mathcal{F}$};
+
+  \draw[->] ( 6*\X, \YA ) -- node[sloped, above]{$B$} (7*\X, \YB);
+
+  % \draw[->, dashed, thick] ( 7*\X, \YB ) --
+  % node[sloped, below]{$\bm{B_{B\beta}}$} (8*\X, \YA);
+
+%  node[below left]{$\mathcal{E}$};
+
+
+\end{tikzpicture}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:
