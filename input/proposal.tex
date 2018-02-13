@@ -247,23 +247,42 @@ proposal and its complexity.
 
 \subsection{Problem statement}
 
-\TODO{Not good, for expected message are local...}
-
-The scientific problem is about being able to divide the messages of the buffer
-into 3 categories:
+Assuming Process~A sends a buffer of messages to Process~B in order to finalize
+the safety of this link. Upon receipt of this buffer by Process~B, the
+scientific problem consists in:
 \begin{itemize}[leftmargin=*]
-\item messages delivered by Process~A but not delivered by Process~B;
-\item messages delivered by both;
-\item messages not delivered by Process~A but delivered by Process~B.
+\item Identifying the array of messages from the buffer that are delivered by
+  Process~A but not delivered by Process~B;
+\item Identifying the messages from the buffer that are delivered by Process~A
+  and Process~B;
+\item Identifying the messages delivered by Process~B that Process~B will
+  receive by this safe link.
 \end{itemize}
+These are the array of messages to deliver, the set of messages to ignore, and
+the set of messages to expect, respectively.
 
 \begin{figure}
   \input{input/figproblemstatement.tex}
-  \caption{\label{fig:problemstatement} For each message in the buffer, the protocol must be able to identify its category. \TODO{Not good because of expected messages.}}
+  \caption{\label{fig:problemstatement}For each message in the buffer, Process~B
+    must identify its category and assign awaited messages on the new safe
+    link.}
 \end{figure}
 
-\subsection{Operation}
+Figure~\ref{fig:problemstatement} depicts the scientific problem. The buffer of
+messages sent by Process~A includes messages that are delivered by Process~A
+only. Process~B must deliver these messages normally. The buffer of messages
+also includes messages already delivered by Process~B. Process~B must remember
+these messages to discard them when the buffer arrives. Finally, Process~B
+delivered messages that Process~A did not deliver. Since each process delivers
+and forwards each message exactly once, Process~B will receive these messages by
+this new safe link. Process~B must remember these messages to discard them at
+their receipt.
 
+The rest of this section describes a broadcast protocol that solves this problem
+and provides its complexity analysis.
+
+
+\subsection{Operation}
 
 \begin{algorithm}[h]
   \input{./input/algorpcbroadcast.tex}

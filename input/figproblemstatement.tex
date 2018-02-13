@@ -11,9 +11,9 @@
 
   \newcommand\OFFX{15pt};
 
-  \draw[->, thick] (0.5*\RADX*\X, -2*\RADY*\Y) node[below]{buffer} -- (0.5*\RADX*\X, -1*\RADY*\Y);
+  \draw[->, thick] (0.5*\RADX*\X, -1.75*\RADY*\Y) node[below, align=center]{buffer of messages\\sent by Process~A} -- (0.5*\RADX*\X, -1*\RADY*\Y);
   \draw[->, thick] (0.5*\RADX*\X, -1.5*\RADY*\Y) -- (0.2*\RADX*\X, -1*\RADY*\Y);
-  \draw[->, thick] (0.5*\RADX*\X, -1.5*\RADY*\Y) -- (0.8*\RADX*\X, -1*\RADY*\Y);
+%  \draw[->, thick] (0.5*\RADX*\X, -1.5*\RADY*\Y) -- node[sloped]{\Large$\times$} (0.8*\RADX*\X, -1*\RADY*\Y);
   
   \draw (0*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
   \draw (0*\X, -\OFFX+\RADY*\Y) node[below left, align=left]
