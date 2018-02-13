@@ -88,8 +88,8 @@ double receipts.
   remembered: \\ $\not\exists m,\, remember_A(m) \rightarrow d_A(m)$.
 \end{definition}
 
-\begin{theorem}[\label{theo:rememberinganduniqueness}
-  Remembering ensures delivery uniqueness]
+\begin{theorem}[\label{theo:rememberinganduniqueness}Remembering ensures
+  delivery uniqueness]
   A process delivering messages it does not remember delivers each message
   exactly once.
 \end{theorem}
@@ -217,7 +217,7 @@ Links start unsafe, for messages traveling by the new links may arrive before
 preceding messages that took longer paths. \PCBROADCAST ensures safety by
 sending control messages. Figure~\ref{fig:timelinepcbroadcast} shows the
 operation. Process~A sends a control message $\pi$ to Process~B using safe links
-and awaits its answer. This is a ping phase.
+and awaits its answer $\rho$. This is a ping phase.
 
 \begin{definition}[Ping phase (\REF)]
   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
@@ -238,11 +238,11 @@ acknowledging the receipt of most messages while buffering messages concurrent
 to the acknowledgment. Processes receive all messages at least once and
 following causal order.
 
-However, this is insufficient to ensure exactly once delivery. The issue is
-identical to that depicted in Figure~\ref{fig:generalproblem}. Process~B adds
-Process~C in its out-view but Process~C already forgot about the message $a$
-while Process~B received it. This leads to double delivery of $a$ and subsequent
-inconsistencies.
+However, this is insufficient to ensure exactly once delivery (\TODO{With
+  bounded remembering}). The issue is identical to that depicted in
+Figure~\ref{fig:generalproblem}. Process~B adds Process~C in its out-view but
+Process~C already forgot about the message $a$ while Process~B received it. This
+leads to double delivery of $a$ and subsequent inconsistencies.
 
 In this paper, we exploit causal communication to implement a stronger meaning
 of safe link at marginal cost. A link becomes safe when it cannot violate both
