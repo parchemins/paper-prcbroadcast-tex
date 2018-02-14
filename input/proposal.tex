@@ -116,14 +116,15 @@ The idea consists in discarding obsolete messages, i.e., messages that will
 never be received any longer.
 
 \begin{theorem}[Bound on remembering]
-  Remembering a message from its delivery to its last receipt is necessary
-  and sufficient to ensure delivery uniqueness.
+  Assuming processes receive each message a finite number of times, remembering
+  a message from its delivery to its last receipt is necessary and sufficient to
+  ensure delivery uniqueness.
 \end{theorem}
 
 \begin{proof}
-  Assuming series of $k$ receipts of a same message $m$ at Process~A:
-  $r^1_A(m) \rightarrow r^2_A(m) \wedge r^2_A(m) \rightarrow r^3_A(m) \wedge \ldots \wedge
-  r^{k-1}_A(m) \rightarrow r^k_A(m)$. \\
+  Assuming a finite series of $k$ receipts of a message $m$ at Process~A:
+  $r^1_A(m) \rightarrow r^2_A(m) \wedge r^2_A(m) \rightarrow r^3_A(m) \wedge
+  \ldots \wedge r^{k-1}_A(m) \rightarrow r^k_A(m)$. \\
   We must show that if Process~A remembers $m$ from its delivery until its
   $k^{th}$ receipt, then Process~A delivers $m$ once. The proof is similar to
   that of Theorem~\ref{theo:rememberinganduniqueness}. After the $k^{th}$
@@ -255,10 +256,13 @@ proposal and its complexity.
 %more buffers.
 
 \subsection{Problem statement}
+\label{subsec:problemstatement}
+
+\TODO{Must be self contained. Must be related to issues and motivations...}
 
 Assuming Process~A sends a buffer of messages to Process~B in order to finalize
-the safety of this link. Upon receipt of this buffer by Process~B, the
-scientific problem consists in:
+the safety of this link (see Figure~\ref{fig:timelinepcbroadcast}). Upon receipt
+of this buffer by Process~B, the scientific problem consists in:
 \begin{itemize}[leftmargin=*]
 \item Identifying the array of messages from the buffer that are delivered by
   Process~A but not delivered by Process~B;
@@ -310,7 +314,7 @@ operation is that of reliable broadcast.
 In dynamic systems where processes can join, leave, or reconfigure their
 out-view at any time, \RPCBROADCAST ensures that links cannot violate causal
 broadcast properties. It extends Definition~\ref{def:safe} of safe links by
-adding a clause about exactly once delivery. 
+adding a clause to ensure exactly once delivery.
 
 % When the process wants to add a link to another process for causal broadcast, it
 % makes sure that this link cannot break the guaranty that the other process
@@ -318,19 +322,22 @@ adding a clause about exactly once delivery.
 % safe links stated by Definition~\ref{def:safe}.
 
 \begin{definition}[\label{def:extension}Safe link extension]
-  In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
-  is safe if it guarantees to Process~A that messages received by Process~B via
-  this link are delivered exactly once.
+  % In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
+  % is safe if it guarantees to Process~A that messages received by Process~B via
+  % this link are delivered exactly once.
+  A link from Process~A to Process~B is safe if Process~B differentiates among
+  its delivered messages the messages it will eventually receive via this new
+  link from the messages it will never receive via this new link.
 \end{definition}
 
-Definition~\ref{def:extension} implies that Process~B manages to distinguish
-messages it delivered that are not delivered by Process~A from messages it did
-not delivered that are just delivered by Process~A. The former constitutes
-messages Process~B expects to receive from the link while the latter constitutes
-messages Process~B receives for the first time and should
-deliver. Algorithm~\ref{algo:reliablebroadcast} maintains this knowledge over
-receipts. However, it may fail when processes add neighbors in their out-view
-(see Figure~\ref{fig:generalproblem}).
+% Definition~\ref{def:extension} implies that Process~B manages to distinguish
+% messages it delivered that are not delivered by Process~A from messages it did
+% not delivered that are just delivered by Process~A. The former constitutes
+% messages Process~B expects to receive from the link while the latter constitutes
+% messages Process~B receives for the first time and should
+% deliver. Algorithm~\ref{algo:reliablebroadcast} maintains this knowledge over
+% receipts. However, it may fail when processes add neighbors in their out-view
+% (see Figure~\ref{fig:generalproblem}).
 
 \RPCBROADCAST solves this problem by delaying the use of links for broadcast
 until they become safe. It builds temporary buffers to retrieve the knowledge
