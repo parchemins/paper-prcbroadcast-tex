@@ -376,13 +376,28 @@ about expected messages and new messages.
 %%  $ m \not\in B \Longleftrightarrow d_B(m) \rightarrow r_B(\pi_1) \wedge r_B(\pi_2) \rightarrow d_B(m)$
 \end{proof}
 
+% \begin{figure*}
+%   \begin{center}
+%     \input{input/figtimelinerpcbroadcast.tex}
+%     \caption{\label{fig:timeline}Timeline of \RPCBROADCAST when Process~A adds a
+%       link to Process~B in its out-view. We hide intermediate processes for the
+%       purpose of clarity. Messages arrive in causal order.}
+%   \end{center}
+% \end{figure*}
 
 \begin{figure*}
   \begin{center}
-    \input{input/figtimelinerpcbroadcast.tex}
-    \caption{\label{fig:timeline}Timeline of \RPCBROADCAST when Process~A adds a
-      link to Process~B in its out-view. We hide intermediate processes for the
-      purpose of clarity. Messages arrive in causal order.}
+    \input{input/figtimelineproof.tex}
+    \caption{\label{fig:timelineproof}\label{fig:timeline}Timeline of
+      \RPCBROADCAST when Process~A adds a link to Process~B in its out-view. We
+      hide intermediate processes for the purpose of clarity. Messages arrive in
+      causal order.  $B_\beta \setminus B_\alpha \wedge B_\pi = \mathcal{G}$ is
+      the set of messages to ignore,
+      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{D}'\setminus
+      \mathcal{G}$
+      is the set of messages to deliver,
+      $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$ is the set of
+      messages to expect.}
   \end{center}
 \end{figure*}
 
