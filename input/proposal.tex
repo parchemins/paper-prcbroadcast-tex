@@ -340,8 +340,11 @@ adding a clause to ensure exactly once delivery.
 % (see Figure~\ref{fig:generalproblem}).
 
 \RPCBROADCAST solves this problem by delaying the use of links for broadcast
-until they become safe. It builds temporary buffers to retrieve the knowledge
-about expected messages and new messages.
+until they become safe. It builds temporary buffers in order to remember
+messages as long as they might be received again, taking into account the
+dynamicity of the system. Using these buffers, a process is able to retrieve the
+knowledge about old messages to ignore, messages to expect, and new messages to
+deliver.
 
 \begin{definition}[Buffering phase]
   Process~B starts and stops buffering upon receipt of control messages from
@@ -350,20 +353,20 @@ about expected messages and new messages.
   receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
   communication means. Process~A sends $\gamma$ to Process~B using safe
   links. Process~B stops buffering on receipt of $\gamma$.
-  The buffer contains the messages delivered by Process~B. \\
-  $m \in B \Longleftrightarrow 
+  The buffer $Buf$ contains the messages delivered by Process~B. \\
+  $m \in Buf \Longleftrightarrow 
   r_B(\alpha) \rightarrow d_B(m) \wedge d_B(m) \rightarrow r_B(\gamma)$
 \end{definition}
 
 \begin{lemma}[Messages of buffer]
-  The buffer includes messages delivered by Process~A but not delivered by
+  The buffer $Buf$ includes messages delivered by Process~A but not delivered by
   Process~B before the receipt of $\alpha$. This excludes messages delivered by
   Process~A before the sending of $\alpha$ and messages delivered by Process~B
   before the receipt of $\alpha$.\\
   $\forall m,\,m',\,(m\neq m'),\,
   s_A(\alpha) \rightarrow d_A(m) \wedge
   d_A(m) \rightarrow s_A(\gamma) \wedge
-  d_B(m') \rightarrow r_B(\alpha) \implies m \in B$
+  d_B(m') \rightarrow r_B(\alpha) \implies m \in Buf$
 \end{lemma}
 
 \begin{proof}
@@ -371,9 +374,8 @@ about expected messages and new messages.
   the receipt of all messages delivered by Process~A before the sending of
   $\alpha$ precedes the receipt of $\alpha$ by Process~B:\\
   $\forall m,\, d_A(m) \rightarrow s_A(\alpha) \implies d_B(m) \rightarrow
-  r_B(m) \implies m \not\in B$\\
+  r_B(m) \implies m \not\in Buf$\\
   \TODO{Not sure where we are going.}
-%%  $ m \not\in B \Longleftrightarrow d_B(m) \rightarrow r_B(\pi_1) \wedge r_B(\pi_2) \rightarrow d_B(m)$
 \end{proof}
 
 % \begin{figure*}
