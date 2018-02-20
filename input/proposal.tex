@@ -401,94 +401,126 @@ about expected messages and new messages.
   \end{center}
 \end{figure*}
 
+\RPCBROADCAST interlaces 3 buffering phases. One control message of a buffering
+phase becomes the control message of the next buffering
+phase. Figure~\ref{fig:timeline} depicts the functioning of
+\RPCBROADCAST. Process~A adds a link to Process~B. \RPCBROADCAST ensures link
+safety in few steps:
 
-\RPCBROADCAST interlaces 3 buffering phases. A control message $\beta$ becomes a
-control message $\alpha$ of the next buffering phase. It must travel by safe
-links. Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST on a
-timeline when Process~A wants to add Process~B in its out-view. 
 \begin{enumerate}[leftmargin=*]
 \item Process~A starts a first buffering phase. It sends a first control message
-  $\alpha$ to Process~B using safe links. 
-\item Process~B receives $\alpha$ after all messages $\mathcal{A}$ delivered by
-  Process~A before the sending of $\alpha$ plus other concurrent messages
-  $\mathcal{B}$.  Process~B starts to register messages it delivers in a buffer
-  $B_\alpha$.  Process~B starts a second buffering phase. It sends a second
-  control message using safe links to Process~A.
-\item Once Process~A receives $\beta$, it received $\mathcal{B}$ plus other
-  concurrent messages $\mathcal{C}$. Process~A starts to register messages it
-  delivers in a buffer $B_\beta$. $B_\alpha$ and $B_\beta$ do not contain messages from
-  $\mathcal{A}$ and $\mathcal{B}$.
-  Then, Process~A starts a third buffering phase. It sends a third control
-  message $\pi$ to Process~B using safe link. This corresponds to the ping phase
-  of \PCBROADCAST.
-\item Once Process~B receives $\pi$, it ends the first buffering phase.
-  Process~B stops buffering messages in $B_\alpha$. Process~B delivered and
-  buffered all messages in $\mathcal{C}$ plus concurrent messages
-  $\mathcal{D}$. $B_\alpha$ contains all concurrent messages between
-  $s_B(\beta_{BA})$ and $r_B(\pi_{AB})$. Most importantly, it contains the
-  concurrent messages delivered by Process~B between $s_A(\pi_{AB})$ and
-  $r_B(\pi_{AB})$. It also contains meaningless messages from $\mathcal{C}$.
-  Process~B also starts to register messages it delivers in $B_\pi$.
-  Process~B sends a fourth and last control message $\rho$ to Process~B
-  using safe links. 
-\item Once Process~A receives $\rho$, it ends the second buffering
-  phase. Process~A delivered all concurrent messages $\mathcal{D}$ plus other
-  concurrent messages $\mathcal{E}$. Process~A sends its buffer of messages $B_\beta$
-  using the new link $s_{AB}(B)$ and starts using this link normally. The new
-  link is safe.
+  $\alpha$ to Process~B using safe links (see Line~\ref{line:sendalpha}).
+\item After being routed to Process~B by intermediary processes, $\alpha$
+  reaches Process~B.  Process~B starts to register messages it delivers in a
+  buffer $B_\alpha$.  Process~B starts a second buffering phase. It sends a
+  second control message $\beta$ to Process~A using safe links (see
+  Line~\ref{line:sendbeta}).
+\item After being routed to Process~A, $\beta$ reaches Process~A. Process~A
+  starts to register messages it delivers in a buffer $B_\beta$.  Process~A
+  starts a third buffering phase. It sends a third control message $\pi$ to
+  Process~B using safe link (see Line~\ref{line:sendpi}).
+\item After being routed to Process~B by intermediary processes, $\pi$ reaches
+  Process~B. Process~B ends the first buffering phase: Process~B stops buffering
+  messages in $B_\alpha$.  Process~B starts to register messages it delivers in
+  $B_\pi$.  Process~B sends a fourth and last control message $\rho$ to
+  Process~A using safe links (see Line~\ref{line:sendrho}).
+\item After being routed to Process~A, $\rho$ reaches Process~A.  Process~A
+  stops buffering and sends its buffer of messages $B_\beta$ using the new link
+  $s_{AB}(B)$. The new link is safe. Process~A starts to use this link normally
+  for causal broadcast.
 \item Once Process~B receives the buffer, it ends the third buffering
   phase. Using $B_\beta$, $B_\alpha$, and $B_\pi$, Process~B is able to identify
   messages expected from Process~A and new messages from Process~A.
-
-\begin{definition}[To expect]
-  When Process~B receives the buffer from Process~A, the link becomes safe.
-  Process~B expects from Process~A messages delivered by Process~B but not
-  delivered by Process~A at the moment of the sending.
-  $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
-\end{definition}
-
-\begin{lemma}[\label{lemma:expected}All expected messages eventually arrive]
-  Once a link from Process~A to Process~B becomes safe, Process~B eventually
-  receives all expected messages via this link.
-\end{lemma}
-
-\begin{proof}
-  \TODO{To do.}
-\end{proof}
-
-The set of expected messages is $B_\pi \setminus (B_\beta \setminus B_\alpha)$.  It
-registers these messages to discard them when they
-arrive. Theorem~\ref{lemma:expected} states that all expected messages eventually
-arrive. Consequently, processes eventually discard each message of this set
-until it is fully purged. 
-
-\begin{definition}[To deliver]
-  When Process~B receives the buffer from Process~A, it delivers messages it did
-  not deliver that are delivered by Process~A at the moment of the sending. \\
-  $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
-  d_B(m)$
-\end{definition}
-
-\begin{lemma}[\label{lemma:delivered}All undelivered messages are delivered]
-  A link from Process~A to Process~B becomes safe once it delivered all messages
-  to deliver via this link. 
-\end{lemma}
-
-\begin{proof}
-  \TODO{Todotoo.}
-\end{proof}
-
-The set of messages to deliver is $B_\beta\setminus B_\alpha \setminus B_\pi$. It
-delivers them in causal order.
 \end{enumerate}
 
-\begin{theorem}[Three interlaced buffering phases ensures link safety]
-  \TODO{Meow.}
-\end{theorem}
 
-\begin{proof}
-  Resulting from Lemma~\ref{lemma:expected} and Lemma~\ref{lemma:delivered}.
-\end{proof}
+% \RPCBROADCAST interlaces 3 buffering phases. A control message $\beta$ becomes a
+% control message $\alpha$ of the next buffering phase. It must travel by safe
+% links. Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST on a
+% timeline when Process~A wants to add Process~B in its out-view. 
+% \begin{enumerate}[leftmargin=*]
+% \item Process~A starts a first buffering phase. It sends a first control message
+%   $\alpha$ to Process~B using safe links. 
+% \item Process~B receives $\alpha$ after all messages $\mathcal{A}$ delivered by
+%   Process~A before the sending of $\alpha$ plus other concurrent messages
+%   $\mathcal{B}$.  Process~B starts to register messages it delivers in a buffer
+%   $B_\alpha$.  Process~B starts a second buffering phase. It sends a second
+%   control message using safe links to Process~A.
+% \item Once Process~A receives $\beta$, it received $\mathcal{B}$ plus other
+%   concurrent messages $\mathcal{C}$. Process~A starts to register messages it
+%   delivers in a buffer $B_\beta$. $B_\alpha$ and $B_\beta$ do not contain messages from
+%   $\mathcal{A}$ and $\mathcal{B}$.
+%   Then, Process~A starts a third buffering phase. It sends a third control
+%   message $\pi$ to Process~B using safe link. This corresponds to the ping phase
+%   of \PCBROADCAST.
+% \item Once Process~B receives $\pi$, it ends the first buffering phase.
+%   Process~B stops buffering messages in $B_\alpha$. Process~B delivered and
+%   buffered all messages in $\mathcal{C}$ plus concurrent messages
+%   $\mathcal{D}$. $B_\alpha$ contains all concurrent messages between
+%   $s_B(\beta_{BA})$ and $r_B(\pi_{AB})$. Most importantly, it contains the
+%   concurrent messages delivered by Process~B between $s_A(\pi_{AB})$ and
+%   $r_B(\pi_{AB})$. It also contains meaningless messages from $\mathcal{C}$.
+%   Process~B also starts to register messages it delivers in $B_\pi$.
+%   Process~B sends a fourth and last control message $\rho$ to Process~B
+%   using safe links. 
+% \item Once Process~A receives $\rho$, it ends the second buffering
+%   phase. Process~A delivered all concurrent messages $\mathcal{D}$ plus other
+%   concurrent messages $\mathcal{E}$. Process~A sends its buffer of messages $B_\beta$
+%   using the new link $s_{AB}(B)$ and starts using this link normally. The new
+%   link is safe.
+% \item Once Process~B receives the buffer, it ends the third buffering
+%   phase. Using $B_\beta$, $B_\alpha$, and $B_\pi$, Process~B is able to identify
+%   messages expected from Process~A and new messages from Process~A.
+
+% \begin{definition}[To expect]
+%   When Process~B receives the buffer from Process~A, the link becomes safe.
+%   Process~B expects from Process~A messages delivered by Process~B but not
+%   delivered by Process~A at the moment of the sending.
+%   $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
+% \end{definition}
+
+% \begin{lemma}[\label{lemma:expected}All expected messages eventually arrive]
+%   Once a link from Process~A to Process~B becomes safe, Process~B eventually
+%   receives all expected messages via this link.
+% \end{lemma}
+
+% \begin{proof}
+%   \TODO{To do.}
+% \end{proof}
+
+% The set of expected messages is $B_\pi \setminus (B_\beta \setminus B_\alpha)$.  It
+% registers these messages to discard them when they
+% arrive. Theorem~\ref{lemma:expected} states that all expected messages eventually
+% arrive. Consequently, processes eventually discard each message of this set
+% until it is fully purged. 
+
+% \begin{definition}[To deliver]
+%   When Process~B receives the buffer from Process~A, it delivers messages it did
+%   not deliver that are delivered by Process~A at the moment of the sending. \\
+%   $\forall m \in B,\, d_B(m) \not\rightarrow r_{BA}(B) \implies r_{BA}(B) \rightarrow
+%   d_B(m)$
+% \end{definition}
+
+% \begin{lemma}[\label{lemma:delivered}All undelivered messages are delivered]
+%   A link from Process~A to Process~B becomes safe once it delivered all messages
+%   to deliver via this link. 
+% \end{lemma}
+
+% \begin{proof}
+%   \TODO{Todotoo.}
+% \end{proof}
+
+% The set of messages to deliver is $B_\beta\setminus B_\alpha \setminus B_\pi$. It
+% delivers them in causal order.
+% \end{enumerate}
+
+% \begin{theorem}[Three interlaced buffering phases ensures link safety]
+%   \TODO{Meow.}
+% \end{theorem}
+
+% \begin{proof}
+%   Resulting from Lemma~\ref{lemma:expected} and Lemma~\ref{lemma:delivered}.
+% \end{proof}
 
 % Process~A maintains 1 buffer to ensure causal order that starts upon receipt of
 % $\beta$ and stops upon receipt of $\rho$; and Process~B maintains 2 buffers to
@@ -559,8 +591,12 @@ delivers them in causal order.
 Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
 intermediate processes are faulty. Control messages never reach their
 destination. \PCBROADCAST handles such crashes using a timeout and retry
-policy. Such strategy fits \RPCBROADCAST.  \TODO{Receiving may ignore all
-  incoming messages.}
+policy. Such strategy fits \RPCBROADCAST. Both involved processes can halt and
+retry the safety check of the new link. Either the origin process does not send
+its buffer $B_\beta$, or the destination process does not accept incoming
+messages.
+
+% \TODO{Receiving may ignore all incoming messages.}
 
 
 \subsection{Complexity}

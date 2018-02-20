@@ -25,7 +25,7 @@
   
   \Upon{$\textup{open}_o(q)$} {
     $Q_o \leftarrow Q_o \setminus q$ \;
-    $\textup{sendAlpha}(p,\,q)$ \tcp*{$\alpha$}
+    $\textup{sendAlpha}(p,\,q)$ \label{line:sendalpha} \tcp*{$\alpha$}
   }
   
   \Upon{$\textup{open}_i(q)$} {
@@ -37,14 +37,14 @@
   \Upon{$\textup{receiveAlpha}(from,\,to)$ \tcp*[f]{$to=p$}} {
     $S[from] \leftarrow \langle \varnothing,\, \varnothing,\, false \rangle$ 
     \tcp*{$B_\alpha$}
-    $\textup{sendBeta}(from,\,to)$ \tcp*{$\beta$}
+    $\textup{sendBeta}(from,\,to)$ \label{line:sendbeta} \tcp*{$\beta$}
   }
 
   \BlankLine
 
   \Upon{$\textup{receiveBeta}(from,\,to)$ \tcp*[f]{$from=p$}} {
     $B[to] \leftarrow \varnothing$ \tcp*{$B_\beta$}
-    $\textup{sendPing}(from,\, to)$ \tcp*{$\pi$}
+    $\textup{sendPing}(from,\, to)$ \label{line:sendpi} \tcp*{$\pi$}
   }
   
   \BlankLine
@@ -52,7 +52,7 @@
   \Upon{$\textup{receivePing}(from,\,to)$ \tcp*[f]{$to=p$}} {
     \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
     $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \tcp*{$B_\pi$}
-    $\textup{sendPong}(from,\, to)$ \tcp*{$\rho$}
+    $\textup{sendPong}(from,\, to)$ \label{line:sendrho} \tcp*{$\rho$}
   }
 
   \BlankLine
