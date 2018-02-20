@@ -391,7 +391,8 @@ about expected messages and new messages.
     \caption{\label{fig:timelineproof}\label{fig:timeline}Timeline of
       \RPCBROADCAST when Process~A adds a link to Process~B in its out-view. We
       hide intermediate processes for the purpose of clarity. Messages arrive in
-      causal order.  $B_\beta \wedge (B_\alpha \cup B_\pi) = \mathcal{G}$ is
+      causal order.
+      $B_\beta \wedge (B_\alpha \cup B_\pi) = \mathcal{G} \cup \mathcal{C}'$ is
       the set of messages to ignore,
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{D}'\setminus
       \mathcal{G}$
@@ -426,51 +427,77 @@ safety in few steps:
   Process~A using safe links (see Line~\ref{line:sendrho}).
 \item After being routed to Process~A, $\rho$ reaches Process~A.  Process~A
   stops buffering and sends its buffer of messages $B_\beta$ using the new link
-  $s_{AB}(B)$. The new link is safe. Process~A starts to use this link normally
-  for causal broadcast.
+  $s_{AB}(B)$ (see Line~\ref{line:sendbuffer}). The new link is safe. Process~A
+  starts to use this link normally for causal broadcast.
 \item Once Process~B receives the buffer, it ends the third buffering
-  phase. Using $B_\beta$, $B_\alpha$, and $B_\pi$, Process~B is able to identify
-  messages expected from Process~A and new messages from Process~A.
+  phase. Using $B_\alpha$, and $B_\pi$, Process~B is able to distinguish among
+  messages from $B_\beta$: the array of messages to deliver (see
+  Line~\ref{line:todeliver}) from the set of messages to ignore, i.e., the rest
+  of messages. Process~B also identifies among its delivered messages the
+  messages to expect from Process~A (see Line~\ref{line:toexpect}). Messages
+  received by this new link are processed normally.
 \end{enumerate}
+\RPCBROADCAST solves the problem statement of
+Section~\ref{subsec:problemstatement}. Consequently, messages from the received
+buffer and upcoming messages from the new link do not cause causal order
+violations nor exactly once delivery violations.
+
+\begin{proof}
+  Figure~\ref{fig:timeline} exposes the different steps of this proof. Assuming
+  that Process~A adds Process~B in its out-view. Before sending $\alpha$,
+  Process~A delivered a set of messages $\mathcal{A}$. Since $\alpha$ travels
+  using causal communication, all messages delivered by Process~A at the moment
+  of the sending are delivered by Process~B at the moment of the receipt:
+  $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies d_B(m) \rightarrow
+  r_B(\alpha_{AB})$.
+  Thus, Process~B delivered a set of messages $\mathcal{B}$ that comprises
+  $\mathcal{A}$ and another set of delivered messages $\mathcal{A}'$ unknown to
+  Process~A at the moment of the sending. $\mathcal{A}$ and $\mathcal{A}'$ are
+  disjoint.\\
+  When Process~A receives $\beta$, it delivered $\mathcal{C}$ that comprises
+  $\mathcal{B}$ and $\mathcal{B}'$, $\mathcal{B}'$ being a set of messages
+  unknown to Process~B at the moment of the sending of $\beta$. \\
+  When Process~B receives $\pi$, it delivered $\mathcal{D}$ that comprises
+  $\mathcal{C}$ and $\mathcal{C}'$, $\mathcal{C}'$ being the set of messages
+  unknown to Process~A at the moment of the sending of $\pi$. Hence, Buffer
+  $B_\alpha$ contains the set of messages delivered between the sending of
+  $\beta$ and the receipt of $\pi$:
+  $\mathcal{D} \setminus \mathcal{C} = \mathcal{A} \cup \mathcal{A}' \cup
+  \mathcal{B}' \cup \mathcal{C}' \setminus (\mathcal{A} \cup \mathcal{A'} \cup
+  \mathcal{B}' \cup \mathcal{C'} \cup \mathcal{D}') = \mathcal{B}' \cup
+  \mathcal{C}'$. \\
+  When Process~A receives $\rho$, it delivered $\mathcal{E}$ that comprises
+  $\mathcal{D}$ and $\mathcal{D}'$, $\mathcal{D}'$ being a set of messages
+  unknown to Process~B at the moment of the sending of $\rho$. Hence, Buffer
+  $B_\beta$ contains the array of messages delivered between the receipt of
+  $\beta$ and the receipt of $\rho$:
+  $\mathcal{E} \setminus \mathcal{C} = \mathcal{C}' \cup \mathcal{D}'$.\\
+  When Process~B receives the buffer $B_\beta$, it delivered a set of messages
+  that follows the receipt of $\pi$. The buffer $B_\pi$ comprises a set of
+  messages $\mathcal{G}$ delivered by Process~A before the sending of $B_\beta$
+  and a set of messages $\mathcal{H}$ not delivered by Process~A before the
+  sending of $B_\beta$. 
+  
+  \noindent\textbf{To ignore:} Process~B ignores messages in $\mathcal{C}'$,
+  for they are
+  delivered by both processes: $B_\beta \setminus B_\alpha = \mathcal{D}'$.
+  $\mathcal{G}$ is a subset of the remaining $\mathcal{D}'$ that should be
+  ignored: $(B_\beta \setminus B_\alpha) \wedge B_\pi$.
 
 
-% \RPCBROADCAST interlaces 3 buffering phases. A control message $\beta$ becomes a
-% control message $\alpha$ of the next buffering phase. It must travel by safe
-% links. Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST on a
-% timeline when Process~A wants to add Process~B in its out-view. 
-% \begin{enumerate}[leftmargin=*]
-% \item Process~A starts a first buffering phase. It sends a first control message
-%   $\alpha$ to Process~B using safe links. 
-% \item Process~B receives $\alpha$ after all messages $\mathcal{A}$ delivered by
-%   Process~A before the sending of $\alpha$ plus other concurrent messages
-%   $\mathcal{B}$.  Process~B starts to register messages it delivers in a buffer
-%   $B_\alpha$.  Process~B starts a second buffering phase. It sends a second
-%   control message using safe links to Process~A.
-% \item Once Process~A receives $\beta$, it received $\mathcal{B}$ plus other
-%   concurrent messages $\mathcal{C}$. Process~A starts to register messages it
-%   delivers in a buffer $B_\beta$. $B_\alpha$ and $B_\beta$ do not contain messages from
-%   $\mathcal{A}$ and $\mathcal{B}$.
-%   Then, Process~A starts a third buffering phase. It sends a third control
-%   message $\pi$ to Process~B using safe link. This corresponds to the ping phase
-%   of \PCBROADCAST.
-% \item Once Process~B receives $\pi$, it ends the first buffering phase.
-%   Process~B stops buffering messages in $B_\alpha$. Process~B delivered and
-%   buffered all messages in $\mathcal{C}$ plus concurrent messages
-%   $\mathcal{D}$. $B_\alpha$ contains all concurrent messages between
-%   $s_B(\beta_{BA})$ and $r_B(\pi_{AB})$. Most importantly, it contains the
-%   concurrent messages delivered by Process~B between $s_A(\pi_{AB})$ and
-%   $r_B(\pi_{AB})$. It also contains meaningless messages from $\mathcal{C}$.
-%   Process~B also starts to register messages it delivers in $B_\pi$.
-%   Process~B sends a fourth and last control message $\rho$ to Process~B
-%   using safe links. 
-% \item Once Process~A receives $\rho$, it ends the second buffering
-%   phase. Process~A delivered all concurrent messages $\mathcal{D}$ plus other
-%   concurrent messages $\mathcal{E}$. Process~A sends its buffer of messages $B_\beta$
-%   using the new link $s_{AB}(B)$ and starts using this link normally. The new
-%   link is safe.
-% \item Once Process~B receives the buffer, it ends the third buffering
-%   phase. Using $B_\beta$, $B_\alpha$, and $B_\pi$, Process~B is able to identify
-%   messages expected from Process~A and new messages from Process~A.
+  \noindent \textbf{To deliver:} Process~B delivers messages in $\mathcal{D}'$
+  that it did not delivered yet:
+  $(B_\beta\setminus B_\alpha) \setminus B_\pi = \mathcal{D}' \setminus
+  \mathcal{G}$.
+  
+  \noindent \textbf{To expect from Process~A:} Process~B expects messages that
+  are not in $\mathcal{D}'$:
+  $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$.  Assuming the
+  link is not removed, since $\mathcal{H}$ comprises messages delivered by
+  Process~B only, and since all processes eventually receive, deliver, and
+  forward all messages, Process~B will eventually receive all the expected
+  messages $\mathcal{H}$ from this link in causal order.
+\end{proof}
 
 % \begin{definition}[To expect]
 %   When Process~B receives the buffer from Process~A, the link becomes safe.
@@ -478,15 +505,6 @@ safety in few steps:
 %   delivered by Process~A at the moment of the sending.
 %   $\forall m,\, d_B(m) \rightarrow r_B(B)  \wedge d_A(m) \not\rightarrow r_A(\rho_{AB}) \implies r_{BA}(m)$
 % \end{definition}
-
-% \begin{lemma}[\label{lemma:expected}All expected messages eventually arrive]
-%   Once a link from Process~A to Process~B becomes safe, Process~B eventually
-%   receives all expected messages via this link.
-% \end{lemma}
-
-% \begin{proof}
-%   \TODO{To do.}
-% \end{proof}
 
 % The set of expected messages is $B_\pi \setminus (B_\beta \setminus B_\alpha)$.  It
 % registers these messages to discard them when they
@@ -501,30 +519,8 @@ safety in few steps:
 %   d_B(m)$
 % \end{definition}
 
-% \begin{lemma}[\label{lemma:delivered}All undelivered messages are delivered]
-%   A link from Process~A to Process~B becomes safe once it delivered all messages
-%   to deliver via this link. 
-% \end{lemma}
-
-% \begin{proof}
-%   \TODO{Todotoo.}
-% \end{proof}
-
 % The set of messages to deliver is $B_\beta\setminus B_\alpha \setminus B_\pi$. It
 % delivers them in causal order.
-% \end{enumerate}
-
-% \begin{theorem}[Three interlaced buffering phases ensures link safety]
-%   \TODO{Meow.}
-% \end{theorem}
-
-% \begin{proof}
-%   Resulting from Lemma~\ref{lemma:expected} and Lemma~\ref{lemma:delivered}.
-% \end{proof}
-
-% Process~A maintains 1 buffer to ensure causal order that starts upon receipt of
-% $\beta$ and stops upon receipt of $\rho$; and Process~B maintains 2 buffers to
-% identify messages to deliver and to expect from Process~A.
 
 \begin{figure*}
   \begin{center}
@@ -627,6 +623,10 @@ of the system. If the system becomes static, the space complexity of
 of \RPCBROADCAST is $O(B_\alpha+ B_\beta + B_\pi)$.  If the system becomes both
 static and quiescent, \RPCBROADCAST does not consume
 space. 
+
+\TODO{Not optimal because messages in $\mathcal{B}'$ that will never be received
+  by Process~B from Process~A, yet remembered.}
+
 
 \noindent The overhead in terms of \textbf{number of control messages} per added
 link in an out-view varies from $6$ to $4P^2$ depending on the overlay network;

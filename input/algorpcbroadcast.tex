@@ -58,7 +58,7 @@
   \BlankLine
 
   \Upon{$\textup{receivePong}(from,\,to)$ \tcp*[f]{$from=p$}} {
-    $\textup{sendBuffer}(from,\,to,\, B[to])$ \;
+    $\textup{sendBuffer}(from,\,to,\, B[to])$ \label{line:sendbuffer}\;
     $B \leftarrow B \setminus to$ \;
     $Q_o \leftarrow Q_o \cup to$
   }
@@ -69,8 +69,8 @@
     \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
     \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
-    {$\textup{receive}(m,\,from)$ \tcp*[f]{to deliver}}
-    $D[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \tcp*{to expect}
+    {$\textup{receive}(m,\,from)$ \label{line:todeliver}\tcp*[f]{to deliver}}
+    $D[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \tcp*{to expect}
     $Q_i \leftarrow Q_i \cup from$ 
   }
   
