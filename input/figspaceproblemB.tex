@@ -1,0 +1,36 @@
+
+\begin{tikzpicture}[scale=1]
+  
+  \small
+  
+  \newcommand\X{210/5pt};
+  \newcommand\Y{30pt};
+
+  
+  \draw[fill=white] (0*\X, 0*\Y) node{\textbf{A}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  \draw (-5+0*\X, 5+0*\Y) node[above]{$[\bm{B:1}]$};
+  \draw[fill=white] (1*\X, -1*\Y) node{\textbf{B}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  \draw (1*\X, -5-1*\Y) node[below]{$[B:1]$};
+  \draw[fill=white] (2*\X,  0*\Y) node{\textbf{C}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
+  \draw (5+2*\X, 5+0*\Y) node[above]{$[\,]$};
+  
+  \draw[->](5+0*\X, 0*\Y) -- 
+  node[sloped,above]{$b_{B,\,1}$}
+  (-5+1*\X, -1*\Y); %% A->B
+
+  \draw[<-](5+0*\X, -5+0*\Y) --
+  node[sloped, below]{$\bm{\pi}$}
+  (-5+1*\X, -5-1*\Y); %% A<-B
+  
+  \draw[->](5+0*\X, 5+0*\Y) --
+  node[sloped,above]{$b_{B,\,1}$}
+  (-5+2*\X, 5+0*\Y); % A->C
+  
+  \draw[<-](5+0*\X,  1.25+ 0*\Y) -- (-5+2*\X,  1.25+ 0*\Y); % A<-C
+  
+  % \draw[->,dashed](5+1*\X, -1*\Y) -- (-5+2*\X, 0*\Y); %% B<-C
+  \draw[->, dashed](5+1*\X, -5-1*\Y) -- (-5+2*\X, -5+0*\Y); %% B->C
+
+
+
+\end{tikzpicture}
