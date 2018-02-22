@@ -12,10 +12,7 @@ exactly once.
 \PCBROADCAST (\REF) is a causal broadcast that improves state-of-the-art
 approaches (\REF) by removing the need for piggybacking control information the
 size of which is linear. It uses FIFO communications links for causal broadcast
-and control messages to handle dynamicity.  Figure~\ref{fig:spaceproblem}
-depicts its functioning while highlighting the problem. 
-
-
+and control messages to handle dynamicity. 
 
 \begin{figure*}
   \begin{center}
@@ -55,6 +52,41 @@ depicts its functioning while highlighting the problem.
   \end{center}
 \end{figure*}
 
+Figure~\ref{fig:spaceproblem} depicts its functioning while highlighting the
+problem. In this scenario, the system comprises 3 processes. At first, Process~B
+cannot communicate directly with Process~C. In Figure~\ref{fig:spaceproblemA},
+Process~B broadcasts $b$. It assigns it a unique identifier
+$\langle B,\, 1 \rangle$ and saves this element in a local vector. In
+Figure~\ref{fig:spaceproblemB}, Process~A receives $b$. Its vector does not
+contain this element. Hence, Process~A saves $\langle B,\,1\rangle$ in its
+vector, delivers and forwards $b$. In the meantime, Process~B wants to add a
+direct communication link to Process~C for causal broadcast. For the sake of
+safety, i.e., sending messages using this new link cannot violate causal order,
+Process~B must send a control message $\pi$ to Process~C using already
+established link. It uses Process~A as mediator and buffers its delivered
+messages while awaiting for Process~C's reply. In
+Figure~\ref{fig:spaceproblemC}, Process~A broadcasts $a$ along with its assigned
+unique identifier $\langle A,\, 1 \rangle$. Process~A updates its local vector
+accordingly. Then, Process~A routes $\pi$ to Process~C. Process~B receives $b$
+but discards it, for its local vector already contains this message.  Process~C
+receives, saves, delivers, and forwards $b$. In Figure~\ref{fig:spaceproblemD},
+Process~A receives and discards $b$. Process~B receives, saves, delivers,
+buffers, and forwards $a$. Process~C receives, saves, delivers, and forwards
+$a$. In Figure~\ref{fig:spaceproblemE}, Process~A receives two copies of an
+already delivered message $a$, hence discards them both. Process~C receives
+$\pi$ and sends its reply $\rho$ to Process~B. Such reply can travel using any
+communication mean. In Figure~\ref{fig:spaceproblemF}, Process~B receives
+$\rho$. Process~B empties its buffer comprising $a$ to Process~C. This procedure
+ensures that the delivery of $b$ happens before the delivery of $a$ at
+Process~C. Afterwards, Process~B uses this link normally for causal broadcast.
+
+This scenario highlights the issue about memory consumption: the local structure
+to discards multiple receipts increases linearly with the number of processes
+that ever broadcast a message. However, information about messages becomes
+absolete over receipts. For instance, all copies of the message $b$ disappear in
+Figure~\ref{fig:spaceproblemD}. Processes could remove this message from their
+local structure safely.
+
 \begin{figure*}
   \begin{center}
     \subfloat[Part A][\label{fig:counterproblemA}Process~B broadcasts the 
@@ -92,6 +124,11 @@ depicts its functioning while highlighting the problem.
       is more efficient in terms of memory usage but fails in dynamic systems.}
   \end{center}
 \end{figure*}
+
+
+Figure~\ref{fig:counterproblem} depicts the same scenario where we replace the
+linearly increasing local structure by another that is purged over time. 
+
 
 %%% Local Variables:
 %%% mode: latex
