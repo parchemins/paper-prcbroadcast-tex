@@ -9,6 +9,13 @@ messages need to deliver $m$ before $m'$. Otherwise they deliver them in any
 order. Each process may receive a message multiple times but it delivers it
 exactly once.
 
+\PCBROADCAST (\REF) is a causal broadcast that improves state-of-the-art
+approaches (\REF) by removing the need for piggybacking control information the
+size of which is linear. It uses FIFO communications links for causal broadcast
+and control messages to handle dynamicity.  Figure~\ref{fig:spaceproblem}
+depicts its functioning while highlighting the problem. 
+
+
 
 \begin{figure*}
   \begin{center}
@@ -42,7 +49,47 @@ exactly once.
     Process~C. The latter will discard the message $a$, for it is already registered
     in Process~C's local vector]
     {\input{input/figspaceproblemF.tex}}
+    \caption{\label{fig:spaceproblem}\PCBROADCAST relies on vectors to deliver
+      once and discard multiple receipts. The size of vectors increases linearly
+      with the number of processes that ever broadcast a message.}
+  \end{center}
+\end{figure*}
 
+\begin{figure*}
+  \begin{center}
+    \subfloat[Part A][\label{fig:counterproblemA}Process~B broadcasts the 
+    message $b$ and expects to receive 1 copy of $b$.]
+    {\input{input/figcounterproblemA.tex}}
+    \hspace{10pt}
+    \subfloat[Part B][\label{fig:counterproblemB}Process~A receives, delivers
+    and forwards $b$. It expects 1 additional copy of $b$. Process~B wants to 
+    add Process~C in its direct neighbors for causal broadcast. It sends a 
+    control message $\pi$ to Process~C using Process~A as mediator.]
+    {\input{input/figcounterproblemB.tex}}
+    \hspace{10pt}
+    \subfloat[Part C][\label{fig:counterproblemC}Process~A broadcasts $a$. It 
+    expects 2 copies. Process~B receives $b$ again, it does not expect any other 
+    copy. Hence, it purges its local structure from $b$. Process~C receives, 
+    delivers and forwards $b$. It does not expect additional copies.]
+    {\input{input/figcounterproblemC.tex}}
+    \hspace{10pt}
+    \subfloat[Part D][\label{fig:counterproblemD}Process~A receives, discards,
+    and purges $b$. Process~B and Process~C receive, deliver, and forward $a$ but
+    do not expect any additional copy. Process~B buffers $a$ to ensure the safety 
+    of the new link.]
+    {\input{input/figcounterproblemD.tex}}
+    \hspace{10pt}
+    \subfloat[Part E][\label{fig:counterproblemE}Process~A receives and discards 
+    two copies of $a$. It purges its local structure of $a$. Process~C receives
+    $\pi$ and replies $\rho$ to Process~B.]
+    {\input{input/figcounterproblemE.tex}}
+    \hspace{10pt}
+    \subfloat[Part F][\label{fig:counterproblemF}Process~B empties its buffer
+    to Process~C. Not only Process~C mistakes $a$ for a new message and delivers it 
+    again, but it has cascading effects due to the forwarding.]
+    {\input{input/figcounterproblemF.tex}}
+    \caption{\label{fig:counterproblem}Using counters to discard multiple receipts
+      is more efficient in terms of memory usage but fails in dynamic systems.}
   \end{center}
 \end{figure*}
 

@@ -8,30 +8,28 @@
 
   
   \draw[fill=white] (0*\X, 0*\Y) node{\textbf{A}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
-  \draw (-5+0*\X, 5+0*\Y) node[above]{$[A:1,\,B:1]$};
+  \draw (-5+0*\X, 5+0*\Y) node[above]{$\varnothing$};
   \draw[fill=white] (1*\X, -1*\Y) node{\textbf{B}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
-  \draw (1*\X, -5-1*\Y) node[below]{$[\bm{A:1},\,B:1]$};
+  \draw (1*\X, -5-1*\Y) node[below]{$\varnothing$\vphantom{$\{$}};
   \draw[fill=white] (2*\X,  0*\Y) node{\textbf{C}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
-  \draw (5+2*\X, 5+0*\Y) node[above]{$[\bm{A:1},\,B:1]$};
+  \draw (5+2*\X, 5+0*\Y) node[above]{$\{\bm{a:1}\}$};
   
   \draw[->](5+0*\X, 0*\Y) -- 
   (-5+1*\X, -1*\Y); %% A->B
 
   \draw[<-](5+0*\X, -5+0*\Y) --
-  node[sloped,below]{$a_{A,\,1}$}
   (-5+1*\X, -5-1*\Y); %% A<-B
   
   \draw[->](5+0*\X, 5+0*\Y) --
-  node[above]{$\pi$}
   (-5+2*\X, 5+0*\Y); % A->C
   
   \draw[<-](5+0*\X,  1.25+ 0*\Y) --
-  node[below]{$a_{A,\,1}$}
+  node[sloped, below]{ ~ ~ ~ ~ ~ ~ ~ ~~$\bm{a}$}
   (-5+2*\X,  1.25+ 0*\Y); % A<-C
   
   % \draw[->,dashed](5+1*\X, -1*\Y) -- (-5+2*\X, 0*\Y); %% B<-C
-  \draw[->, dashed](5+1*\X, -5-1*\Y) --
-  node[sloped, below]{$[a_{A,\,1}]$} (-5+2*\X, -5+0*\Y); %% B->C
+  \draw[->](5+1*\X, -5-1*\Y) --
+  (-5+2*\X, -5+0*\Y); %% B->C
 
 
 
