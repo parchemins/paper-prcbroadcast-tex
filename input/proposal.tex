@@ -68,7 +68,8 @@ From uniform integrity, we derive that despite multiple receipts, a process
 delivers a message once.
 
 \begin{definition}[Exactly once delivery]
-  Each process receives each broadcast message at least once. A process may
+  Each process receives each broadcast message at least once. A process may receive
+  a message multiple times but delivers it at most once:
   \begin{enumerate}
   \item $\forall A,\,B,\, b_A(m) \implies r_B(m)$
   \item $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$
@@ -78,9 +79,9 @@ delivers a message once.
 \end{definition}
 
 Property~\ref{enum:uniqueness} suggests the use of a data structure ensuring
-uniqueness of messages such as sets or vectors. The data structure allows
-processes to remember about prior delivery of messages in order to discard
-double receipts.
+uniqueness of messages such as sets or vectors
+(e.g. Figure~\ref{fig:spaceproblem}). The data structure allows processes to
+remember about prior delivery of messages in order to discard double receipts.
 
 \begin{definition}[Remembering]
   A process starts to remember a message at its delivery:
@@ -90,8 +91,8 @@ double receipts.
 
 \begin{theorem}[\label{theo:rememberinganduniqueness}Remembering ensures
   delivery uniqueness]
-  A process delivering messages it does not remember delivers each message
-  exactly once.
+  A process delivering only messages it does not remember delivers each received
+  message exactly once.
 \end{theorem}
 
 \begin{proof}
@@ -140,11 +141,12 @@ never be received any longer.
 \end{proof}
 
 Algorithm~\ref{algo:reliablebroadcast} keeps track of expected messages until
-remembering these messages becomes obsolete.  Similarly to
-Algorithm~\ref{algo:counterrbroadcast}, it uses the in-view and exploits the
-property that each process sends each message exactly once to each neighbor in
-their out-view.  Instead of using counters, it associates with each link from
-the in-view a set of expected messages.
+remembering these messages becomes obsolete. % Similarly to
+%Algorithm~\ref{algo:counterrbroadcast},
+It uses the in-view and exploits the property that each process sends each
+message exactly once to each neighbor in their out-view.  Instead of using
+counters as in Figure~\ref{fig:counterproblem}, it associates with each link
+from the in-view a set of expected messages.
 
 \begin{definition}[Per link remembering]
   A process remembers a message from its delivery to its last receipt, i.e.,
@@ -168,11 +170,12 @@ the in-view a set of expected messages.
   receiving multiple copies.
 \end{proof}
 
-Algorithms~\ref{algo:counterrbroadcast} and~\ref{algo:reliablebroadcast}
-guarantee exactly once delivery of messages in static systems. The local data
-structure is safely purged over receipts. However, as soon as the system becomes
-dynamic, this property may be violated (see Figure~\ref{fig:generalproblem}). In
-this paper, we exploit message ordering to solve this issue.
+%Algorithms~\ref{algo:counterrbroadcast} and
+Algorithm~\ref{algo:reliablebroadcast} guarantees exactly once delivery of
+messages in static systems. The local data structure is safely purged over
+receipts. However, as soon as the system becomes dynamic, this property may be
+violated (see Figure~\ref{fig:counterproblem}). In this paper, we exploit
+message ordering to solve this issue.
 
 In addition to reliable delivery, broadcast protocols can guarantee a delivery
 order of messages. We focus on causal order. Process~A should deliver a message
@@ -201,10 +204,10 @@ set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
   \end{center}
 \end{figure}
 
-\PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, control
-messages, and buffers to ensure causal order in dynamic systems. A process
-broadcasting a message sends the message to an out-view of safe links that
-cannot lead to causal order violations.
+\PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, forwarding,
+control messages, and buffers to ensure causal order in dynamic systems. A
+process broadcasting a message sends the message to an out-view of safe links
+that cannot lead to causal order violations.
 
 \begin{definition}[\label{def:safe}Safe link (\REF)]  
   A link from Process~A to Process~B is safe if and only if Process~B received
@@ -216,9 +219,10 @@ cannot lead to causal order violations.
 
 Links start unsafe, for messages traveling by the new links may arrive before
 preceding messages that took longer paths. \PCBROADCAST ensures safety by
-sending control messages. Figure~\ref{fig:timelinepcbroadcast} shows the
-operation. Process~A sends a control message $\pi$ to Process~B using safe links
-and awaits its answer $\rho$. This is a ping phase.
+sending control messages. Section~\ref{sec:motivations} and
+Figure~\ref{fig:timelinepcbroadcast} show its functioning. Process~A sends a
+control message $\pi$ to Process~B using safe links and awaits its answer
+$\rho$. This is a ping phase.
 
 \begin{definition}[Ping phase (\REF)]
   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
@@ -239,27 +243,38 @@ acknowledging the receipt of most messages while buffering messages concurrent
 to the acknowledgment. Processes receive all messages at least once and
 following causal order.
 
-However, this is insufficient to ensure exactly once delivery (\TODO{With
-  bounded remembering}). The issue is identical to that depicted in
-Figure~\ref{fig:generalproblem}. Process~B adds Process~C in its out-view but
-Process~C already forgot about the message $a$ while Process~B received it. This
-leads to double delivery of $a$ and subsequent inconsistencies.
+However, \PCBROADCAST does not ensure exactly once delivery by itself. It relies
+on a reliable broadcast protocol that either grows linearly compared to the
+number of processes that ever broadcast a message (see
+Figure~\ref{fig:spaceproblem}), or bounds the remembering of messages but fails
+to handle dynamic systems (see Figure~\ref{fig:counterproblem}).
 
-In this paper, we exploit causal communication to implement a stronger meaning
-of safe link at marginal cost. A link becomes safe when it cannot violate both
-causal delivery and exactly once delivery.  This is more expensive to ensure in
-terms of control messages, for it must account for concurrent messages between
-involved processes. The rest of this section describes the operation of our
-proposal and its complexity.
+% Process~B adds Process~C in its out-view but Process~C forgot about 
+% message $a$ when Process~B received it. This leads to double delivery of $a$
+% and subsequent inconsistencies.
 
-%broadcast requires more ping phases and
-%more buffers.
+% In this paper, we exploit causal communication to implement a stronger meaning
+% of safe link at marginal cost. A link becomes safe when it cannot violate both
+% causal delivery and exactly once delivery.  This is more expensive to ensure in
+% terms of control messages, for it must account for concurrent messages between
+% involved processes. The rest of this section describes the operation of our
+% proposal and its complexity.
+
+
 
 \subsection{Problem statement}
 \label{subsec:problemstatement}
 
-\TODO{Must be self contained. Must be related to issues and motivations...}
+To remove the last linear upper bound that remains on space complexity, causal
+broadcast must provide a bound on remembering while handle dynamic systems where
+processes can join, leave, or self-reconfigure their partial view.
 
+In Figure~\ref{fig:counterproblem}, the issue comes from Process~C being unable
+to remember messages it will receive from Process~B's buffer (i.e., the message
+$a$) while forgetting about messages it will never receive from Process~B (i.e.,
+the message $b$).
+
+\begin{problem*}
 Assuming Process~A sends a buffer of messages to Process~B in order to finalize
 the safety of this link (see Figure~\ref{fig:timelinepcbroadcast}). Upon receipt
 of this buffer by Process~B, the scientific problem consists in:
@@ -273,6 +288,7 @@ of this buffer by Process~B, the scientific problem consists in:
 \end{itemize}
 These are the array of messages to deliver, the set of messages to ignore, and
 the set of messages to expect, respectively.
+\end{problem*}
 
 \begin{figure}
   \begin{center}
@@ -392,8 +408,9 @@ deliver.
     \input{input/figtimelineproof.tex}
     \caption{\label{fig:timelineproof}\label{fig:timeline}Timeline of
       \RPCBROADCAST when Process~A adds a link to Process~B in its out-view. We
-      hide intermediate processes for the purpose of clarity. Messages arrive in
-      causal order.
+      hide intermediate processes for the purpose of clarity. Control messages
+      $\alpha$, $\beta$, $\pi$, and $\rho$ travel by safe links. Process~A sends
+      $B_beta$ using the new link. Messages arrive in causal order.
       $B_\beta \wedge (B_\alpha \cup B_\pi) = \mathcal{G} \cup \mathcal{C}'$ is
       the set of messages to ignore,
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{D}'\setminus
