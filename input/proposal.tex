@@ -269,10 +269,16 @@ To remove the last linear upper bound that remains on space complexity, causal
 broadcast must provide a bound on remembering while handle dynamic systems where
 processes can join, leave, or self-reconfigure their partial view.
 
-In Figure~\ref{fig:counterproblem}, the issue comes from Process~C being unable
-to remember messages it will receive from Process~B's buffer (i.e., the message
-$a$) while forgetting about messages it will never receive from Process~B (i.e.,
-the message $b$).
+To provide a bound on remembering, upon receipt of a broadcast message, a
+process must
+\begin{inparaenum}[(i)]
+\item identify if it already delivered this message and
+\item identify all other processes that will send it this message.
+\end{inparaenum}
+In Figure~\ref{fig:counterproblem}, the related issue comes from Process~C being
+unable to remember messages it will receive from Process~B's buffer (i.e., the
+message $a$) while forgetting about messages it will never receive from
+Process~B (i.e., the message $b$).
 
 \begin{problem*}
 Assuming Process~A sends a buffer of messages to Process~B in order to finalize
