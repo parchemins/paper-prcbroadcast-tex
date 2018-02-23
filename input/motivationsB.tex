@@ -1,5 +1,5 @@
 
-\section{Issues and motivations (bis)}
+\section{Issues and motivations}
 
 Causal broadcast is a communication primitive that allows a process to send
 messages to all processes of its distributed system (\REF). Message deliveries
@@ -9,10 +9,11 @@ messages need to deliver $m$ before $m'$. Otherwise they deliver them in any
 order. Each process may receive a message multiple times but it delivers it
 exactly once.
 
-\PCBROADCAST (\REF) is a causal broadcast that improves state-of-the-art
-approaches (\REF) by removing the need for piggybacking control information the
-size of which is linear. It uses FIFO communications links for causal broadcast
-and control messages to handle dynamicity. 
+\PCBROADCAST (\REF) is a causal broadcast where broadcast messages piggyback
+constant size control information. The overhead brought by causal order in terms
+of generated traffic is negligible.  \PCBROADCAST uses FIFO communications links
+and forwarding for causal broadcast (\REF); while sending few control messages
+to handle dynamicity (see Table~\ref{table:complexity}).
 
 \begin{figure*}
   \begin{center}
@@ -82,10 +83,7 @@ Process~C. Afterwards, Process~B uses this link normally for causal broadcast.
 
 This scenario highlights the issue about memory consumption: the local structure
 to discards multiple receipts increases linearly with the number of processes
-that ever broadcast a message. However, information about messages becomes
-absolete over receipts. For instance, all copies of the message $b$ disappear in
-Figure~\ref{fig:spaceproblemD}. Processes could remove this message from their
-local structure safely.
+that ever broadcast a message.
 
 \begin{figure*}
   \begin{center}
@@ -125,9 +123,59 @@ local structure safely.
   \end{center}
 \end{figure*}
 
+However, we observe that information about messages becomes obsolete over
+receipts. For instance, all copies of the message $b$ disappear of the system in
+Figure~\ref{fig:spaceproblemD}. With such knowledge, processes could remove this
+message from their local structure safely. 
 
 Figure~\ref{fig:counterproblem} depicts the same scenario where we replace the
-linearly increasing local structure by another that is purged over time. 
+linearly increasing local structure by a set of messages purged over
+receipts. Assuming that each process delivers and forwards each message exactly
+once, processes expect to receive one copy of each broadcast message per link
+pointing to them. For instance, in Figure~\ref{fig:counterproblemA}, Process~B
+expects to receive one copy of $b$, for only Process~A has Process~B as
+neighbor; in Figure~\ref{fig:counterproblemC}, Process~A expects two copies of
+$a$, for both Process~B and Process~C have Process~A as neighbor. Received
+messages that are not in the local structure are new and must be
+delivered. Receives messages that are in the local structure must be ignored and
+the counter of expected copies decremented. When this counter reaches 0, the
+process assumes that it will not receive this message again, hence it purges its
+local structure from this message. For instance, in
+Figure~\ref{fig:counterproblemC}, Process~B removes the element $b$, for it
+received the awaited copy; in Figure~\ref{fig:counterproblemE}, Process~A
+removes the element $a$, for it received both awaited copies.  Unfortunately, in
+Figure~\ref{fig:counterproblemF}, the number of expected messages becomes
+inconsistent due to dynamicity. Process~B empties its buffer of messages
+containing $a$, for the sake of causal order. When Process~C receives $a$, it
+mistakes this message for a new message. Not only Process~C delivers $a$ a
+second time, but it forwards it to its neighbors leading to a cascading effect
+of multiple deliveries.
+
+%Process~C was unable to distinguish messages it would receive from Process~B
+%(i.e., $a$) from messages it would never receive from Process~B (i.e., $b$).
+
+Even if counters are insufficient to discard multiple receipts in dynamic
+systems, this hints that broadcast can guarantee reliability locally without
+maintaining costly data structures summarizing the global state of the system,
+e.g., using vector clocks.
+
+
+% To solve this issue, state-of-the-art protocols maintain a local vector the size
+% of which increases linearly with the number of processes that ever broadcast a
+% message. They eventually become overcostly in dynamic settings.
+
+
+In this paper, we exploit and extend \PCBROADCAST to provide a causal broadcast
+middleware that is lightweight in terms of local memory consumption, and message
+overhead. Table~\ref{table:complexity} shows the complexity of the proposed
+approach. It keeps constant message overhead and constant delivery execution
+time while removing the linear dependency $N$ from the local space
+complexity. Its overhead in terms of number of control messages is twice that of
+\PCBROADCAST.
+%% It maintains a local structure that grows and shrinks over time when
+%% processes can join, leave, or self-reconfigure their neighborhood over time.
+%% \TODO{maybe more details.}
+The next section describes the proposed protocol.
 
 
 %%% Local Variables:
