@@ -377,7 +377,7 @@ deliver.
   links. Process~B stops buffering on receipt of $\gamma$.
   The buffer $Buf$ contains the messages delivered by Process~B. \\
   $m \in Buf \Longleftrightarrow 
-  r_B(\alpha) \rightarrow d_B(m) \wedge d_B(m) \rightarrow r_B(\gamma)$
+  (r_B(\alpha) \rightarrow d_B(m)) \wedge (d_B(m) \rightarrow r_B(\gamma))$
 \end{definition}
 
 \begin{lemma}[Messages of buffer]
@@ -416,7 +416,7 @@ deliver.
       \RPCBROADCAST when Process~A adds a link to Process~B in its out-view. We
       hide intermediate processes for the purpose of clarity. Control messages
       $\alpha$, $\beta$, $\pi$, and $\rho$ travel by safe links. Process~A sends
-      $B_beta$ using the new link. Messages arrive in causal order.
+      $B_\beta$ using the new link. Messages arrive in causal order.
       $B_\beta \wedge (B_\alpha \cup B_\pi) = \mathcal{G} \cup \mathcal{C}'$ is
       the set of messages to ignore,
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{D}'\setminus

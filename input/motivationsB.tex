@@ -2,6 +2,15 @@
 \section{Issues and motivations}
 \label{sec:motivations}
 
+A distributed system is set of processes that can communicate with each other
+using messages. Processes may only have partial knowledge of the full system
+membership, for maintaining full knowledge is overcostly in large and dynamic
+systems where processes can join, or leave at any time. A process can send a
+message to all processes that belong to the system by broadcasting.
+
+Broadcast protocols can ensure properties on message delivery. Reliable
+broadcast \TODO{meow}.
+
 Causal broadcast is a communication primitive that allows a process to send
 messages to all processes of its distributed system (\REF). Message deliveries
 follow the happen before relationship (\REF). If the sending of a message $m$
@@ -55,18 +64,19 @@ to handle dynamicity (see Table~\ref{table:complexity}).
 \end{figure*}
 
 Figure~\ref{fig:spaceproblem} depicts its functioning while highlighting the
-problem. In this scenario, the system comprises 3 processes. At first, Process~B
-cannot communicate directly with Process~C. In Figure~\ref{fig:spaceproblemA},
-Process~B broadcasts $b$. It assigns it a unique identifier
-$\langle B,\, 1 \rangle$ and saves this element in a local vector. In
-Figure~\ref{fig:spaceproblemB}, Process~A receives $b$. Its vector does not
-contain this element. Hence, Process~A saves $\langle B,\,1\rangle$ in its
-vector, delivers and forwards $b$. In the meantime, Process~B wants to add a
-direct communication link to Process~C for causal broadcast. For the sake of
-safety, i.e., sending messages using this new link cannot violate causal order,
-Process~B must send a control message $\pi$ to Process~C using already
-established link. It uses Process~A as mediator and buffers its delivered
-messages while awaiting for Process~C's reply. In
+problem. In this scenario, the system comprises 3 processes. Processes maintain
+a vector of pairs $\langle site,\, counter \rangle$ summarizing the received
+messages. At first, vectors start empty and Process~B cannot communicate
+directly with Process~C. In Figure~\ref{fig:spaceproblemA}, Process~B broadcasts
+$b$. It assigns it a unique identifier $\langle B,\, 1 \rangle$ and saves this
+element in its local vector. In Figure~\ref{fig:spaceproblemB}, Process~A
+receives $b$. Its vector does not contain this element. Hence, Process~A saves
+$\langle B,\,1\rangle$ in its vector, delivers and forwards $b$. In the
+meantime, Process~B wants to add a direct communication link to Process~C for
+causal broadcast. For the sake of safety, i.e., sending messages using this new
+link cannot violate causal order, Process~B must send a control message $\pi$ to
+Process~C using already established link. It uses Process~A as mediator and
+buffers its delivered messages while awaiting for Process~C's reply. In
 Figure~\ref{fig:spaceproblemC}, Process~A broadcasts $a$ along with its assigned
 unique identifier $\langle A,\, 1 \rangle$. Process~A updates its local vector
 accordingly. Then, Process~A routes $\pi$ to Process~C. Process~B receives $b$
