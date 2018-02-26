@@ -141,8 +141,9 @@ linear upper bound remaining for causal broadcast.
     to Process~C. Not only Process~C mistakes $a$ for a new message and delivers it 
     again, but it has cascading effects due to the forwarding.]
     {\input{input/figcounterproblemF.tex}}
-    \caption{\label{fig:counterproblem}Using counters to discard multiple receipts
-      is more efficient in terms of memory usage but fails in dynamic systems.}
+    \caption{\label{fig:counterproblem}Using counters to discard multiple
+      receipts is efficient in terms of memory usage but fails in dynamic
+      systems.}
   \end{center}
 \end{figure*}
 
@@ -151,15 +152,15 @@ linear upper bound remaining for causal broadcast.
 % Figure~\ref{fig:spaceproblemD}. With such knowledge, processes could remove this
 % message from their local structure safely. 
 
-However, Figure~\ref{fig:counterproblem} highlights that, instead of maintaining
-a costly data structure summerizing the global state of the system, a simple
-data structure that is purged over receipts ensures exactly once delivery as
-long as the system remains static. In this scenario, processes use
-\PCBROADCAST. When a process broadcasts a message, it sends it to its set of
-neighbors (see Figures~\ref{fig:counterproblemA} and~\ref{fig:counterproblemC});
-when a process delivers such message, it forwards it to its own neighbors in a
-gossip fashion (see Figure~\ref{fig:counterproblemB}). Processes receive each
-message either
+To remove this last linear upper bound, Figure~\ref{fig:counterproblem} hints
+that, instead of a costly data structure summarizing the global state of the
+system, a lightweight data structure that is purged over receipts can ensure
+exactly once delivery as long as the system remains static. In this scenario,
+processes use \PCBROADCAST. When a process broadcasts a message, it sends it to
+its set of neighbors (see Figures~\ref{fig:counterproblemA}
+and~\ref{fig:counterproblemC}); when a process delivers such message, it
+forwards it to its own neighbors in a gossip fashion (see
+Figure~\ref{fig:counterproblemB}). Processes receive each message either
 directly or transitively.\\
 In addition, to ensure exactly once delivery, each process maps each delivered
 message with a number of expected copies. Each processes computes this number of
@@ -173,7 +174,7 @@ that counters stay consistent until Process~B adds Process~C in its
 neighborhood. \PCBROADCAST prevents causal order violations by the mean of a
 round-trip of control messages.  At first, Process~B cannot communicate directly
 with Process~C for causal broadcast. When Process~B wants to add Process~C in
-its neigbhorhood, it must send a control message $\pi$ using its established
+its neighborhood, it must send a control message $\pi$ using its established
 links to Process~C (see
 Figures~\ref{fig:counterproblemB}--\ref{fig:counterproblemD}, await for the
 latter's answer (see Figure~\ref{fig:counterproblemE}) while buffering each
@@ -225,7 +226,7 @@ In this paper, we exploit and extend \PCBROADCAST to provide a causal broadcast
 middleware that is lightweight in terms of local memory consumption, and message
 overhead. Table~\ref{table:complexity} shows the complexity of the proposed
 approach. It keeps constant message overhead and constant delivery execution
-time while removing the linear dependency $N$ from the local space
+time while removing the last linear dependency $N$ that remained on local space
 complexity. Its overhead in terms of number of control messages is twice that of
 \PCBROADCAST.
 %% It maintains a local structure that grows and shrinks over time when

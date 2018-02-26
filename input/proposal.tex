@@ -103,6 +103,8 @@ remember about prior delivery of messages in order to discard double receipts.
   delivers each message once and only once.
 \end{proof}
 
+\TODO{Vector clocks implement remembering but fail to remove obsolete
+  information. To be lightweight, we must provide a safe bound on remembering.}
 
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
@@ -204,7 +206,7 @@ set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
   \end{center}
 \end{figure}
 
-\PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, forwarding,
+\PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, gossiping,
 control messages, and buffers to ensure causal order in dynamic systems. A
 process broadcasting a message sends the message to an out-view of safe links
 that cannot lead to causal order violations.
