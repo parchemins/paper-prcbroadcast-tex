@@ -20,27 +20,37 @@ view. Broadcast messages reach all processes either directly or transitively.
 
 \begin{figure*}
   \begin{center}
-    \subfloat[Part A][\label{fig:generalpurgeA}Process~A broadcasts $a$. It expects 
-    two copies of the message $a$.]
-    {\input{input/figgeneralpurgeA.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralpurgeA.tex}
+      \caption{\label{fig:generalpurgeA}Process~A broadcasts $a$. It expects 
+        two copies of the message $a$.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part B][\label{fig:generalpurgeB}Process~B and Process~C receive
-    and deliver $a$. Process~C expected an additional copy of the message $a$
-    while Process~B does not.]
-    {\input{input/figgeneralpurgeB.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralpurgeB.tex}
+      \caption{\label{fig:generalpurgeB}Process~B and Process~C receive
+        and deliver $a$. Process~C expected an additional copy of the message $a$
+        while Process~B does not.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part C][\label{fig:generalpurgeC}Process~B and Process~C forward $a$ 
-    to their neighbors in a gossip fashion.]
-    {\input{input/figgeneralpurgeC.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralpurgeC.tex}
+      \caption{\label{fig:generalpurgeC}Process~B and Process~C forward $a$ 
+        to their neighbors in a gossip fashion.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part D][\label{fig:generalpurgeD}Process~A and Process~C receive a copy
-    of $a$. Process~C does not expect additional copies of the message $a$. 
-    Process~A still expects a copy.]
-    {\input{input/figgeneralpurgeD.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralpurgeD.tex}
+      \caption{\label{fig:generalpurgeD}Process~A and Process~C receive a copy
+        of $a$. Process~C does not expect additional copies of the message $a$. 
+        Process~A still expects a copy.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part E][\label{fig:generalpurgeE}Process~A receives the last 
-    awaited copy of the message $a$. It purges its structure from this message.]
-    {\input{input/figgeneralpurgeE.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralpurgeE.tex}
+      \caption{\label{fig:generalpurgeE}Process~A receives the last 
+        awaited copy of the message $a$. It purges its structure from this message.}
+    \end{subfigure}
     \caption{\label{fig:generalpurge}Broadcast that guarantees to deliver 
       messages exactly once using counters.}
   \end{center}
@@ -78,24 +88,34 @@ Process~A finally receives the last copy of $a$ and purges its structure.
 
 \begin{figure*}
   \begin{center}
-    \subfloat[Part A][\label{fig:generalproblemA}Process~A broadcasts $a$.]
-    {\input{input/figgeneralproblemA.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralproblemA.tex}
+      \caption{\label{fig:generalproblemA}Process~A broadcasts $a$.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part B][\label{fig:generalproblemB}Process~C receives,
-    delivers, and forwards $a$. It does not expect additional copies.]
-    {\input{input/figgeneralproblemB.tex}}
+    \begin{subfigure}
+      \input{input/figgeneralproblemB.tex}
+      \caption{\label{fig:generalproblemB}Process~C receives,
+        delivers, and forwards $a$. It does not expect additional copies.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part C][\label{fig:generalproblemC}Process~B adds Process~C as neighbor.]
-    {\input{input/figgeneralproblemC.tex}}    
+    \begin{subfigure}
+      \input{input/figgeneralproblemC.tex}
+      \caption{\label{fig:generalproblemC}Process~B adds Process~C as neighbor.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part D][\label{fig:generalproblemD}Process~B receives, delivers,
-    and forwards $a$. Among others, it sends a copy of $a$ to Process~C.]
-    {\input{input/figgeneralproblemD.tex}}    
+    \begin{subfigure}
+      \input{input/figgeneralproblemD.tex}
+      \caption{\label{fig:generalproblemD}Process~B receives, delivers,
+        and forwards $a$. Among others, it sends a copy of $a$ to Process~C.}
+    \end{subfigure}
     \hspace{10pt}
-    \subfloat[Part E][\label{fig:generalproblemE}Not only Process~C receives, delivers, 
-    and forwards $a$ a second time, but it has cascading effects in the network.
-    The expected number of copies becomes inconsistent and may grow unbounded.]
-    {\input{input/figgeneralproblemE.tex}}    
+    \begin{subfigure}
+      \input{input/figgeneralproblemE.tex}
+      \caption{\label{fig:generalproblemE}Not only Process~C receives, delivers, 
+        and forwards $a$ a second time, but it has cascading effects in the network.
+        The expected number of copies becomes inconsistent and may grow unbounded.}
+    \end{subfigure}
     \caption{\label{fig:generalproblem}In dynamic systems, the reliable
       broadcast using counters may deliver messages multiple times leading to
       inconsistencies.}

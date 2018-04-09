@@ -47,7 +47,7 @@ requires an overcostly distributed consensus (\REF).
 % messages. However, it still requires to maintain the local vector to ensure that
 % it delivers each message exactly once.
 
-\begin{table*}
+\begin{table}
   \begin{center}
     \caption{\label{table:complexity} Complexity of broadcast algorithms
       at each process. $N$ the number of processes that ever broadcast a
@@ -58,7 +58,7 @@ requires an overcostly distributed consensus (\REF).
       becomes static.}
     \input{input/tablecomplexity.tex}
   \end{center}
-\end{table*}
+\end{table}
 
 In this paper, we present a causal broadcast protocol that exploits causal order
 to get rid of the summary of past delivered messages. 

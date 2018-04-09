@@ -79,9 +79,9 @@ delivers a message once.
 \end{definition}
 
 Property~\ref{enum:uniqueness} suggests the use of a data structure ensuring
-uniqueness of messages such as sets or vectors
-(e.g. Figure~\ref{fig:spaceproblem}). The data structure allows processes to
-remember about prior delivery of messages in order to discard double receipts.
+uniqueness of messages such as sets or vectors. The data structure allows
+processes to remember about prior delivery of messages in order to discard
+double receipts.
 
 \begin{definition}[Remembering]
   A process starts to remember a message at its delivery:
@@ -411,7 +411,7 @@ deliver.
 %   \end{center}
 % \end{figure*}
 
-\begin{figure*}
+\begin{figure}
   \begin{center}
     \input{input/figtimelineproof.tex}
     \caption{\label{fig:timelineproof}\label{fig:timeline}Timeline of
@@ -427,77 +427,80 @@ deliver.
       $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$ is the set of
       messages to expect.}
   \end{center}
-\end{figure*}
+\end{figure}
 
-\begin{figure*}
+\begin{figure}
   \begin{center}
-    \subfloat[Part A][\label{fig:solveA}
-    Process~B adds a link to Process~C. \RPCBROADCAST ensures its
-    safety. Process~B sends a first control message $\alpha$ to Process~C using
-    Process~A as mediator.]
-    {\input{input/figsolveA.tex}}
-    \hspace{10pt}
-    \subfloat[Part B][\label{fig:solveB}
-    Process~A receives $\alpha$ and routes it to Process~C.]
-    {\input{input/figsolveB.tex}}
-    \hspace{10pt}
-    \subfloat[Part C][\label{fig:solveC}
-    Process~C receives $\alpha$ and answers by sending $\beta$ 
-    to Process~B using Process~A as mediator. Then, Process~C broadcasts
-    $c_1$ and registers it in $B_\alpha$.]
-    {\input{input/figsolveC.tex}}
-    \hspace{10pt}
-    \subfloat[Part D][\label{fig:solveD}
-    Process~A receives $\beta$ and routes it to Process~B. 
-    Process~A receives $c_1$ and forwards it to both its neighbors.]
-    {\input{input/figsolveD.tex}}
-    \hspace{10pt}
-    \subfloat[Part E][\label{fig:solveE}
-    Process~C receives and discards $c_1$. 
-    Process~B receives $c_1$ and forwards it to its neighbor.
-    Process~B receives $\beta$ and replies $\pi$ to Process~C using Process~A 
-    as mediator. Process~B broadcasts $b_1$ and registers it in $B_\beta$.]
-    {\input{input/figsolveE.tex}}
-    \hspace{10pt}
-    \subfloat[Part F][\label{fig:solveF}
-    Process~A receives $c_1$ and discards it.
-    Process~A receives $\pi$ and routes it to Process~C. Process~A receives $b_1$
-    and forwards it to its neighbors. Process~C broadcasts $c_2$ and registers it 
-    in $B_\alpha$]
-    {\input{input/figsolveF.tex}}
-    \hspace{10pt}
-    \subfloat[Part G][\label{fig:solveG}
-    Process~A receives $c_2$ and forwards it to its neighbors.
-    Process~B broadcasts $b_2$ and registers it in $B_\beta$. Process~C receives
-    $\pi$ and replies $\rho$ to Process~B using Process~A as mediator. Then it 
-    receives and forwards $b_1$. Then it broadcasts $c_3$. It registers $b_1$ 
-    and $c_3$ in $B_\pi$.]
-    {\input{input/figsolveG.tex}}
-    \hspace{10pt}
-    \subfloat[Part H][\label{fig:solveH}
-    Process~A receives and discards $b_1$. 
-    Process~A receives and routes $\rho$ to Process~B. 
-    Process~A receives and  forwards $b_2$ then $c_3$. Process~B receives, forwards, 
-    and registers $c_2$. Then Process~B receives $\rho$ and sends $B_\beta$ to
-    Process~C using the new link.]
-    {\input{input/figsolveH.tex}}
-    \hspace{10pt}
-    \subfloat[Part I][\label{fig:solveI}
-    Once Process~A sent $B_\beta$, the new link is safe.
-    Process~C receives $B_\beta$. Process~C does not deliver $b_1$ and $c_2$, for it
-    already delivered them. Process~C delivers $b_2$ and
-    expects another copy from Process~A, for it constitutes a new message. 
-    Process~C expects to eventually receive $c_3$ from Process~B.]
-    {\input{input/figsolveI.tex}}\\
-    %\hspace{10pt}
-    \subfloat[Part J][\label{fig:solveJ}
-    Process~C categorizes each message of $B_\beta$ using its two 
-    own buffers $B_\alpha$ and $B_\pi$.]
-    {\input{input/figsolveJ.tex}}
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveA.tex}
+      \caption{\label{fig:solveA} Process~B adds a link to
+        Process~C. \RPCBROADCAST ensures its safety. Process~B sends a first
+        control message $\alpha$ to Process~C using Process~A as mediator.}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveB.tex}
+      \caption{\label{fig:solveB} Process~A receives $\alpha$ and routes it to
+        Process~C.}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveC.tex}
+      \caption{\label{fig:solveC} Process~C receives $\alpha$ and answers by
+        sending $\beta$ to Process~B using Process~A as mediator. Then,
+        Process~C broadcasts $c_1$ and registers it in $B_\alpha$.}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveD.tex}
+      \caption{\label{fig:solveD} Process~A receives $\beta$ and routes it to
+        Process~B.  Process~A receives $c_1$ and forwards it to both its
+        neighbors.}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveE.tex}
+      \caption{\label{fig:solveE} Process~C receives and discards $c_1$.
+        Process~B receives $c_1$ and forwards it to its neighbor.  Process~B
+        receives $\beta$ and replies $\pi$ to Process~C using Process~A as
+        mediator. Process~B broadcasts $b_1$ and registers it in $B_\beta$.}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveF.tex}
+      \caption{\label{fig:solveF} Process~A receives $c_1$ and discards it.
+        Process~A receives $\pi$ and routes it to Process~C. Process~A receives
+        $b_1$ and forwards it to its neighbors. Process~C broadcasts $c_2$ and
+        registers it in $B_\alpha$}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveG.tex}
+      \caption{\label{fig:solveG} Process~A receives $c_2$ and forwards it to
+        its neighbors.  Process~B broadcasts $b_2$ and registers it in
+        $B_\beta$. Process~C receives $\pi$ and replies $\rho$ to Process~B
+        using Process~A as mediator. Then it receives and forwards $b_1$. Then
+        it broadcasts $c_3$. It registers $b_1$ and $c_3$ in $B_\pi$.}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveH.tex}
+      \caption{\label{fig:solveH} Process~A receives and discards $b_1$.
+        Process~A receives and routes $\rho$ to Process~B.  Process~A receives
+        and forwards $b_2$ then $c_3$. Process~B receives, forwards, and
+        registers $c_2$. Then Process~B receives $\rho$ and sends $B_\beta$ to
+        Process~C using the new link.}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveI.tex}
+      \caption{\label{fig:solveI} Once Process~A sent $B_\beta$, the new link is
+        safe.  Process~C receives $B_\beta$. Process~C does not deliver $b_1$
+        and $c_2$, for it already delivered them. Process~C delivers $b_2$ and
+        expects another copy from Process~A, for it constitutes a new message.
+        Process~C expects to eventually receive $c_3$ from Process~B.}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+      \input{input/figsolveJ.tex}
+      \caption{\label{fig:solveJ} Process~C categorizes each message of
+        $B_\beta$ using its two own buffers $B_\alpha$ and $B_\pi$.}
+    \end{subfigure}
     \caption{\label{fig:solve}Using buffers and control messages, \RPCBROADCAST 
       provides reliable causal broadcast.}
   \end{center}
-\end{figure*}
+\end{figure}
 
 
 

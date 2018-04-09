@@ -110,37 +110,44 @@ linear upper bound remaining for causal broadcast.
 
 \begin{figure*}
   \begin{center}
-    \subfloat[Part A][\label{fig:counterproblemA}Process~B broadcasts the 
-    message $b$ and expects to receive 1 copy of $b$.]
-    {\input{input/figcounterproblemA.tex}}
-    \hspace{10pt}
-    \subfloat[Part B][\label{fig:counterproblemB}Process~A receives, delivers
-    and forwards $b$. It expects 1 additional copy of $b$. Process~B wants to 
-    add Process~C in its direct neighbors for causal broadcast. It sends a 
-    control message $\pi$ to Process~C using Process~A as mediator.]
-    {\input{input/figcounterproblemB.tex}}
-    \hspace{10pt}
-    \subfloat[Part C][\label{fig:counterproblemC}Process~A broadcasts $a$. It 
-    expects 2 copies. Process~B receives $b$ again, it does not expect any other 
-    copy. Hence, it purges its local structure from $b$. Process~C receives, 
-    delivers and forwards $b$. It does not expect additional copies.]
-    {\input{input/figcounterproblemC.tex}}
-    \hspace{10pt}
-    \subfloat[Part D][\label{fig:counterproblemD}Process~A receives, discards,
-    and purges $b$. Process~B and Process~C receive, deliver, and forward $a$ but
-    do not expect any additional copy. Process~B buffers $a$ to ensure the safety 
-    of the new link.]
-    {\input{input/figcounterproblemD.tex}}
-    \hspace{10pt}
-    \subfloat[Part E][\label{fig:counterproblemE}Process~A receives and discards 
-    two copies of $a$. It purges its local structure of $a$. Process~C receives
-    $\pi$ and replies $\rho$ to Process~B.]
-    {\input{input/figcounterproblemE.tex}}
-    \hspace{10pt}
-    \subfloat[Part F][\label{fig:counterproblemF}Process~B empties its buffer
-    to Process~C. Not only Process~C mistakes $a$ for a new message and delivers it 
-    again, but it has cascading effects due to the forwarding.]
-    {\input{input/figcounterproblemF.tex}}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \input{input/figcounterproblemA.tex}
+      \caption{\label{fig:counterproblemA}Process~B broadcasts the 
+        message $b$ and expects to receive 1 copy of $b$.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \input{input/figcounterproblemB.tex}
+      \caption{\label{fig:counterproblemB}Process~A receives, delivers
+        and forwards $b$. It expects 1 additional copy of $b$. Process~B wants to 
+        add Process~C in its direct neighbors for causal broadcast. It sends a 
+        control message $\pi$ to Process~C using Process~A as mediator.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \input{input/figcounterproblemC.tex}
+      \caption{\label{fig:counterproblemC}Process~A broadcasts $a$. It 
+        expects 2 copies. Process~B receives $b$ again, it does not expect any other 
+        copy. Hence, it purges its local structure from $b$. Process~C receives, 
+        delivers and forwards $b$. It does not expect additional copies.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \input{input/figcounterproblemD.tex}
+      \caption{\label{fig:counterproblemD}Process~A receives, discards,
+        and purges $b$. Process~B and Process~C receive, deliver, and forward $a$ but
+        do not expect any additional copy. Process~B buffers $a$ to ensure the safety 
+        of the new link.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \input{input/figcounterproblemE.tex}
+      \caption{\label{fig:counterproblemE}Process~A receives and discards 
+        two copies of $a$. It purges its local structure of $a$. Process~C receives
+        $\pi$ and replies $\rho$ to Process~B.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \input{input/figcounterproblemF.tex}
+      \caption{\label{fig:counterproblemF}Process~B empties its buffer to
+        Process~C. Not only Process~C mistakes $a$ for a new message and
+        delivers it again, but it has cascading effects due to the forwarding.}
+    \end{subfigure}
     \caption{\label{fig:counterproblem}Using counters to discard multiple
       receipts is efficient in terms of memory usage but fails in dynamic
       systems.}
