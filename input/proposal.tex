@@ -641,8 +641,8 @@ and number of control messages.
 only piggyback the control information to ensure reliable FIFO links.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
-receipt function, is constant $O(1)$, for it only checks if the message should
-be discarded or delivered. \TODO{Maybe $O(Q_i)$?}
+receipt function is $O(Q_i)$, for it only checks in the inview if the message
+must be discarded or delivered.
 
 \noindent The \textbf{local space consumption} depends on the size of
 buffers. There are 4 buffers in total. $W$ is the size of buffers related to

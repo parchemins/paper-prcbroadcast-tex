@@ -84,10 +84,11 @@ contribution is threefold:
   processes can join, leave, or self-reconfigure at any time.
 \item Our protocol provides an original tradeoff where message overhead remains
   constant while space consumption depends on the actual system (see
-  Table~\ref{table:complexity}). It safely discards obsolete control information
-  about broadcast messages by transmitting lightweight control messages. The
-  number of control messages depends on routing capabilities of the system and
-  its dynamicity. For instance, gossip-based peer-sampling
+  Table~\ref{table:complexity}). It exploits causal order to safely discard
+  obsolete control information about broadcast messages by transmitting
+  lightweight control messages. The number of control messages depends on
+  routing capabilities of the system and its dynamicity. For instance,
+  gossip-based peer-sampling
   protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} needs
   8 control messages per added link during periodic shuffles.
 \item Our experiments highlights the space consumed by our protocol in dynamic

@@ -3,120 +3,41 @@
 \label{sec:motivations}
 
 A distributed system is set of processes that can communicate with each other
-using messages (\REF). Processes may only have partial knowledge of the full
-system membership, for maintaining full knowledge is overcostly in large and
-dynamic systems where processes can join, or leave at any time (\REF). A process
-sends a message to all processes that belong to the system by
-broadcasting. Reliable broadcast ensures that all messages reach all processes
-and processes deliver each message exactly once; and causal broadcast is a
-reliable broadcast that ensures causal order on message delivery (\REF).
-
+using messages. Processes may only have partial knowledge of the full system
+membership, for maintaining full knowledge is overcostly in large and dynamic
+systems where millions of processes could join, leave, or self-reconfigure at
+any time~\cite{birman1999bimodal,demers1987epidemic}. Broadcasting is a
+communication primitive that allows a process to send a message to all processes
+that belong to its system. Reliable broadcast ensures that all messages reach
+all processes and processes deliver each message exactly once. Causal broadcast
+is a reliable broadcast that ensures causal order on message
+delivery~\cite{hadzilacos1994modular}:
 % Causal broadcast is a communication primitive that allows a process to send
 % messages to all processes of its distributed system (\REF). Message deliveries
-% follow the happen before relationship (\REF). If the sending of a message $m$
-% precedes the sending of a message $m'$ then all processes that deliver these two
-% messages need to deliver $m$ before $m'$. Otherwise they deliver them in any
-% order. Each process may receive a message multiple times but it delivers it
-% exactly once.
+% follow the happen before relationship (\REF).
+if the sending of a message $m$ precedes the sending of a message $m'$ then all
+processes that deliver these two messages need to deliver $m$ before $m'$;
+otherwise they deliver them in any order.
 
-Implementing causal broadcast notoriously required vector clocks to ensure
-causal order and reliable delivery (\REF). The size of vector clocks increases
-linearly with the number of processes that ever broadcast a message.  This
-negatively impacts generated traffic and local memory consumption as well.  In
-the worst case, a system comprising 1 million processes requires that each
-process maintains a local vector of 1 million entries and sends it within each
-broadcast message. This forbids the usage of causal broadcast in large and
-dynamic systems where any process could participate, such as in distributed
-collaborative editing (\REF). Fortunately, \PCBROADCAST (\REF) partially removed
-the need for such vectors. Instead of piggybacking control information in
-messages to ensure causal order, \PCBROADCAST uses FIFO communication links,
-gossiping, and few control messages (see Table~\ref{table:complexity}). Yet,
-vectors remain locally to ensure that despite multiple receipts, each process
-delivers each message exactly once. This constitutes the last monotonic and
-linear upper bound remaining for causal broadcast.
-
-
-% \begin{figure*}
-%   \begin{center}
-%     \subfloat[Part A][\label{fig:spaceproblemA}Process~B broadcasts $b$ along
-%     with control information $\langle B,\,1 \rangle$.]
-%     {\input{input/figspaceproblemA.tex}}
-%     \hspace{10pt}
-%     \subfloat[Part B][\label{fig:spaceproblemB}Process~A receives, saves in its
-%     local vector, delivers and forwards
-%     $b$. Process~B wants to add Process~C in its direct neighbors for
-%     causal broadcast. It sends a control message $\pi$ to Process~C using 
-%     Process~A as mediator.]
-%     {\input{input/figspaceproblemB.tex}}    
-%     \hspace{10pt}
-%     \subfloat[Part C][\label{fig:spaceproblemC}Process~A broadcasts $a$ along with
-%     control information $\langle A,\, 1 \rangle$. Then, it routes $\pi$ towards
-%     Process~C. Process~B receives $b$ but discards it, for it is already
-%     registered in Process~B's local vector.]
-%     {\input{input/figspaceproblemC.tex}}
-%     \hspace{10pt}
-%     \subfloat[Part D][\label{fig:spaceproblemD}Process~B and Process~C receive,
-%     save in their local vector, deliver and forward $a$. In addition, Process~B
-%     buffers $a$ to send it later to Process~C.]
-%     {\input{input/figspaceproblemD.tex}}
-%     \hspace{10pt}
-%     \subfloat[Part E][\label{fig:spaceproblemE}Process~C receives $\pi$ and 
-%     replies $\rho$ to Process~B.]
-%     {\input{input/figspaceproblemE.tex}}
-%     \hspace{10pt}
-%     \subfloat[Part F][\label{fig:spaceproblemF}Process~B empties its buffer to
-%     Process~C. The latter will discard the message $a$, for it is already registered
-%     in Process~C's local vector]
-%     {\input{input/figspaceproblemF.tex}}
-%     \caption{\label{fig:spaceproblem}\PCBROADCAST relies on vectors to deliver
-%       once and discard multiple receipts. The size of vectors increases linearly
-%       with the number of processes that ever broadcast a message.}
-%   \end{center}
-% \end{figure*}
-
-% Figure~\ref{fig:spaceproblem} depicts the functioning of \PCBROADCAST while
-% highlighting the issue. In this scenario, the system comprises 3
-% processes. Processes maintain a vector of pairs
-% $\langle site,\, counter \rangle$ summarizing the received messages. At first,
-% vectors start empty and Process~B cannot communicate directly with Process~C.
-% In Figure~\ref{fig:spaceproblemA}, Process~B broadcasts $b$. It assigns it a
-% unique identifier $\langle B,\, 1 \rangle$ and saves this element in its local
-% vector. In Figure~\ref{fig:spaceproblemB}, Process~A receives $b$. Its vector
-% does not contain this element. Hence, Process~A saves $\langle B,\,1\rangle$ in
-% its vector, delivers and forwards $b$. In the meantime, Process~B wants to add a
-% direct communication link to Process~C for causal broadcast. For the sake of
-% safety, i.e., sending messages using this new link cannot violate causal order,
-% Process~B must send a control message $\pi$ to Process~C using already
-% established link. It uses Process~A as mediator and buffers its delivered
-% messages while awaiting for Process~C's reply. In
-% Figure~\ref{fig:spaceproblemC}, Process~A broadcasts $a$ along with its assigned
-% unique identifier $\langle A,\, 1 \rangle$. Process~A updates its local vector
-% accordingly. Then, Process~A routes $\pi$ to Process~C. Process~B receives $b$
-% but discards it, for its local vector already contains this message.  Process~C
-% receives, saves, delivers, and forwards $b$. In Figure~\ref{fig:spaceproblemD},
-% Process~A receives and discards $b$. Process~B receives, saves, delivers,
-% buffers, and forwards $a$. Process~C receives, saves, delivers, and forwards
-% $a$. In Figure~\ref{fig:spaceproblemE}, Process~A receives two copies of an
-% already delivered message $a$, hence discards them both. Process~C receives
-% $\pi$ and sends its reply $\rho$ to Process~B. Such reply can travel using any
-% communication mean. In Figure~\ref{fig:spaceproblemF}, Process~B receives
-% $\rho$. Process~B empties its buffer comprising $a$ to Process~C. This procedure
-% ensures that the delivery of $b$ happens before the delivery of $a$ at
-% Process~C. Afterwards, Process~B uses this link normally for causal broadcast.
-
-% This scenario highlights the issue about memory consumption: the local structure
-% to discards multiple receipts increases linearly with the number of processes
-% that ever broadcast a message.
+Implementing reliable broadcast requires vectors of Lamport's
+clocks~\cite{lamport1978time} to forbid multiple delivery of broadcast
+messages. However, the size of such vectors monotonically increases with the
+number of processes that ever broadcast a message. The cost becomes
+prohibitively high in contexts where anyone can broadcast a message at any
+time~\cite{borthakur2013petabyte,nedelec2016crate,slate13}. One million
+broadcasters implies that each process maintains locally a vector with one
+million entries. Processes cannot safely reclaim entries without running and
+overcostly consensus protocol.
 
 \begin{figure*}
   \begin{center}
-    \begin{subfigure}[t]{0.3\textwidth}
+    \begin{subfigure}[t]{0.31\textwidth}
       \input{input/figcounterproblemA.tex}%
       \caption{\label{fig:counterproblemA}Process~B broadcasts the 
         message $b$ and expects to receive 1 copy of $b$.}
     \end{subfigure}
     ~
-    \begin{subfigure}[t]{0.3\textwidth}
+    \begin{subfigure}[t]{0.31\textwidth}
       \input{input/figcounterproblemB.tex}%
       \caption{\label{fig:counterproblemB}Process~A receives, delivers
         and forwards $b$. It expects 1 additional copy of $b$. Process~B wants to 
@@ -124,14 +45,14 @@ linear upper bound remaining for causal broadcast.
         control message $\pi$ to Process~C using Process~A as mediator.}
     \end{subfigure}
     ~
-    \begin{subfigure}[t]{0.3\textwidth}
+    \begin{subfigure}[t]{0.31\textwidth}
       \input{input/figcounterproblemC.tex}%
       \caption{\label{fig:counterproblemC}Process~A broadcasts $a$. It 
         expects 2 copies. Process~B receives $b$ again, it does not expect any other 
         copy. Hence, it purges its local structure from $b$. Process~C receives, 
         delivers and forwards $b$. It does not expect additional copies.}
     \end{subfigure}
-    \begin{subfigure}[t]{0.3\textwidth}
+    \begin{subfigure}[t]{0.31\textwidth}
       \input{input/figcounterproblemD.tex}%
       \caption{\label{fig:counterproblemD}Process~A receives, discards,
         and purges $b$. Process~B and Process~C receive, deliver, and forward $a$ but
@@ -139,14 +60,14 @@ linear upper bound remaining for causal broadcast.
         of the new link.}
     \end{subfigure}
     ~
-    \begin{subfigure}[t]{0.3\textwidth}
+    \begin{subfigure}[t]{0.31\textwidth}
       \input{input/figcounterproblemE.tex}%
       \caption{\label{fig:counterproblemE}Process~A receives and discards 
         two copies of $a$. It purges its local structure of $a$. Process~C receives
         $\pi$ and replies $\rho$ to Process~B.}
     \end{subfigure}
     ~
-    \begin{subfigure}[t]{0.3\textwidth}
+    \begin{subfigure}[t]{0.31\textwidth}
       \input{input/figcounterproblemF.tex}%
       \caption{\label{fig:counterproblemF}Process~B empties its buffer to
         Process~C. Not only Process~C mistakes $a$ for a new message and
@@ -158,17 +79,15 @@ linear upper bound remaining for causal broadcast.
   \end{center}
 \end{figure*}
 
-% However, we observe that information about messages becomes obsolete over
-% receipts. For instance, all copies of the message $b$ disappear of the system in
-% Figure~\ref{fig:spaceproblemD}. With such knowledge, processes could remove this
-% message from their local structure safely. 
 
-To remove this last linear upper bound, Figure~\ref{fig:counterproblem} hints
-that, instead of a costly data structure summarizing the global state of the
-system, a lightweight data structure that is purged over receipts can ensure
-exactly once delivery as long as the system remains static. In this scenario,
-processes use \PCBROADCAST. When a process broadcasts a message, it sends it to
-its set of neighbors (see Figures~\ref{fig:counterproblemA}
+To remove this last monotonic and linear upper bound on space complexity,
+Figure~\ref{fig:counterproblem} shows that summarizing the global state of the
+system using vector clocks is unnecessary. Instead, a simple and lightweight
+data structure can forbid multiple delivery as long as the system remains
+static. In this scenario, processes use \PCBROADCAST (\REF): a causal broadcast
+protocol that ensures causal order of messages even in dynamic systems without
+message overhead.  When a process broadcasts a message, it sends it to its set
+of neighbors (see Figures~\ref{fig:counterproblemA}
 and~\ref{fig:counterproblemC}); when a process delivers such message, it
 forwards it to its own neighbors in a gossip fashion (see
 Figure~\ref{fig:counterproblemB}). Processes receive each message either
@@ -187,7 +106,7 @@ round-trip of control messages.  At first, Process~B cannot communicate directly
 with Process~C for causal broadcast. When Process~B wants to add Process~C in
 its neighborhood, it must send a control message $\pi$ using its established
 links to Process~C (see
-Figures~\ref{fig:counterproblemB}--\ref{fig:counterproblemD}, await for the
+Figures~\ref{fig:counterproblemB}--\ref{fig:counterproblemD}), await for the
 latter's answer (see Figure~\ref{fig:counterproblemE}) while buffering each
 message it delivers (see Figure~\ref{fig:counterproblemD}). Upon receipt of the
 acknowledgment $\rho$, Process~B empties its buffer to Process~C and starts
@@ -198,52 +117,12 @@ compute the number of expected messages correctly. Process~C was unable to
 distinguish messages it would receive from Process~B (i.e., $a$) from messages
 it would never receive from Process~B (i.e., $b$).
 
-% depicts the same scenario where we replace the linearly increasing local
-% structure by a set of messages purged over receipts. Assuming that each process
-% delivers and forwards each message exactly once, processes expect to receive one
-% copy of each broadcast message per link pointing to them. For instance, in
-% Figure~\ref{fig:counterproblemA}, Process~B expects to receive one copy of $b$,
-% for only Process~A has Process~B as neighbor; in
-% Figure~\ref{fig:counterproblemC}, Process~A expects two copies of $a$, for both
-% Process~B and Process~C have Process~A as neighbor. Received messages that are
-% not in the local structure are new and must be delivered. Receives messages that
-% are in the local structure must be ignored and the counter of expected copies
-% decremented. When this counter reaches 0, the process assumes that it will not
-% receive this message again, hence it purges its local structure from this
-% message. For instance, in Figure~\ref{fig:counterproblemC}, Process~B removes
-% the element $b$, for it received the awaited copy; in
-% Figure~\ref{fig:counterproblemE}, Process~A removes the element $a$, for it
-% received both awaited copies.  Unfortunately, in
-% Figure~\ref{fig:counterproblemF}, the number of expected messages becomes
-% inconsistent due to dynamicity. Process~B empties its buffer of messages
-% containing $a$, for the sake of causal order. When Process~C receives $a$, it
-% mistakes this message for a new message. Not only Process~C delivers $a$ a
-% second time, but it forwards it to its neighbors leading to a cascading effect
-% of multiple deliveries.
-
-
-% Even if counters are insufficient to discard multiple receipts in dynamic
-% systems, this hints that broadcast can guarantee reliability locally without
-% maintaining costly data structures summarizing the global state of the system,
-% e.g., using vector clocks.
-
-
-% To solve this issue, state-of-the-art protocols maintain a local vector the size
-% of which increases linearly with the number of processes that ever broadcast a
-% message. They eventually become overcostly in dynamic settings.
-
-
 In this paper, we exploit and extend \PCBROADCAST to provide a causal broadcast
-middleware that is lightweight in terms of local memory consumption, and message
-overhead. Table~\ref{table:complexity} shows the complexity of the proposed
-approach. It keeps constant message overhead and constant delivery execution
-time while removing the last linear dependency $N$ that remained on local space
-complexity. Its overhead in terms of number of control messages is twice that of
-\PCBROADCAST.
-%% It maintains a local structure that grows and shrinks over time when
-%% processes can join, leave, or self-reconfigure their neighborhood over time.
-%% \TODO{maybe more details.}
-The next section describes the proposed protocol.
+middleware that keeps constant message overhead while removing the last linear
+and monotonic dependency $O(N)$ that remained on local space complexity (see
+Table~\ref{table:complexity}). Compared to \PCBROADCAST, its overhead in terms
+of number of control messages is twice higher.  The next section describes the
+proposed protocol.
 
 
 %%% Local Variables:
