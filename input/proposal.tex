@@ -2,32 +2,38 @@
 \section{Proposal}
 \label{sec:proposal}
 
-In this section, we present \RPCBROADCAST, a causal broadcast protocol removing
-the last linear upper bound in terms of number of processes that ever broadcast
-a message that remained on space complexity. \RPCBROADCAST exploits the
-improvement brought by \PCBROADCAST on generated traffic to reduce the space
-consumed by reliable broadcast, at marginal cost.
+In this section, we present \RPCBROADCAST, a causal broadcast protocol providing
+an original tradeoff in terms of complexity. \RPCBROADCAST exploits causal order
+to remove obsolete control information about broadcast messages. It removes the
+last linear and monotonic upper bound that remained on space complexity at the
+cost of few lightweight control messages.
 
 \subsection{Model}
 
 A distributed system comprises a set of processes that can communicate with each
 other using messages. Processes may not have full knowledge of the membership of
 the system. Instead, processes build and maintain overlay networks: each process
-updates a local partial view of logical communication channels, i.e., a set of
+updates a local partial view of logical communication links, i.e., a set of
 processes to communicate with. The partial view is usually much smaller than the
 actual system size. We speak of overlay networks, networks, or distributed
 systems indifferently.
 
 \begin{definition}[Overlay network]
-  An overlay network comprises a set of processes that run a set of instructions
-  sequentially.  An overlay network also comprises a set of directed
-  links. \\
-  An overlay network is dynamic if the set of processes or the set of links is
-  mutable. Otherwise, the overlay network is static. \\
-  The set of links departing from a process is its neighborhood, or partial
-  view, or out-view. The set of links arriving to a process is its in-view. \\
-  A link from a process to another process allows the former to transmit
-  information to the latter. Processes transmit information using asynchronous
+  An overlay network $G: P \times E$ comprises a set of processes $P$ and a set
+  of directed links $E: P \times P$.  An overlay network is static if both sets
+  $P$ and $G$ are immutable. Otherwise, the overlay network is dynamic. An
+  overlay network is unpartitioned if their exists a path -- i.e. a link or an
+  array of links -- from any process to any other process. We only consider
+  unpartitioned overlay networks.
+\end{definition}
+
+\begin{definition}[Process]
+  A process runs a set of instructions sequentially.\\ The set of links
+  departing from a process is its neighborhood, or partial
+  view, or out-view $Q_o$. The set of links arriving to a process is its in-view $Q_i$.\\
+  % A link from a process to another process allows the former to transmit
+  % information to the latter.
+  Processes transmit information using asynchronous
   message passing.\\
   Processes are faulty if they crash, otherwise they are correct. There are no
   byzantine processes.
