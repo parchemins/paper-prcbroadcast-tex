@@ -1,12 +1,20 @@
  
 \section{Introduction}
 
-Causal broadcast (\REF) constitutes the core communication primitive of many
-distributed systems (\REF). It ensures the reliable delivery of broadcast
-messages, exactly once, following Lamport's happen before
-relationship~\cite{lamport1978time}. If the sending of a message $m$ precedes
-the sending of a message $m'$ then all processes that deliver these two messages
-need to deliver $m$ before $m'$. Otherwise they deliver them in any order.
+Causal broadcast constitutes the core communication primitive of many
+distributed systems~\cite{hadzilacos1994modular}. Applications such as
+distributed social networks~\cite{borthakur2013petabyte}, distributed
+collaborative software~\cite{heinrich2012exploiting,nedelec2016crate}, or
+distributed data
+stores~\cite{bailis2013bolton,bravo2017saturn,demers1987epidemic,lloyd2011cops,shapiro2011comprehensive}
+use causal broadcast to ensure consistency criteria.  Causal broadcast ensures
+the reliable delivery of broadcast messages, exactly once, following Lamport's
+happen before relationship~\cite{lamport1978time}. When Alice comments Bob's
+picture, nobody sees Alice's comment without Bob's picture, and nobody sees
+Alice's comment or Bob's picture multiple times.
+% If the sending of a message $m$ precedes the sending of a message $m'$ then all
+% processes that deliver these two messages need to deliver $m$ before
+% $m'$. Otherwise they deliver them in any order.
 
 In large and dynamic systems, processes cannot afford to maintain an up-to-date
 knowledge of the full membership (\REF). Instead, each process builds a partial view of
