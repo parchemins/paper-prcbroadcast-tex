@@ -11,39 +11,45 @@ use causal broadcast to ensure consistency criteria.  Causal broadcast ensures
 the reliable delivery of broadcast messages, exactly once, following Lamport's
 happen before relationship~\cite{lamport1978time}. When Alice comments Bob's
 picture, nobody sees Alice's comment without Bob's picture, and nobody sees
-Alice's comment or Bob's picture multiple times.
+multiple occurrences of Alice's comment or Bob's picture.
 % If the sending of a message $m$ precedes the sending of a message $m'$ then all
 % processes that deliver these two messages need to deliver $m$ before
 % $m'$. Otherwise they deliver them in any order.
 
-In large and dynamic systems, processes cannot afford to maintain an up-to-date
-knowledge of the full membership (\REF). Instead, each process builds a partial view of
-neighbors to communicate with. Gossiping (\REF) exploits these neighborhoods to
+In large and dynamic systems comprising from hundreds to millions of processes,
+no process can afford to maintain an up-to-date knowledge of the full
+membership~\cite{birman1999bimodal,demers1987epidemic}. Instead, each process
+builds a partial view of neighbors to communicate
+with~\cite{jelasity2007gossip}. Gossiping exploits these neighborhoods to
 efficiently broadcast a message to all processes. To broadcast a message, a
 process sends the message to its neighbors; each process receiving such message
 forwards it to its own neighbors. Processes receive the message either directly
-or transitively. Processes may receive a broadcast message multiples times from
+or transitively. 
+
+
+% In static systems where processes cannot join, leave, or self-reconfigure their
+% neighborhood, the local structure that ensures exactly once delivery is
+% lightweight.  Since each process forwards each message exactly once, each
+% process knows that it will receive a number of copies of the original message
+% equal to the number of their incoming links. Once it received that many copies,
+% it safely purges its local structure from this message. It will never receive
+% this message again.  However, in dynamic systems, when a process adds a neighbor
+% to its partial view, the latter does not know if it should expect another
+% message copy from this new incoming link. It may cause multiple deliveries of a
+% same message.
+
+However, processes may receive a broadcast message multiples times from
 different sources.  To deliver each message exactly once, reliable broadcast
-must discard the additional copies of the original message at receipt.
+discards the additional copies of the original message at
+receipt~\cite{hadzilacos1994modular}.  To forbid multiple delivery,
+state-of-the-art broadcast protocols maintain a local vector of Lamport's clocks
+with 1 entry per process that ever broadcast a
+message~\cite{hadzilacos1994modular}. While it allows to discard already
+delivered messages in constant time $O(1)$, its size increases monotonically
+over deliveries $O(N)$ where $N$ is the number of processes that ever broadcast
+a message. This eventually becomes inefficient, for processes cannot safely
+reclaim entries without running an overcostly consensus protocol.
 
-In static systems where processes cannot join, leave, or self-reconfigure their
-neighborhood, the local structure that ensures exactly once delivery is
-lightweight.  Since each process forwards each message exactly once, each
-process knows that it will receive a number of copies of the original message
-equal to the number of their incoming links. Once it received that many copies,
-it safely purges its local structure from this message. It will never receive
-this message again.  However, in dynamic systems, when a process adds a neighbor
-to its partial view, the latter does not know if it should expect another
-message copy from this new incoming link. It may cause multiple deliveries of a
-same message.
-
-To solve this, broadcast protocols maintain a summary of past delivered messages
-(\REF). Upon receipt, processes quickly identify whether they should deliver the
-message or discard it. However, the size of this structure increases linearly
-with the number of processes that ever broadcast a message (\REF). This dampens
-the usage of broadcast protocols. In particular, humble devices with limited
-local memory cannot afford it, and reclaiming elements from the structure
-requires an overcostly distributed consensus (\REF).
 
 % \TODO{We do reliable broadcast on top of causal broadcast. Did not make sense
 %   before because the cost of causal broadcast was too high. Now that it's cheap,
@@ -67,42 +73,39 @@ requires an overcostly distributed consensus (\REF).
   \end{center}
 \end{table}
 
-In this paper, we present a causal broadcast protocol that exploits causal order
-to get rid of the summary of past delivered messages. 
-%\TODO{Maybe more generic: on top of any causal broadcast? Along with
-%  \PCBROADCAST it removes the last linear complexity?}
-Our contribution is threefold:
+In this paper, we introduce an implementation of causal broadcast that gets rid
+of this last monotonically increasing upper bound on space complexity.  Our
+contribution is threefold:
 \begin{itemize}[leftmargin=*]
-\item We extend the causal broadcast protocol proposed in (\REF) to remove the
-  last linear upper bound in terms of number of processes that ever broadcast a
-  message that remains on local space complexity. Similarly to \REF, it only
-  makes use of temporary buffers and few control messages to ensure both causal
-  order and reliability. We provide the corresponding formal proof.
-  % describe a causal broadcast that piggybacks constant size control information
-  % while maintaining a local structure that is safely purged over time, and we
-  % prove it.
-\item We provide the complexity analysis of our causal broadcast
-  protocol. Table~\ref{table:complexity} shows that removing the last linear
-  upper bound $N$ cost twice as much in terms of number of control messages as
-  ensuring causal order. Depending on the system (\REF), the number of messages
-  stays close to its lower bound $6$. The local space consumption consists of
-  buffers that grow and shrink in dynamic settings.
-\item We provide experimentation highlighting the impact of our protocol on
-  transmission delays before delivery and the generated traffic. \TODO{More.}
+\item We provide the scientific problem to solve: identifying processes that
+  will broadcast or forward a message while discarding obsolete control
+  information about messages that will never be received again. We provide an
+  algorithm and the proof that it solves this problem in dynamic systems where
+  processes can join, leave, or self-reconfigure at any time.
+\item Our protocol provides an original tradeoff where message overhead remains
+  constant while space consumption depends on the actual system (see
+  Table~\ref{table:complexity}). It safely discards obsolete control information
+  about broadcast messages by transmitting lightweight control messages. The
+  number of control messages depends on routing capabilities of the system and
+  its dynamicity. For instance, gossip-based peer-sampling
+  protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} needs
+  8 control messages per added link during periodic shuffles.
+\item Our experiments highlights the space consumed by our protocol in dynamic
+  systems with varying latency. It confirms that the proposed approach scales
+  with the system settings instead of past broadcast messages. Processes
+  actually pay at the height of their current use.
 \end{itemize}
-\RPCBROADCAST proposes an advantageous tradeoff that makes causal broadcast a
-lightweight and efficient middleware in large and dynamic systems. This tradeoff
-even makes \RPCBROADCAST a lightweight and efficient implementation of reliable
-broadcast. By removing the last linearly and monotonically increasing structure,
-these broadcast protocols can run in large and dynamic systems even on most
-humble devices such as Raspberry Pi's. \TODO{It also makes scalable all
-  protocols that rely on causal broadcast.}
+The proposed causal broadcast constitutes an advantageous tradeoff that makes
+causal broadcast a lightweight and efficient middleware in large and dynamic
+systems. We argue that this tradeoff even makes the protocol a lightweight and
+efficient implementation of reliable broadcast.
 
 The rest of this paper is organized as follows. Section~\ref{sec:motivations}
 shows the issue and motivates this work. Section~\ref{sec:proposal} presents the
 proposed causal broadcast and corresponding
-proofs. Section~\ref{sec:experimentation} highlights the pros and cons of our
-approach on experimental setups. We conclude in Section~\ref{sec:conclusion}.
+proofs. Section~\ref{sec:experimentation} shows the
+experiments. Section~\ref{sec:relatedwork} reviews related work. We conclude in
+Section~\ref{sec:conclusion}.
 
 
 %%% Local Variables:
