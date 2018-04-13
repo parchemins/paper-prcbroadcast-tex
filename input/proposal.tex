@@ -223,14 +223,17 @@ preceding messages that took longer paths. \PCBROADCAST ensures safety by
 sending control messages. Section~\ref{sec:motivations} and
 Figure~\ref{fig:timelinepcbroadcast} show its functioning. Process~A sends a
 control message $\pi$ to Process~B using safe links and awaits its answer
-$\rho$. This is a ping phase.
+$\rho$. This is a ping phase. While awaiting Process~B's response, Process~A
+buffers its delivered messages. Upon receipt of $rho$, Process~A empties its
+buffer to Process~A. The link is safe. Process~A can use it normally for causal
+broadcast.
 
-\begin{definition}[Ping phase (\REF)]
-  Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
-  using safe links. When Process~B receives this ping, it replies to
-  Process~A. Replies $\rho$ travel using any communication mean. Ping phase ends
-  when Process~A receives the reply of Process~B.
-\end{definition}
+% \begin{definition}[Ping phase (\REF)]
+%   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
+%   using safe links. When Process~B receives this ping, it replies to
+%   Process~A. Replies $\rho$ travel using any communication mean. Ping phase ends
+%   when Process~A receives the reply of Process~B.
+% \end{definition}
 
 \begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts (\REF)]
   A ping phase from Process~A to Process~B acknowledges the receipt by B of all
@@ -239,44 +242,42 @@ $\rho$. This is a ping phase.
   r_B(m)$
 \end{lemma}
 
-\PCBROADCAST ensures that all preceding messages arrive before new messages by
-acknowledging the receipt of most messages while buffering messages concurrent
-to the acknowledgment. Processes receive all messages at least once and
-following causal order. However, \PCBROADCAST does not forbid multiple delivery
-by itself. It relies on a reliable broadcast that either use vector clocks, or
-fails to handle dynamic systems (see Figure~\ref{fig:counterproblem}).
+%\PCBROADCAST ensures that all preceding messages arrive before new messages by
+%acknowledging the receipt of most messages while buffering messages concurrent
+%to the acknowledgment. Processes receive all messages at least once and deliver
+%them following causal order. 
+However, \PCBROADCAST does not forbid multiple delivery by itself. It relies on
+a reliable broadcast that either use vector clocks, or fails to handle dynamic
+systems.  In Figure~\ref{fig:counterproblem}, the issue comes from Process~C
+being unable to remember messages it will receive from Process~B's buffer (i.e.,
+the message $a$) while forgetting about messages it will never receive from
+Process~B (i.e., the message $b$).  To remove the last linear and monotonic
+upper bound that remains on space complexity, causal broadcast must forget
+obsolete control information and handle dynamic systems where processes can
+join, leave, or self-reconfigure their partial view.
 
-
-
-To remove the last linear upper bound that remains on space complexity, causal
-broadcast must provide a bound on remembering while handle dynamic systems where
-processes can join, leave, or self-reconfigure their partial view.
-
-To provide a bound on remembering, upon receipt of a broadcast message, a
-process must
-\begin{inparaenum}[(i)]
-\item identify if it already delivered this message, and
-\item identify all other processes that will send it this message.
-\end{inparaenum}
-In Figure~\ref{fig:counterproblem}, the related issue comes from Process~C being
-unable to remember messages it will receive from Process~B's buffer (i.e., the
-message $a$) while forgetting about messages it will never receive from
-Process~B (i.e., the message $b$).
+% To provide a bound on remembering, upon receipt of a broadcast message, a
+% process must
+% \begin{inparaenum}[(i)]
+% \item identify if it already delivered this message, and
+% \item identify all other processes that will send it this message.
+% \end{inparaenum}
 
 \begin{problem*}
-Assuming Process~A sends a buffer of messages to Process~B in order to finalize
-the safety of this link (see Figure~\ref{fig:timelinepcbroadcast}). Upon receipt
-of this buffer by Process~B, the scientific problem consists in:
-\begin{itemize}[leftmargin=*]
-\item Identifying the array of messages from the buffer that are delivered by
-  Process~A but not delivered by Process~B;
-\item Identifying the set of message messages from the buffer that are delivered
-  by Process~A and Process~B;
-\item Identifying the set of messages delivered by Process~B that Process~B will
-  receive by this safe link.
-\end{itemize}
-These are the array of messages to deliver, the set of messages to ignore, and
-the set of messages to expect, respectively.
+  Figure~\ref{fig:problemstatement} depicts this problem. Assuming Process~A
+  sends a buffer of messages to Process~B in order to finalize the safety of
+  this link (see Figure~\ref{fig:timelinepcbroadcast}). Upon receipt of this
+  buffer by Process~B, the scientific problem consists in:
+  \begin{itemize}[leftmargin=*]
+  \item Identifying the array of messages from the buffer that are delivered by
+    Process~A but not delivered by Process~B in order to deliver them;
+  \item Identifying the set of message messages from the buffer that are
+    delivered by Process~A and Process~B in order to forget them;
+  \item Identifying the set of messages delivered by Process~B that Process~B will
+    receive by this safe link in order to remember them.
+  \end{itemize}%
+%  These are the array of messages to deliver, the set of messages to ignore, and
+%  the set of messages to expect, respectively.
 \end{problem*}
 
 \begin{figure}
@@ -288,18 +289,18 @@ the set of messages to expect, respectively.
   \end{center}
 \end{figure}
 
-Figure~\ref{fig:problemstatement} depicts the scientific problem. The buffer of
-messages sent by Process~A includes messages that are delivered by Process~A
-only. Process~B must deliver these messages normally. The buffer of messages
-also includes messages already delivered by Process~B. Process~B must remember
-these messages to discard them when the buffer arrives. Finally, Process~B
-delivered messages that Process~A did not deliver. Since each process delivers
-and forwards each message exactly once, Process~B will receive these messages by
-this new safe link. Process~B must remember these messages to discard them at
-their receipt.
+% Figure~\ref{fig:problemstatement} depicts the scientific problem. The buffer of
+% messages sent by Process~A includes messages that are delivered by Process~A
+% only. Process~B must deliver these messages normally. The buffer of messages
+% also includes messages already delivered by Process~B. Process~B must remember
+% these messages to discard them when the buffer arrives. Finally, Process~B
+% delivered messages that Process~A did not deliver. Since each process delivers
+% and forwards each message exactly once, Process~B will receive these messages by
+% this new safe link. Process~B must remember these messages to discard them at
+% their receipt.
 
-The rest of this section describes a broadcast protocol that solves this problem
-and provides its complexity analysis.
+The rest of this section describes a causal broadcast protocol that solves this
+problem and provides its complexity analysis.
 
 
 \subsection{Operation}
