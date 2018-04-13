@@ -28,38 +28,31 @@ systems indifferently.
 \end{definition}
 
 \begin{definition}[Process]
-  A process runs a set of instructions sequentially.\\ The set of links
-  departing from a process is its neighborhood, or partial
-  view, or out-view $Q_o$. The set of links arriving to a process is its in-view $Q_i$.\\
-  % A link from a process to another process allows the former to transmit
-  % information to the latter.
-  Processes transmit information using asynchronous
-  message passing.\\
-  Processes are faulty if they crash, otherwise they are correct. There are no
-  byzantine processes.
+  A process runs a set of instructions sequentially. Processes communicate with
+  each other using asynchronous message passing. A process~A can send a message
+  to another process~B $s_{AB}(m)$, or to any process $s_A(m)$; receive a
+  message from another process~B $r_{AB}(m)$, or from any process $r_A(m)$. A
+  process sends messages to the set of links departing from it, called
+  neighborhood, or partial view, or out-view $Q_o$. A process receives messages
+  from the set of links arriving to it, called in-view $Q_i$.  Processes are
+  faulty if they crash, otherwise they are correct. We do not consider byzantine
+  processes.
 \end{definition}
-
-Processes can communicate with each other using message passing. Process~A can
-send a message $m$ to Process~B $s_{AB}(m)$. Process~A can receive a message $m$
-from another process B $r_{AB}(m)$, or from any other process
-$r_A(m)$. Process~A can send a message $m$ to all other processes of the system,
-i.e., it broadcasts a message $b_A(m)$. Process~A can deliver a message
-$d_A(m)$.
 
 To characterize the order among events such as send, or receive, we define time
 in a logical sense using Lamport’s definition.
 
 \begin{definition}[Happen before~\cite{lamport1978time}]
-  Happen before is a transitive, irreflexive, and antisymmetric relation that
-  defines a strict partial orders of events. The sending of a message always
-  precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two messages are
-  concurrent if none happens before the other.
+  Happen before is a transitive, irreflexive, and antisymmetric relation
+  $\rightarrow$ that defines a strict partial orders of events. The sending of a
+  message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
+  messages are concurrent if none happens before the other.
 \end{definition}
 
 \begin{definition}[Uniform reliable broadcast] 
-  When a process broadcasts a message to all processes of the network, correct
-  processes eventually receive it. Uniform reliable broadcast guarantees 3
-  properties:
+  When a process~A broadcasts a message to all processes of its system $b_A(m)$,
+  each correct process~B eventually receives it and delivers it
+  $d_B(m)$. Uniform reliable broadcast guarantees 3 properties:
   \begin{itemize}[leftmargin=*]
   \item Validity: If a correct process broadcasts a message, then it
     eventually delivers it.
@@ -70,24 +63,22 @@ in a logical sense using Lamport’s definition.
   \end{itemize}
 \end{definition}
 
-From uniform integrity, we derive that despite multiple receipts, a process
-delivers a message once.
-
-\begin{definition}[Exactly once delivery]
-  Each process receives each broadcast message at least once. A process may receive
-  a message multiple times but delivers it at most once:
-  \begin{enumerate}
-  \item $\forall A,\,B,\, b_A(m) \implies r_B(m)$
-  \item $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$
-  \item \label{enum:uniqueness}
-    $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$
-  \end{enumerate}
-\end{definition}
-
-Property~\ref{enum:uniqueness} suggests the use of a data structure ensuring
-uniqueness of messages such as sets or vectors. The data structure allows
-processes to remember about prior delivery of messages in order to discard
-double receipts.
+From validity and uniform agreement, each correct process receives each
+broadcast message at least once. From uniform integrity, each correct process
+delivers each broadcast message once despite possible multiple receipts.
+% \begin{definition}[Exactly once delivery]
+%   Each process receives each broadcast message at least once. A process may receive
+%   a message multiple times but delivers it at most once:
+%   \begin{enumerate}
+%   \item $\forall A,\,B,\, b_A(m) \implies r_B(m)$
+%   \item $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$
+%   \item \label{enum:uniqueness}
+%     $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$
+%   \end{enumerate}
+% \end{definition}
+This suggests a data structure ensuring uniqueness of messages such as sets or
+vectors. It allows processes to remember about prior delivery of messages in
+order to discard double receipts.
 
 \begin{definition}[Remembering]
   A process starts to remember a message at its delivery:
@@ -95,8 +86,8 @@ double receipts.
   remembered: \\ $\not\exists m,\, remember_A(m) \rightarrow d_A(m)$.
 \end{definition}
 
-\begin{theorem}[\label{theo:rememberinganduniqueness}Remembering ensures
-  delivery uniqueness]
+\begin{theorem}[\label{theo:rememberinganduniqueness}Remembering forbids
+  multiple delivery]
   A process delivering only messages it does not remember delivers each received
   message exactly once.
 \end{theorem}
@@ -109,25 +100,25 @@ double receipts.
   delivers each message once and only once.
 \end{proof}
 
-\TODO{Vector clocks implement remembering but fail to remove obsolete
-  information. To be lightweight, we must provide a safe bound on remembering.}
-
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
   \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
 \end{algorithm}
 
-Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a uniform
-reliable broadcast ensuring uniqueness of delivery in static systems. It
-features a data structure that remembers messages for a finite period of time.
-This structure is eventually and safely purged over time of delivered messages.
-The idea consists in discarding obsolete messages, i.e., messages that will
-never be received any longer.
+Vector clocks implement remembering but fail to remove obsolete control
+information.  Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a
+uniform reliable broadcast that forbids multiple delivery in static systems. It
+features a data structure that remembers messages (see
+Line~\ref{line:remembers}) but forgets them as soon as they cannot be received
+any longer by the process (see Line~\ref{line:forgets}).  It uses the in-view
+and exploits the property that each process sends each message exactly once to
+each neighbor in their out-view. It associates with each link from the in-view a
+set of expected messages. A process forgets expected messages over receipts.
 
-\begin{theorem}[Bound on remembering]
+\begin{theorem}[Forgetting]
   Assuming processes receive each message a finite number of times, remembering
   a message from its delivery to its last receipt is necessary and sufficient to
-  ensure delivery uniqueness.
+  forbid multiple delivery.
 \end{theorem}
 
 \begin{proof}
@@ -148,48 +139,45 @@ never be received any longer.
   that many deliveries of $m$.
 \end{proof}
 
-Algorithm~\ref{algo:reliablebroadcast} keeps track of expected messages until
-remembering these messages becomes obsolete. % Similarly to
-%Algorithm~\ref{algo:counterrbroadcast},
-It uses the in-view and exploits the property that each process sends each
-message exactly once to each neighbor in their out-view.  Instead of using
-counters as in Figure~\ref{fig:counterproblem}, it associates with each link
-from the in-view a set of expected messages.
+However, forgetting becomes more challenging in dynamic systems where processes
+can start sending messages to any other process at any time. Any process can
+receive an already forgotten message from another process. This may lead to
+double delivery with cascading effects in the
+system. Algorithm~\ref{algo:reliablebroadcast} fails to forbid multiple delivery
+in dynamic systems (see Figure~\ref{fig:counterproblem}). In this paper, we
+exploit causal order to solve this issue.
 
-\begin{definition}[Per link remembering]
-  A process remembers a message from its delivery to its last receipt, i.e.,
-  once the process received the message from its whole in-view.
-  $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
-\end{definition}
+% \begin{definition}[Per link remembering]
+%   A process remembers a message from its delivery to its last receipt, i.e.,
+%   once the process received the message from its whole in-view.
+%   $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
+% \end{definition}
 
-\begin{lemma}[Per link remembering ensures delivery uniqueness]
-  Assuming a static network where processes cannot join, nor leave, nor
-  self-reconfigure their partial views, per link remembering ensures uniqueness
-  of delivery.
-\end{lemma}
+% \begin{lemma}[Per link remembering ensures delivery uniqueness]
+%   Assuming a static network where processes cannot join, nor leave, nor
+%   self-reconfigure their partial views, per link remembering ensures uniqueness
+%   of delivery.
+% \end{lemma}
 
-\begin{proof}
-  When a process receives a message $m$ for the first time, it expects to
-  receive one copy of $m$ for each other neighbor in its in-view. Assuming $k$
-  neighbors in its in-view, the process remembers $m$ until it receives $k$
-  copies in total. Assuming that each process delivers -- hence forwards -- each
-  message exactly once, the former process does not receive more than $k$ copies
-  of $m$. Consequently, each process deliver each message exactly once despite
-  receiving multiple copies.
-\end{proof}
+% \begin{proof}
+%   When a process receives a message $m$ for the first time, it expects to
+%   receive one copy of $m$ for each other neighbor in its in-view. Assuming $k$
+%   neighbors in its in-view, the process remembers $m$ until it receives $k$
+%   copies in total. Assuming that each process delivers -- hence forwards -- each
+%   message exactly once, the former process does not receive more than $k$ copies
+%   of $m$. Consequently, each process deliver each message exactly once despite
+%   receiving multiple copies.
+% \end{proof}
 
-%Algorithms~\ref{algo:counterrbroadcast} and
-Algorithm~\ref{algo:reliablebroadcast} guarantees exactly once delivery of
-messages in static systems. The local data structure is safely purged over
-receipts. However, as soon as the system becomes dynamic, this property may be
-violated (see Figure~\ref{fig:counterproblem}). In this paper, we exploit
-message ordering to solve this issue.
+% Algorithm~\ref{algo:reliablebroadcast} guarantees exactly once delivery of
+% messages in static systems. The local data structure is safely purged over
+% receipts. 
 
-In addition to reliable delivery, broadcast protocols can guarantee a delivery
-order of messages. We focus on causal order. Process~A should deliver a message
-$m$ from Process~B after having delivered all messages delivered by Process~B
-before the sending of $m$. This order will prove useful to ensure the receipt of
-set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
+% In addition to reliable delivery, broadcast protocols can guarantee a delivery
+% order of messages. We focus on causal order. Process~A should deliver a message
+% $m$ from Process~B after having delivered all messages delivered by Process~B
+% before the sending of $m$. This order will prove useful to ensure the receipt of
+% set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
 
 \begin{definition}[Causal order]
   The delivery order of messages follows the happen before relationships of the
@@ -201,6 +189,8 @@ set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
   Causal broadcast is a uniform reliable broadcast ensuring causal order.
 \end{definition}
 
+
+
 \begin{figure}
   \begin{center}
     \input{input/figtimelinepcbroadcast.tex}
@@ -211,6 +201,9 @@ set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
       messages via the new link. The link becomes safe.}
   \end{center}
 \end{figure}
+
+\subsection{Problem statement}
+\label{subsec:problemstatement}
 
 \PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, gossiping,
 control messages, and buffers to ensure causal order in dynamic systems. A
@@ -249,29 +242,11 @@ $\rho$. This is a ping phase.
 \PCBROADCAST ensures that all preceding messages arrive before new messages by
 acknowledging the receipt of most messages while buffering messages concurrent
 to the acknowledgment. Processes receive all messages at least once and
-following causal order.
-
-However, \PCBROADCAST does not ensure exactly once delivery by itself. It relies
-on a reliable broadcast protocol that either grows linearly compared to the
-number of processes that ever broadcast a message (see
-Figure~\ref{fig:spaceproblem}), or bounds the remembering of messages but fails
-to handle dynamic systems (see Figure~\ref{fig:counterproblem}).
-
-% Process~B adds Process~C in its out-view but Process~C forgot about 
-% message $a$ when Process~B received it. This leads to double delivery of $a$
-% and subsequent inconsistencies.
-
-% In this paper, we exploit causal communication to implement a stronger meaning
-% of safe link at marginal cost. A link becomes safe when it cannot violate both
-% causal delivery and exactly once delivery.  This is more expensive to ensure in
-% terms of control messages, for it must account for concurrent messages between
-% involved processes. The rest of this section describes the operation of our
-% proposal and its complexity.
+following causal order. However, \PCBROADCAST does not forbid multiple delivery
+by itself. It relies on a reliable broadcast that either use vector clocks, or
+fails to handle dynamic systems (see Figure~\ref{fig:counterproblem}).
 
 
-
-\subsection{Problem statement}
-\label{subsec:problemstatement}
 
 To remove the last linear upper bound that remains on space complexity, causal
 broadcast must provide a bound on remembering while handle dynamic systems where

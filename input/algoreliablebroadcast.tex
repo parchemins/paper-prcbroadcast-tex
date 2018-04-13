@@ -40,10 +40,10 @@
   \Function{$\textup{received}(m,\, l)$}{
     \textbf{let} $hasReceived \leftarrow true$ \;
     \If {$\not\exists q \in D$ \textbf{\textup{such that}} $m \in D[q]$} {
-      \lForEach {$q \in Q_i$} {$D[q] \leftarrow D[q] \cup m$}
+      \lForEach {$q \in Q_i$} {$D[q] \leftarrow D[q] \cup m$ \label{line:remembers}}
       $hasReceived \leftarrow false$ \;
     }
-    $D[l] \leftarrow D[l] \setminus m$ \;
+    $D[l] \leftarrow D[l] \setminus m$ \label{line:forgets}\;
     \Return $hasReceived$ \;
   }
   
