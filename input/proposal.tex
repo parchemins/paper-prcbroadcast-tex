@@ -304,9 +304,21 @@ problem and provides its complexity analysis.
 
 \subsection{Operation}
 
+% \begin{algorithm}[h]
+%   \input{./input/algorpcbroadcast.tex}
+%   \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
+% \end{algorithm}
+
+
 \begin{algorithm}[h]
-  \input{./input/algorpcbroadcast.tex}
-  \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
+  \input{./input/algorpcbroadcastsplitA.tex}
+  \caption{\label{algo:rpcbroadcastsplitA}Safety check of \RPCBROADCAST at Process $p$.}
+\end{algorithm}
+
+\begin{algorithm}[h]
+  \input{./input/algorpcbroadcastsplitB.tex}
+  \caption{\label{algo:rpcbroadcastsplitB}Dissemination and buffering of
+    \RPCBROADCAST at Process $p$.}
 \end{algorithm}
 
 

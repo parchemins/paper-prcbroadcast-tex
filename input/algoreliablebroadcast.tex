@@ -30,7 +30,7 @@
   
   \Upon{$\textup{receive}(m,\, l)$}{
     \If {$\neg\textup{received}(m,\,l)$} {
-      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{fwd}}
+      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{forward}}
       \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
     }
   }
