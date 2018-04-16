@@ -11,23 +11,60 @@
 
 %\begin{multicols}{2}
 \Initially {} {
-  $Q_o$ \tcp*{Set of processes, $p$'s outview}
-  $Q_i$ \tcp*{Set of processes, $p$'s inview}
-  \BlankLine  
-  $B \leftarrow \varnothing$ \tcp*{link $\rightarrow$ buffered messages}
-  \BlankLine  
-  $S \leftarrow \varnothing$ \tcp*{Map of buffers $Q_i : M^* \times M^* \times bool$}
+%  $Q_o$ \tcp*{Set of processes, $p$'s outview}
+%  $Q_i$ \tcp*{Set of processes, $p$'s inview}
+%  \BlankLine  
+  $B \leftarrow \varnothing$ \tcp*{$@$Sender Map of buffers $Q_o : M^*$}
+%  \BlankLine  
+  $S \leftarrow \varnothing$ \tcp*{$@$Receiver Map of buffers $Q_i : M^* \times M^* \times bool$}
+}
+
+\BlankLine
+
+\Dissemination{}{
+  
+  \Function{$\RPCBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
+%    $\textup{buffering}(m)$ \;
+    $\textup{R-broadcast}(m)$
+  }
+
+  \BlankLine
+  
+  \Upon{$\textup{R-deliver}(m)$} {
+    $\textup{buffering}(m)$ \;
+    $\textup{RPC-deliver}(m)$
+  }
+
+  \BlankLine
+
+  \Function{$\textup{buffering}(m)$}{ 
+    \lForEach {$q \in B$} {$B[q] \leftarrow B[q] \cup m$}
+
+    \lForEach{$q \in S$ \textup{\textbf{such that}}
+      $S[q] = \langle B_\alpha,\, \_,\, false \rangle$}
+    {$B_\alpha \leftarrow B_\alpha \cup m$}
+
+    \lForEach{$q \in S$ \textup{\textbf{such that}}
+      $S[q] = \langle\, \_,\,B_\pi,\, true \rangle$}
+    {$B_\pi \leftarrow B_\pi \cup m$}
+
+    % \ForEach {$q \in S$} {
+    %   \textbf{let} $\langle B_\alpha,\, B_\pi,\, received_\pi \rangle \leftarrow S[q]$ \;
+    %   \leIf {$received_\pi$}
+    %   {$B_\pi \leftarrow B_\pi \cup m$}
+    %   {$B_\alpha \leftarrow B_\alpha \cup m$} 
+%    }
+  }
 }
 
 \BlankLine
 
 \Safety{}{
-  
   \Upon{$\textup{open}_o(q)$} {
     $Q_o \leftarrow Q_o \setminus q$ \;
     $\textup{sendAlpha}(p,\,q)$ \label{line:sendalpha} \tcp*{$\alpha$}
   }
-  
+
   \Upon{$\textup{open}_i(q)$} {
     $Q_i \leftarrow Q_i \setminus q$ \;
   }
@@ -44,20 +81,20 @@
 
   \Upon{$\textup{receiveBeta}(from,\,to)$ \tcp*[f]{$from=p$}} {
     $B[to] \leftarrow \varnothing$ \tcp*{$B_\beta$}
-    $\textup{sendPing}(from,\, to)$ \label{line:sendpi} \tcp*{$\pi$}
+    $\textup{sendPi}(from,\, to)$ \label{line:sendpi} \tcp*{$\pi$}
   }
   
   \BlankLine
 
-  \Upon{$\textup{receivePing}(from,\,to)$ \tcp*[f]{$to=p$}} {
+  \Upon{$\textup{receivePi}(from,\,to)$ \tcp*[f]{$to=p$}} {
     \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
     $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \tcp*{$B_\pi$}
-    $\textup{sendPong}(from,\, to)$ \label{line:sendrho} \tcp*{$\rho$}
+    $\textup{sendRho}(from,\, to)$ \label{line:sendrho} \tcp*{$\rho$}
   }
 
   \BlankLine
 
-  \Upon{$\textup{receivePong}(from,\,to)$ \tcp*[f]{$from=p$}} {
+  \Upon{$\textup{receiveRho}(from,\,to)$ \tcp*[f]{$from=p$}} {
     $\textup{sendBuffer}(from,\,to,\, B[to])$ \label{line:sendbuffer}\;
     $B \leftarrow B \setminus to$ \;
     $Q_o \leftarrow Q_o \cup to$
@@ -68,7 +105,7 @@
   \Upon{$\textup{receiveBuffer}(from,\, to,\, B_\beta)$} {
     \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
-    \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
+    \lForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
     {$\textup{receive}(m,\,from)$ \label{line:todeliver}\tcp*[f]{to deliver}}
     $D[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \tcp*{to expect}
     $Q_i \leftarrow Q_i \cup from$ 
@@ -86,33 +123,6 @@
   
 }
 
-\BlankLine
-
-\Dissemination{}{
-  
-  \Function{$\RPCBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
-    $\textup{buffering}(m)$ \;
-    $\textup{R-broadcast}(m)$
-  }
-
-  \BlankLine
-  
-  \Upon{$\textup{R-deliver}(m)$} {
-    $\textup{buffering}(m)$ \;
-    $\textup{RPC-deliver}(m)$
-  }
-
-  \BlankLine
-
-  \Function{$\textup{buffering}(m)$}{ 
-    \lForEach {$q \in B$} {$B[q] \leftarrow B[q] \cup m$}
-    \ForEach {$q \in S$} {
-      \textbf{let} $\langle B_\alpha,\, B_\pi,\, received_\pi \rangle \leftarrow S[q]$ \;
-      \lIf {$received_\pi$} {$B_\pi \leftarrow B_\pi \cup m$}
-      \lElse {$B_\alpha \leftarrow B_\alpha \cup m$} 
-    }
-  }
-}
 %\end{multicols}
 
 %%% Local Variables:

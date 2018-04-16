@@ -141,7 +141,7 @@ set of expected messages. A process forgets expected messages over receipts.
 
 However, forgetting becomes more challenging in dynamic systems where processes
 can start sending messages to any other process at any time. Any process can
-receive an already forgotten message from another process. This may lead to
+receive an already forgotten message from any other process. This may lead to
 double delivery with cascading effects in the
 system. Algorithm~\ref{algo:reliablebroadcast} fails to forbid multiple delivery
 in dynamic systems (see Figure~\ref{fig:counterproblem}). In this paper, we
@@ -191,16 +191,16 @@ exploit causal order to solve this issue.
 
 
 
-\begin{figure}
-  \begin{center}
-    \input{input/figtimelinepcbroadcast.tex}
-    \caption{\label{fig:timelinepcbroadcast}Process~A ensures the safety of a
-      link to Process~B. $\pi$ travels using safe links through intermediary
-      processes that are hidden for the sake of clarity. $\rho$ reaches
-      Process~A by any communication mean. Process~A sends the array of buffered
-      messages via the new link. The link becomes safe.}
-  \end{center}
-\end{figure}
+% \begin{figure}
+%   \begin{center}
+%     \input{input/figtimelinepcbroadcast.tex}
+%     \caption{\label{fig:timelinepcbroadcast}Process~A ensures the safety of a
+%       link to Process~B. $\pi$ travels using safe links through intermediary
+%       processes that are hidden for the sake of clarity. $\rho$ reaches
+%       Process~A by any communication mean. Process~A sends the array of buffered
+%       messages via the new link. The link becomes safe.}
+%   \end{center}
+% \end{figure}
 
 \subsection{Problem statement}
 \label{subsec:problemstatement}
@@ -220,13 +220,12 @@ that cannot lead to causal order violations.
 
 Links start unsafe, for messages traveling by the new links may arrive before
 preceding messages that took longer paths. \PCBROADCAST ensures safety by
-sending control messages. Section~\ref{sec:motivations} and
-Figure~\ref{fig:timelinepcbroadcast} show its functioning. Process~A sends a
-control message $\pi$ to Process~B using safe links and awaits its answer
-$\rho$. This is a ping phase. While awaiting Process~B's response, Process~A
-buffers its delivered messages. Upon receipt of $rho$, Process~A empties its
-buffer to Process~A. The link is safe. Process~A can use it normally for causal
-broadcast.
+sending control messages. Section~\ref{sec:motivations} described its
+functioning. Process~A sends a control message $\pi$ to Process~B using safe
+links and awaits its answer $\rho$. This is a ping phase. While awaiting
+Process~B's response, Process~A buffers its delivered messages. Upon receipt of
+$\rho$, Process~A empties its buffer to Process~A. The link is safe. Process~A
+can use it normally for causal broadcast.
 
 % \begin{definition}[Ping phase (\REF)]
 %   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
@@ -359,7 +358,7 @@ deliver.
   receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
   communication means. Process~A sends $\gamma$ to Process~B using safe
   links. Process~B stops buffering on receipt of $\gamma$.
-  The buffer $Buf$ contains the messages delivered by Process~B. \\
+  The buffer $Buf$ contains the messages delivered by Process~B.
   $m \in Buf \Longleftrightarrow 
   (r_B(\alpha) \rightarrow d_B(m)) \wedge (d_B(m) \rightarrow r_B(\gamma))$
 \end{definition}
@@ -368,7 +367,7 @@ deliver.
   The buffer $Buf$ includes messages delivered by Process~A but not delivered by
   Process~B before the receipt of $\alpha$. This excludes messages delivered by
   Process~A before the sending of $\alpha$ and messages delivered by Process~B
-  before the receipt of $\alpha$.\\
+  before the receipt of $\alpha$.
   $\forall m,\,m',\,(m\neq m'),\,
   s_A(\alpha) \rightarrow d_A(m) \wedge
   d_A(m) \rightarrow s_A(\gamma) \wedge
