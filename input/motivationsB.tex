@@ -73,9 +73,8 @@ overcostly consensus protocol.
         Process~C. Not only Process~C mistakes $a$ for a new message and
         delivers it again, but it has cascading effects due to the forwarding.}
     \end{subfigure}
-    \caption{\label{fig:counterproblem}Using counters to discard multiple
-      receipts is efficient in terms of memory usage but fails in dynamic
-      systems.}
+    \caption{\label{fig:counterproblem}Using counters to forbid multiple
+      delivery is lightweight but fails in dynamic systems.}
   \end{center}
 \end{figure*}
 
@@ -83,8 +82,8 @@ overcostly consensus protocol.
 To remove this last monotonic and linear upper bound on space complexity,
 Figure~\ref{fig:counterproblem} shows that summarizing the global state of the
 system using vector clocks is unnecessary. Instead, a simple and lightweight
-data structure can forbid multiple delivery as long as the system remains
-static. In this scenario, processes use \PCBROADCAST (\REF): a causal broadcast
+data structure can forbid multiple delivery as long as the system remains static
+(\REF). In this scenario, processes use \PCBROADCAST (\REF): a causal broadcast
 protocol that ensures causal order of messages even in dynamic systems without
 message overhead.  When a process broadcasts a message, it sends it to its set
 of neighbors (see Figures~\ref{fig:counterproblemA}

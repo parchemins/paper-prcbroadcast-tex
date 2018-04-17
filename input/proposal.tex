@@ -265,13 +265,13 @@ join, leave, or self-reconfigure their partial view.
 \begin{problem*}
   Figure~\ref{fig:problemstatement} depicts this problem. Assuming Process~A
   sends a buffer of messages to Process~B in order to finalize the safety of
-  this link (see Figure~\ref{fig:timelinepcbroadcast}). Upon receipt of this
-  buffer by Process~B, the scientific problem consists in:
+  this link. Upon receipt of this buffer by Process~B, the scientific problem
+  consists in:
   \begin{itemize}[leftmargin=*]
   \item Identifying the array of messages from the buffer that are delivered by
     Process~A but not delivered by Process~B in order to deliver them;
-  \item Identifying the set of message messages from the buffer that are
-    delivered by Process~A and Process~B in order to forget them;
+  \item Identifying the set of messages from the buffer that are delivered by
+    Process~A and Process~B in order to forget them;
   \item Identifying the set of messages delivered by Process~B that Process~B will
     receive by this safe link in order to remember them.
   \end{itemize}%
@@ -322,11 +322,18 @@ problem and provides its complexity analysis.
 \end{algorithm}
 
 
-Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed causal
-broadcast. It relies on an implementation of reliable broadcast shown in
-Algorithm~\ref{algo:reliablebroadcast}. When the process does not add links to
-other processes, nor other processes add links to this process, causal broadcast
-operation is that of reliable broadcast. 
+% Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed causal
+% broadcast. It relies on an implementation of reliable broadcast shown in
+% Algorithm~\ref{algo:reliablebroadcast}. When the process does not add links to
+% other processes, nor other processes add links to this process, causal broadcast
+% operation is that of reliable broadcast. 
+
+\RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
+causal order violation and multiple delivery by using all and only links that
+have been proven safe to use. Table~\ref{table:complexity} shows that it keeps
+constant size message overhead while discarding local control information about
+messages over receipts. This costs only twice as much as \PCBROADCAST in terms
+of number of control messages.
 
 In dynamic systems where processes can join, leave, or reconfigure their
 out-view at any time, \RPCBROADCAST ensures that links cannot violate causal
@@ -338,14 +345,22 @@ adding a clause to ensure exactly once delivery.
 % delivers each message exactly once in causal order. It extends the meaning of
 % safe links stated by Definition~\ref{def:safe}.
 
-\begin{definition}[\label{def:extension}Safe link extension]
-  % In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
-  % is safe if it guarantees to Process~A that messages received by Process~B via
-  % this link are delivered exactly once.
-  A link from Process~A to Process~B is safe if Process~B differentiates among
-  its delivered messages the messages it will eventually receive via this new
-  link from the messages it will never receive via this new link.
+% \begin{definition}[\label{def:extension}Safe link extension]
+%   % In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
+%   % is safe if it guarantees to Process~A that messages received by Process~B via
+%   % this link are delivered exactly once.
+
+%   A link from Process~A to Process~B is safe if Process~B differentiates among
+%   its delivered messages the messages it will eventually receive via this new
+%   link from the messages it will never receive via this new link.
+% \end{definition}
+
+\begin{definition}[\label{def:extension}Safe link memory]
+  A link from Process~A to Process~B must remember among Process~B's delivered
+  messages those that will be received from Process~A and must forget those that
+  will never: $\forall m,\, remember_{BA}(m)\equiv d_B(m) \rightarrow r_{BA}(m)$
 \end{definition}
+
 
 % Definition~\ref{def:extension} implies that Process~B manages to distinguish
 % messages it delivered that are not delivered by Process~A from messages it did
@@ -370,30 +385,29 @@ deliver.
   receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
   communication means. Process~A sends $\gamma$ to Process~B using safe
   links. Process~B stops buffering on receipt of $\gamma$.
-  The buffer $Buf$ contains the messages delivered by Process~B.
-  $m \in Buf \Longleftrightarrow 
+  The buffer $\mathcal{B}$ contains the messages delivered by Process~B.
+  $m \in \mathcal{B} \Longleftrightarrow 
   (r_B(\alpha) \rightarrow d_B(m)) \wedge (d_B(m) \rightarrow r_B(\gamma))$
 \end{definition}
 
-\begin{lemma}[Messages of buffer]
-  The buffer $Buf$ includes messages delivered by Process~A but not delivered by
-  Process~B before the receipt of $\alpha$. This excludes messages delivered by
-  Process~A before the sending of $\alpha$ and messages delivered by Process~B
-  before the receipt of $\alpha$.
-  $\forall m,\,m',\,(m\neq m'),\,
-  s_A(\alpha) \rightarrow d_A(m) \wedge
-  d_A(m) \rightarrow s_A(\gamma) \wedge
-  d_B(m') \rightarrow r_B(\alpha) \implies m \in Buf$
-\end{lemma}
+% \begin{lemma}[Messages of buffer]
+%   The buffer $\mathcal{B}$ includes messages delivered by Process~A but not
+%   delivered by Process~B before the receipt of $\alpha$. This excludes messages
+%   delivered by Process~A before the sending of $\alpha$ and messages delivered
+%   by Process~B before the receipt of $\alpha$.
+%   $\forall m,\,m',\,(m\neq m'),\, s_A(\alpha) \rightarrow d_A(m) \wedge d_A(m)
+%   \rightarrow s_A(\gamma) \wedge d_B(m') \rightarrow r_B(\alpha) \implies m \in
+%   \mathcal{B}$
+% \end{lemma}
 
-\begin{proof}
-  Since control messages $\alpha$ and $\gamma$ travel by reliable FIFO links,
-  the receipt of all messages delivered by Process~A before the sending of
-  $\alpha$ precedes the receipt of $\alpha$ by Process~B:\\
-  $\forall m,\, d_A(m) \rightarrow s_A(\alpha) \implies d_B(m) \rightarrow
-  r_B(m) \implies m \not\in Buf$\\
-  \TODO{Not sure where we are going.}
-\end{proof}
+% \begin{proof}
+%   Since control messages $\alpha$ and $\gamma$ travel by reliable FIFO links,
+%   the receipt of all messages delivered by Process~A before the sending of
+%   $\alpha$ precedes the receipt of $\alpha$ by Process~B:\\
+%   $\forall m,\, d_A(m) \rightarrow s_A(\alpha) \implies d_B(m) \rightarrow
+%   r_B(m) \implies m \not\in \mathcal{B}$\\
+%   \TODO{Not sure where we are going.}
+% \end{proof}
 
 % \begin{figure*}
 %   \begin{center}
