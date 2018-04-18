@@ -310,24 +310,6 @@ problem and provides its complexity analysis.
 % \end{algorithm}
 
 
-\begin{algorithm}[h]
-  \input{./input/algorpcbroadcastsplitA.tex}
-  \caption{\label{algo:rpcbroadcastsplitA}Safety check of \RPCBROADCAST at Process $p$.}
-\end{algorithm}
-
-\begin{algorithm}[h]
-  \input{./input/algorpcbroadcastsplitB.tex}
-  \caption{\label{algo:rpcbroadcastsplitB}Dissemination and buffering of
-    \RPCBROADCAST at Process $p$.}
-\end{algorithm}
-
-
-% Algorithm~\ref{algo:rpcbroadcast} shows the instructions of the proposed causal
-% broadcast. It relies on an implementation of reliable broadcast shown in
-% Algorithm~\ref{algo:reliablebroadcast}. When the process does not add links to
-% other processes, nor other processes add links to this process, causal broadcast
-% operation is that of reliable broadcast. 
-
 \RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
 causal order violation and multiple delivery by using all and only links that
 have been proven safe to use. Table~\ref{table:complexity} shows that it keeps
@@ -335,15 +317,11 @@ constant size message overhead while discarding local control information about
 messages over receipts. This costs only twice as much as \PCBROADCAST in terms
 of number of control messages.
 
-In dynamic systems where processes can join, leave, or reconfigure their
-out-view at any time, \RPCBROADCAST ensures that links cannot violate causal
-broadcast properties. It extends Definition~\ref{def:safe} of safe links by
-adding a clause to ensure exactly once delivery.
-
-% When the process wants to add a link to another process for causal broadcast, it
-% makes sure that this link cannot break the guaranty that the other process
-% delivers each message exactly once in causal order. It extends the meaning of
-% safe links stated by Definition~\ref{def:safe}.
+Figure~\ref{fig:counterproblem} shows that adding safe links is insufficient to
+forbid multiple delivery. At any time, a process may receive messages it already
+forgot and deliver them again. To solve this, we provide each link with a memory
+that must be consistent with Process~B's past deliveries and upcoming receipts
+from this link.
 
 % \begin{definition}[\label{def:extension}Safe link extension]
 %   % In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
@@ -356,11 +334,13 @@ adding a clause to ensure exactly once delivery.
 % \end{definition}
 
 \begin{definition}[\label{def:extension}Safe link memory]
-  A link from Process~A to Process~B must remember among Process~B's delivered
-  messages those that will be received from Process~A and must forget those that
-  will never: $\forall m,\, remember_{BA}(m)\equiv d_B(m) \rightarrow r_{BA}(m)$
+  A safe link from Process~A to Process~B must remember among Process~B's
+  delivered messages those that will be received from Process~A; and forget
+  among Process~B's delivered messages those that will never be received from
+  Process~A.\\
+  $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$ \\
+  $\forall m,\, remember_{BA}(m) \implies r_{BA}(m)$
 \end{definition}
-
 
 % Definition~\ref{def:extension} implies that Process~B manages to distinguish
 % messages it delivered that are not delivered by Process~A from messages it did
@@ -371,12 +351,19 @@ adding a clause to ensure exactly once delivery.
 % receipts. However, it may fail when processes add neighbors in their out-view
 % (see Figure~\ref{fig:generalproblem}).
 
-\RPCBROADCAST solves this problem by delaying the use of links for broadcast
-until they become safe. It builds temporary buffers in order to remember
-messages as long as they might be received again, taking into account the
-dynamicity of the system. Using these buffers, a process is able to retrieve the
-knowledge about old messages to ignore, messages to expect, and new messages to
-deliver.
+Algorithm~\ref{algo:reliablebroadcast} already implements the maintenance of
+safe link memory over receipts. However, new safe links require consistent
+initialization. The challenge consists in initializing such memory without
+history of past messages. \RPCBROADCAST starts to build the knowledge on-demand,
+i.e., when a process wants to add a link to another process. \RPCBROADCAST
+disables new links while round-trips of control messages and buffering occur.
+\RPCBROADCAST takes advantage of causal order to provide guarantees on messages
+included in buffers.
+
+% It builds temporary buffers in order to remember messages as long as they might
+% be received again, taking into account the dynamicity of the system. Using these
+% buffers, a process is able to retrieve the knowledge about old messages to
+% ignore, messages to expect, and new messages to deliver.
 
 \begin{definition}[Buffering phase]
   Process~B starts and stops buffering upon receipt of control messages from
@@ -435,6 +422,71 @@ deliver.
       messages to expect.}
   \end{center}
 \end{figure}
+
+Figure~\ref{fig:timelineproof} shows that \RPCBROADCAST interlaces 3 buffering
+phases. One control message of a buffering phase becomes the control message of
+the next buffering phase.
+
+\begin{theorem}[\RPCBROADCAST solves the problem statement]
+  \TODO{Meow}
+\end{theorem}
+
+\begin{proof}
+  Figure~\ref{fig:timeline} exposes the different steps of this proof. Assuming
+  that Process~A adds Process~B in its out-view. Before sending $\alpha$,
+  Process~A delivered a set of messages $\mathcal{A}$. Since $\alpha$ travels
+  using causal communication, all messages delivered by Process~A at the moment
+  of the sending are delivered by Process~B at the moment of the receipt:
+  $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies d_B(m) \rightarrow
+  r_B(\alpha_{AB})$.
+  Thus, Process~B delivered a set of messages $\mathcal{B}$ that comprises
+  $\mathcal{A}$ and another set of delivered messages $\mathcal{A}'$ unknown to
+  Process~A at the moment of the sending. $\mathcal{A}$ and $\mathcal{A}'$ are
+  disjoint.\\
+  When Process~A receives $\beta$, it delivered $\mathcal{C}$ that comprises
+  $\mathcal{B}$ and $\mathcal{B}'$, $\mathcal{B}'$ being a set of messages
+  unknown to Process~B at the moment of the sending of $\beta$. \\
+  When Process~B receives $\pi$, it delivered $\mathcal{D}$ that comprises
+  $\mathcal{C}$ and $\mathcal{C}'$, $\mathcal{C}'$ being the set of messages
+  unknown to Process~A at the moment of the sending of $\pi$. Hence, Buffer
+  $B_\alpha$ contains the set of messages delivered between the sending of
+  $\beta$ and the receipt of $\pi$:
+  $\mathcal{D} \setminus \mathcal{C} = \mathcal{A} \cup \mathcal{A}' \cup
+  \mathcal{B}' \cup \mathcal{C}' \setminus (\mathcal{A} \cup \mathcal{A'} \cup
+  \mathcal{B}' \cup \mathcal{C'} \cup \mathcal{D}') = \mathcal{B}' \cup
+  \mathcal{C}'$. \\
+  When Process~A receives $\rho$, it delivered $\mathcal{E}$ that comprises
+  $\mathcal{D}$ and $\mathcal{D}'$, $\mathcal{D}'$ being a set of messages
+  unknown to Process~B at the moment of the sending of $\rho$. Hence, Buffer
+  $B_\beta$ contains the array of messages delivered between the receipt of
+  $\beta$ and the receipt of $\rho$:
+  $\mathcal{E} \setminus \mathcal{C} = \mathcal{C}' \cup \mathcal{D}'$.\\
+  When Process~B receives the buffer $B_\beta$, it delivered a set of messages
+  that follows the receipt of $\pi$. The buffer $B_\pi$ comprises a set of
+  messages $\mathcal{G}$ delivered by Process~A before the sending of $B_\beta$
+  and a set of messages $\mathcal{H}$ not delivered by Process~A before the
+  sending of $B_\beta$. 
+  
+  \noindent\textbf{To ignore:} Process~B ignores messages in $\mathcal{C}'$,
+  for they are
+  delivered by both processes: $B_\beta \setminus B_\alpha = \mathcal{D}'$.
+  $\mathcal{G}$ is a subset of the remaining $\mathcal{D}'$ that should be
+  ignored: $(B_\beta \setminus B_\alpha) \wedge B_\pi$.
+
+  \noindent \textbf{To deliver:} Process~B delivers messages in $\mathcal{D}'$
+  that it did not delivered yet:
+  $(B_\beta\setminus B_\alpha) \setminus B_\pi = \mathcal{D}' \setminus
+  \mathcal{G}$.
+  
+  \noindent \textbf{To expect from Process~A:} Process~B expects messages that
+  are not in $\mathcal{D}'$:
+  $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$.  Assuming the
+  link is not removed, since $\mathcal{H}$ comprises messages delivered by
+  Process~B only, and since all processes eventually receive, deliver, and
+  forward all messages, Process~B will eventually receive all the expected
+  messages $\mathcal{H}$ from this link in causal order.
+\end{proof}
+
 
 \begin{figure}
   \begin{center}
@@ -515,10 +567,19 @@ deliver.
 \end{figure}
 
 
+\begin{algorithm}[h]
+  \input{./input/algorpcbroadcastsplitA.tex}
+  \caption{\label{algo:rpcbroadcastsplitA}Safety check of \RPCBROADCAST at Process $p$.}
+\end{algorithm}
 
-\RPCBROADCAST interlaces 3 buffering phases. One control message of a buffering
-phase becomes the control message of the next buffering
-phase. Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST and
+\begin{algorithm}[h]
+  \input{./input/algorpcbroadcastsplitB.tex}
+  \caption{\label{algo:rpcbroadcastsplitB}Dissemination and buffering of
+    \RPCBROADCAST at Process $p$.}
+\end{algorithm}
+
+
+Figure~\ref{fig:timeline} depicts the functioning of \RPCBROADCAST and
 Figure~\ref{fig:solve} shows a scenario involving buffers. \TODO{Uniformize
   timeline with examples: name of processes.} Process~A adds a link to
 Process~B. \RPCBROADCAST ensures link safety in few steps:
@@ -572,63 +633,6 @@ Section~\ref{subsec:problemstatement}. Consequently, messages from the received
 buffer and upcoming messages from the new link do not cause causal order
 violations nor exactly once delivery violations.
 
-\begin{proof}
-  Figure~\ref{fig:timeline} exposes the different steps of this proof. Assuming
-  that Process~A adds Process~B in its out-view. Before sending $\alpha$,
-  Process~A delivered a set of messages $\mathcal{A}$. Since $\alpha$ travels
-  using causal communication, all messages delivered by Process~A at the moment
-  of the sending are delivered by Process~B at the moment of the receipt:
-  $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies d_B(m) \rightarrow
-  r_B(\alpha_{AB})$.
-  Thus, Process~B delivered a set of messages $\mathcal{B}$ that comprises
-  $\mathcal{A}$ and another set of delivered messages $\mathcal{A}'$ unknown to
-  Process~A at the moment of the sending. $\mathcal{A}$ and $\mathcal{A}'$ are
-  disjoint.\\
-  When Process~A receives $\beta$, it delivered $\mathcal{C}$ that comprises
-  $\mathcal{B}$ and $\mathcal{B}'$, $\mathcal{B}'$ being a set of messages
-  unknown to Process~B at the moment of the sending of $\beta$. \\
-  When Process~B receives $\pi$, it delivered $\mathcal{D}$ that comprises
-  $\mathcal{C}$ and $\mathcal{C}'$, $\mathcal{C}'$ being the set of messages
-  unknown to Process~A at the moment of the sending of $\pi$. Hence, Buffer
-  $B_\alpha$ contains the set of messages delivered between the sending of
-  $\beta$ and the receipt of $\pi$:
-  $\mathcal{D} \setminus \mathcal{C} = \mathcal{A} \cup \mathcal{A}' \cup
-  \mathcal{B}' \cup \mathcal{C}' \setminus (\mathcal{A} \cup \mathcal{A'} \cup
-  \mathcal{B}' \cup \mathcal{C'} \cup \mathcal{D}') = \mathcal{B}' \cup
-  \mathcal{C}'$. \\
-  When Process~A receives $\rho$, it delivered $\mathcal{E}$ that comprises
-  $\mathcal{D}$ and $\mathcal{D}'$, $\mathcal{D}'$ being a set of messages
-  unknown to Process~B at the moment of the sending of $\rho$. Hence, Buffer
-  $B_\beta$ contains the array of messages delivered between the receipt of
-  $\beta$ and the receipt of $\rho$:
-  $\mathcal{E} \setminus \mathcal{C} = \mathcal{C}' \cup \mathcal{D}'$.\\
-  When Process~B receives the buffer $B_\beta$, it delivered a set of messages
-  that follows the receipt of $\pi$. The buffer $B_\pi$ comprises a set of
-  messages $\mathcal{G}$ delivered by Process~A before the sending of $B_\beta$
-  and a set of messages $\mathcal{H}$ not delivered by Process~A before the
-  sending of $B_\beta$. 
-  
-  \noindent\textbf{To ignore:} Process~B ignores messages in $\mathcal{C}'$,
-  for they are
-  delivered by both processes: $B_\beta \setminus B_\alpha = \mathcal{D}'$.
-  $\mathcal{G}$ is a subset of the remaining $\mathcal{D}'$ that should be
-  ignored: $(B_\beta \setminus B_\alpha) \wedge B_\pi$.
-
-  \noindent \textbf{To deliver:} Process~B delivers messages in $\mathcal{D}'$
-  that it did not delivered yet:
-  $(B_\beta\setminus B_\alpha) \setminus B_\pi = \mathcal{D}' \setminus
-  \mathcal{G}$.
-  
-  \noindent \textbf{To expect from Process~A:} Process~B expects messages that
-  are not in $\mathcal{D}'$:
-  $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$.  Assuming the
-  link is not removed, since $\mathcal{H}$ comprises messages delivered by
-  Process~B only, and since all processes eventually receive, deliver, and
-  forward all messages, Process~B will eventually receive all the expected
-  messages $\mathcal{H}$ from this link in causal order.
-\end{proof}
-
-
 Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
 intermediate processes are faulty. Control messages never reach their
 destination. \PCBROADCAST handles such crashes using a timeout and retry
@@ -645,10 +649,10 @@ broadcast message overhead, delivery execution time, local space consumption,
 and number of control messages. 
 
 \noindent The \textbf{broadcast message overhead} is constant $O(1)$, for it
-only piggyback the control information to ensure reliable FIFO links.
+only piggybacks the control information to ensure reliable FIFO links.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
-receipt function is $O(Q_i)$, for it only checks in the inview if the message
+receipt function is $O(Q_i)$, for it only checks in the in-view if the message
 must be discarded or delivered.
 
 \noindent The \textbf{local space consumption} depends on the size of
