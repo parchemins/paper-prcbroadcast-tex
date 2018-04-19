@@ -648,56 +648,42 @@ In this section, we analyze the complexity of \RPCBROADCAST in terms of
 broadcast message overhead, delivery execution time, local space consumption,
 and number of control messages. 
 
-\noindent The \textbf{broadcast message overhead} is constant $O(1)$, for it
-only piggybacks the control information to ensure reliable FIFO links.
+\noindent The \textbf{broadcast message overhead} is constant $O(1)$. Messages
+must travel using FIFO links.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
-receipt function is $O(Q_i)$, for it only checks in the in-view if the message
-must be discarded or delivered.
+receipt function is $O(Q_i)$. It checks and update control information
+associated to each link in the in-view.
 
-\noindent The \textbf{local space consumption} depends on the size of
-buffers. There are 4 buffers in total. $W$ is the size of buffers related to
-reliable FIFO links. A link may delay the delivery of messages to await some
-preceding messages. $B_\beta$ is the size of buffers of messages that increases when
-the process adds a neighbor in its out-view, and decreases when a link become
-safe. $B_\alpha$ and $B_\pi$ are the size of buffers of messages that increases
-when the process gets added as neighbor, and decreases when a links in its
-in-view become safe. The space complexity of \RPCBROADCAST is
-$O(W  + B_\alpha + B_\beta + B_\pi)$. It grows and shrinks depending on the dynamicity
-of the system. If the system becomes static, the space complexity of
-\RPCBROADCAST is $O(W)$. If the system becomes quiescent, the space complexity
-of \RPCBROADCAST is $O(B_\alpha+ B_\beta + B_\pi)$.  If the system becomes both
-static and quiescent, \RPCBROADCAST does not consume
-space. 
-
-\TODO{Not optimal because messages in $\mathcal{B}'$ that will never be received
-  by Process~B from Process~A, yet remembered.}
-
+\noindent The \textbf{local space consumption} depends on the size of buffers
+and the size of the in-view. Each link in the in-view has its buffer of control
+information about messages. A message appears in the structure after its first
+receipt and disappears at its last receipt. So the local space complexity is
+$O(Q_i.M)$ where $M$ is the number of messages already delivered that should be
+received again from at least one process in $Q_i$. A process stores the control
+information of a message during at most $D$ time where $D$ is the diameter of
+the system. The local space consumption depends on the system (e.g. ring or tree
+topologies do not consume any space) and its usage (e.g. when no process
+broadcasts any message, processes do not consume any space).
 
 \noindent The overhead in terms of \textbf{number of control messages} per added
 link in an out-view varies from $6$ to $4P^2$ depending on the overlay network;
 $P$ being the number of processes in the system. It achieves $6$ messages when
 Process~A adds Process~B using Process~C as mediator, and Process~B has
-Process~A in its out-view. It achieves $4P^2$ when Process~A adds Process~B
-without knowledge of any route. Process~A and Process~B fall back to reliable
-broadcast to disseminate control messages.
+Process~A in its out-view.  It achieves $8$ control messages when peer-sampling
+protocols build out-views using neighbor-to-neighbor
+interactions~\cite{jelasity2007gossip,nedelec2017adaptive}. It achieves
+$O(\log(P))$ control messages when peer-sampling protocols allows processes to
+route their messages~\cite{jelasity2009tman,stoica2001chord}.  It achieves
+$O(4P^2)$ control messages when Process~A adds Process~B without knowledge of
+any route. Process~A and Process~B fall back to reliable broadcast to
+disseminate control messages.
 
-Overall, this analysis shows that \RPCBROADCAST proposes an advantageous
-tradeoff when the overlay network allows routing between the process that adds
-the neighbor and the latter. Fortunately, a wide range of peer-sampling
-protocols building overlay networks rely on close neighbor-to-neighbor
-interactions to establish links (\REF). An \RPCBROADCAST built on top of these
-peer-sampling protocols achieves $8$ control messages per added link. Several
-other peer-sampling protocols build addressable overlay networks which allows
-routing with a logarithmic number of hops compared to the actual network size
-(\REF). An \RPCBROADCAST built on top of these peer-sampling protocols achieves
-$O(4\log(P))$ control messages per added link.
-
-Assuming such overlay network, \RPCBROADCAST constitutes a lightweight and
-efficient middleware for reliable broadcast and causal broadcast in large and
-dynamic distributed systems. As consequence, these broadcast can run in large
-and dynamic systems even on most humble devices such as Raspberry Pi's.
-
+Overall, this analysis shows that \RPCBROADCAST proposes an original tradeoff in
+terms of complexity. In systems allowing a form of routing, it constitutes an
+advantageous tradeoff that depends on the actual system instead of past
+deliveries. The next section describes an experiment highlighting the effects of
+the system settings on the space consumed by processes.
 
 %%% Local Variables:
 %%% mode: latex

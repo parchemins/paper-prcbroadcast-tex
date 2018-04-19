@@ -2,6 +2,15 @@
 \section{Experimentation}
 \label{sec:experimentation}
 
+\RPCBROADCAST proposes an original tradeoff in terms of complexity. Among other,
+it removes the last monotonic and linear upper bound that remained on space
+complexity. In this section, we evaluate the impact of the actual system on the
+space consumed by processes. The experiments run on the \PEERSIM
+simulator~\cite{montresor2009peersim} that allows to build large and dynamic
+systems. Our implementation is available on the Github platform at
+\url{http://github.com/chat-wane/peersim-prcbroadcast}.
+
+
 % \begin{figure}
 %   \begin{center}
 %   \input{input/figtimelinebirpcbroadcast.tex}
@@ -31,8 +40,9 @@
 \begin{figure}
   \begin{center}
     \includegraphics[width=0.8\columnwidth]{./img/overhead.eps}
-    \caption{\label{fig:overhead}Local space overhead over time consumed by \RPCBROADCAST to ensure
-      causal order and forbid double delivery in dynamic systems with varying latency.}
+    \caption{\label{fig:overhead}Local space overhead over time consumed by
+      \RPCBROADCAST to ensure causal order and forbid double delivery in dynamic
+      systems with varying latency.}
   \end{center}
 \end{figure}
 
