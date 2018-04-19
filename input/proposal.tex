@@ -202,45 +202,46 @@ exploit causal order to solve this issue.
 %   \end{center}
 % \end{figure}
 
-\subsection{Problem statement}
-\label{subsec:problemstatement}
+% \subsection{Problem statement}
+% \label{subsec:problemstatement}
 
-\PCBROADCAST (\REF) is a causal broadcast that uses FIFO links, gossiping,
-control messages, and buffers to ensure causal order in dynamic systems. A
-process broadcasting a message sends the message to an out-view of safe links
-that cannot lead to causal order violations.
-
-\begin{definition}[\label{def:safe}Safe link (\REF)]  
-  A link from Process~A to Process~B is safe if and only if Process~B received
-  or will receive all messages delivered by Process~A before receiving any
-  message that Process~A will
-  deliver. $safe(AB) \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
-  \implies r_B(m) \rightarrow r_{BA}(m')$
-\end{definition}
-
-Links start unsafe, for messages traveling by the new links may arrive before
-preceding messages that took longer paths. \PCBROADCAST ensures safety by
-sending control messages. Section~\ref{sec:motivations} described its
-functioning. Process~A sends a control message $\pi$ to Process~B using safe
-links and awaits its answer $\rho$. This is a ping phase. While awaiting
-Process~B's response, Process~A buffers its delivered messages. Upon receipt of
-$\rho$, Process~A empties its buffer to Process~A. The link is safe. Process~A
-can use it normally for causal broadcast.
-
+\PCBROADCAST (\REF) is a causal broadcast protocol that provides causal order at
+cost of few control messages. It uses FIFO links, gossiping, control messages,
+and buffers to ensure causal order in dynamic systems. A process broadcasting a
+message sends the message to an out-view of safe links that cannot lead to
+causal order violations.
+%
+% \begin{definition}[\label{def:safe}Safe link (\REF)]  
+%   A link from Process~A to Process~B is safe if and only if Process~B received
+%   or will receive all messages delivered by Process~A before receiving any
+%   message that Process~A will
+%   deliver. $safe(AB) \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
+%   \implies r_B(m) \rightarrow r_{BA}(m')$
+% \end{definition}
+%
+% Links start unsafe, for messages traveling by the new links may arrive before
+% preceding messages that took longer paths. \PCBROADCAST ensures safety by
+% sending control messages. Section~\ref{sec:motivations} described its
+% functioning. Process~A sends a control message $\pi$ to Process~B using safe
+% links and awaits its answer $\rho$. This is a ping phase. While awaiting
+% Process~B's response, Process~A buffers its delivered messages. Upon receipt of
+% $\rho$, Process~A empties its buffer to Process~A. The link is safe. Process~A
+% can use it normally for causal broadcast.
+%
 % \begin{definition}[Ping phase (\REF)]
 %   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
 %   using safe links. When Process~B receives this ping, it replies to
 %   Process~A. Replies $\rho$ travel using any communication mean. Ping phase ends
 %   when Process~A receives the reply of Process~B.
 % \end{definition}
-
-\begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts (\REF)]
-  A ping phase from Process~A to Process~B acknowledges the receipt by B of all
-  messages delivered by Process~A before this ping phase.
-  $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge r_A(\rho_{AB}) \implies
-  r_B(m)$
-\end{lemma}
-
+%
+% \begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts (\REF)]
+%   A ping phase from Process~A to Process~B acknowledges the receipt by B of all
+%   messages delivered by Process~A before this ping phase.
+%   $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge r_A(\rho_{AB}) \implies
+%   r_B(m)$
+% \end{lemma}
+%
 %\PCBROADCAST ensures that all preceding messages arrive before new messages by
 %acknowledging the receipt of most messages while buffering messages concurrent
 %to the acknowledgment. Processes receive all messages at least once and deliver
@@ -262,31 +263,31 @@ join, leave, or self-reconfigure their partial view.
 % \item identify all other processes that will send it this message.
 % \end{inparaenum}
 
-\begin{problem*}
-  Figure~\ref{fig:problemstatement} depicts this problem. Assuming Process~A
-  sends a buffer of messages to Process~B in order to finalize the safety of
-  this link. Upon receipt of this buffer by Process~B, the scientific problem
-  consists in:
-  \begin{itemize}[leftmargin=*]
-  \item Identifying the array of messages from the buffer that are delivered by
-    Process~A but not delivered by Process~B in order to deliver them;
-  \item Identifying the set of messages from the buffer that are delivered by
-    Process~A and Process~B in order to forget them;
-  \item Identifying the set of messages delivered by Process~B that Process~B will
-    receive by this safe link in order to remember them.
-  \end{itemize}%
-%  These are the array of messages to deliver, the set of messages to ignore, and
-%  the set of messages to expect, respectively.
-\end{problem*}
+% \begin{problem*}
+%   Figure~\ref{fig:problemstatement} depicts this problem. Assuming Process~A
+%   sends a buffer of messages to Process~B in order to finalize the safety of
+%   this link. Upon receipt of this buffer by Process~B, the scientific problem
+%   consists in:
+%   \begin{itemize}[leftmargin=*]
+%   \item Identifying the array of messages from the buffer that are delivered by
+%     Process~A but not delivered by Process~B in order to deliver them;
+%   \item Identifying the set of messages from the buffer that are delivered by
+%     Process~A and Process~B in order to forget them;
+%   \item Identifying the set of messages delivered by Process~B that Process~B will
+%     receive by this safe link in order to remember them.
+%   \end{itemize}%
+% %  These are the array of messages to deliver, the set of messages to ignore, and
+% %  the set of messages to expect, respectively.
+% \end{problem*}
 
-\begin{figure}
-  \begin{center}
-    \input{input/figproblemstatement.tex}
-    \caption{\label{fig:problemstatement}For each message in the buffer,
-      Process~B must identify its category and assign awaited messages on the
-      new safe link.}
-  \end{center}
-\end{figure}
+% \begin{figure}
+%   \begin{center}
+%     \input{input/figproblemstatement.tex}
+%     \caption{\label{fig:problemstatement}For each message in the buffer,
+%       Process~B must identify its category and assign awaited messages on the
+%       new safe link.}
+%   \end{center}
+% \end{figure}
 
 % Figure~\ref{fig:problemstatement} depicts the scientific problem. The buffer of
 % messages sent by Process~A includes messages that are delivered by Process~A
