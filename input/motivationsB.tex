@@ -82,14 +82,14 @@ overcostly consensus protocol.
 To remove this last monotonic and linear upper bound on space complexity,
 Figure~\ref{fig:counterproblem} shows that summarizing the global state of the
 system using vector clocks is unnecessary. Instead, a simple and lightweight
-data structure can forbid multiple delivery as long as the system remains static
-(\REF). In this scenario, processes use \PCBROADCAST (\REF): a causal broadcast
-protocol that ensures causal order of messages even in dynamic systems without
-message overhead.  When a process broadcasts a message, it sends it to its set
-of neighbors (see Figures~\ref{fig:counterproblemA}
-and~\ref{fig:counterproblemC}); when a process delivers such message, it
-forwards it to its own neighbors in a gossip fashion (see
-Figure~\ref{fig:counterproblemB}). Processes receive each message either
+data structure can forbid multiple delivery as long as the system remains
+static~\cite{raynal2013distributed}. In this scenario, processes use
+\PCBROADCAST (\REF): a causal broadcast protocol that ensures causal order of
+messages even in dynamic systems without message overhead.  When a process
+broadcasts a message, it sends it to its set of neighbors (see
+Figures~\ref{fig:counterproblemA} and~\ref{fig:counterproblemC}); when a process
+delivers such message, it forwards it to its own neighbors in a gossip fashion
+(see Figure~\ref{fig:counterproblemB}). Processes receive each message either
 directly or transitively.\\
 In addition, to ensure exactly once delivery, each process maps each delivered
 message with a number of expected copies. Each processes computes this number of
