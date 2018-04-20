@@ -4,6 +4,8 @@
 \SetKwProg{Safety}{SAFETY:}{}{}
 \SetKwProg{Dissemination}{DISSEMINATION:}{}{}
 
+\SetKwComment{EmptyComment}{}{}
+
 \small
 
 \DontPrintSemicolon
@@ -48,82 +50,89 @@
       $S[q] = \langle\, \_,\,B_\pi,\, true \rangle$}
     {$B_\pi \leftarrow B_\pi \cup m$}
 
-    % \ForEach {$q \in S$} {
-    %   \textbf{let} $\langle B_\alpha,\, B_\pi,\, received_\pi \rangle \leftarrow S[q]$ \;
-    %   \leIf {$received_\pi$}
-    %   {$B_\pi \leftarrow B_\pi \cup m$}
-    %   {$B_\alpha \leftarrow B_\alpha \cup m$} 
-%    }
   }
 }
 
 \BlankLine
 
 \Safety{}{
+  \begin{multicols}{2}
+    \tcp*[l]{$@$Sender}
   \Upon{$\textup{open}_o(to)$} {
-    $Q_o \leftarrow Q_o \setminus to$ \tcp*{unsafe to send to $to$}
-    $\textup{sendAlpha}(p,\,q)$ \label{line:sendalpha} \tcp*{$\alpha$}
+    $Q_o \leftarrow Q_o \setminus to$  \; % \tcp*{unsafe to send to $to$}
+    $\textup{sendAlpha}(p,\,q)$ \label{line:sendalpha} \; %  \tcp*{$\alpha$}
   }
 
+  \tcp*[l]{$@$Receiver}
   \Upon{$\textup{open}_i(from)$} {
-    $Q_i \leftarrow Q_i \setminus from$ \tcp*{unsafe to receive from $from$}
+    $Q_i \leftarrow Q_i \setminus from$ \; % \tcp*{unsafe to receive from $from$}
   }
+  \end{multicols}
 
   \BlankLine
   
-  \Upon{$\textup{receiveAlpha}(from,\,to)$ \tcp*[f]{$to=p$}} {
-    $S[from] \leftarrow \langle \varnothing,\, \varnothing,\, false \rangle$ 
-    \tcp*{initialize $B_\alpha$}
-    $\textup{sendBeta}(from,\,to)$ \label{line:sendbeta} \tcp*{$\beta$}
+  \begin{multicols}{2}
+  \Upon{$\textup{receiveBeta}(from,\,to)$}{% \tcp*[f]{$from=p$}} {
+    $B[to] \leftarrow \varnothing$ \; %\tcp*{initialize $B_\beta$}
+    $\textup{sendPi}(from,\, to)$ \label{line:sendpi} \; % \tcp*{$\pi$}
   }
 
-  \BlankLine
-
-  \Upon{$\textup{receiveBeta}(from,\,to)$ \tcp*[f]{$from=p$}} {
-    $B[to] \leftarrow \varnothing$ \tcp*{initialize $B_\beta$}
-    $\textup{sendPi}(from,\, to)$ \label{line:sendpi} \tcp*{$\pi$}
+  \Upon{$\textup{receiveAlpha}(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
+    $S[from] \leftarrow \langle \varnothing,\, \varnothing,\, false \rangle$ \;
+    %% \tcp*{initialize $B_\alpha$}
+    $\textup{sendBeta}(from,\,to)$ \label{line:sendbeta} \; % \tcp*{$\beta$}
   }
+
+  \end{multicols}
   
   \BlankLine
-
-  \Upon{$\textup{receivePi}(from,\,to)$ \tcp*[f]{$to=p$}} {
-    \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
-    $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \tcp*{initialize $B_\pi$}
-    $\textup{sendRho}(from,\, to)$ \label{line:sendrho} \tcp*{$\rho$}
-  }
-
-  \BlankLine
-
-  \Upon{$\textup{receiveRho}(from,\,to)$ \tcp*[f]{$from=p$}} {
+  
+  \begin{multicols}{2}
+  \Upon{$\textup{receiveRho}(from,\,to)$}{% \tcp*[f]{$from=p$}} {
     $\textup{sendBuffer}(from,\,to,\, B[to])$ \label{line:sendbuffer}\;
     $B \leftarrow B \setminus to$ \;
-    $Q_o \leftarrow Q_o \cup to$ \tcp*{safe to send to $to$}
+    $Q_o \leftarrow Q_o \cup to$ \; %\tcp*{safe to send to $to$}
   }
 
-  \BlankLine
+  \Upon{$\textup{receivePi}(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
+    \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
+    $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \; % \tcp*{initialize $B_\pi$}
+    $\textup{sendRho}(from,\, to)$ \label{line:sendrho} \; % \tcp*{$\rho$}
+  }
+  \end{multicols}
 
+  \BlankLine
+  
+  \begin{multicols}{2}
+    \EmptyComment*{}
+    \EmptyComment*{}
+    \tcp*[r]{filter messages to ignore $\rightarrow$\hspace{2.2em}}
+    \tcp*[r]{to deliver $\rightarrow$\hspace{2.2em}}
+    \tcp*[r]{to expect $\rightarrow$\hspace{2.2em}}
+    \columnbreak
   \Upon{$\textup{receiveBuffer}(from,\, to,\, B_\beta)$} {
     \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
-    \lForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
-    {$\textup{receive}(m,\,from)$ \label{line:todeliver}\tcp*[f]{to deliver}}
-    $D[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \tcp*{to expect}
+    \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
+    {$\textup{receive}(m,\,from)$ \label{line:todeliver}}  %$ \tcp*[f]{to deliver}}
+    $D[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \;% \tcp*{to expect}
     $S \leftarrow S \setminus from$ \;
-    $Q_i \leftarrow Q_i \cup from$ \tcp*{safe to receive from $from$}
+    $Q_i \leftarrow Q_i \cup from$ \; % \tcp*{safe to receive from $from$}
   }
-  
+  \end{multicols}
   \BlankLine
-
+  
+  \begin{multicols}{2}
   \Upon{$\textup{close}_o(to)$} {
     $B \leftarrow B \setminus to$
   }
   \Upon{$\textup{close}_i(from)$} {
     $S \leftarrow S \setminus from$
   }
-
+  \end{multicols}
+  \BlankLine
 }
 
-%\end{multicols}
 
 %%% Local Variables:
 %%% mode: latex

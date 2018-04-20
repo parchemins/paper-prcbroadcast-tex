@@ -12,7 +12,7 @@
   $Q_o$ \tcp*{Set of processes, $p$'s outview}
   $Q_i$ \tcp*{Set of processes, $p$'s inview}
   \BlankLine
-  $D \leftarrow \varnothing$ \tcp*{link $\rightarrow$ expected messages}
+  $D \leftarrow \varnothing$ \tcp*{Map of expected messages $Q_i \rightarrow M^*$}
 }
 
 \BlankLine
@@ -30,7 +30,7 @@
   
   \Upon{$\textup{receive}(m,\, l)$}{
     \If {$\neg\textup{received}(m,\,l)$} {
-      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{forward}}
+      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{broadcast or forward}}
       \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
     }
   }
@@ -40,10 +40,11 @@
   \Function{$\textup{received}(m,\, l)$}{
     \textbf{let} $hasReceived \leftarrow true$ \;
     \If {$\not\exists q \in D$ \textbf{\textup{such that}} $m \in D[q]$} {
-      \lForEach {$q \in Q_i$} {$D[q] \leftarrow D[q] \cup m$ \label{line:remembers}}
+      \lForEach {$q \in Q_i$} {$D[q] \leftarrow D[q] \cup m$ \label{line:remembers}
+      \tcp*[f]{to remember}}
       $hasReceived \leftarrow false$ \;
     }
-    $D[l] \leftarrow D[l] \setminus m$ \label{line:forgets}\;
+    $D[l] \leftarrow D[l] \setminus m$ \label{line:forgets} \tcp*{to forget}
     \Return $hasReceived$ \;
   }
   

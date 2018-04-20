@@ -305,12 +305,6 @@ problem and provides its complexity analysis.
 
 \subsection{Operation}
 
-% \begin{algorithm}[h]
-%   \input{./input/algorpcbroadcast.tex}
-%   \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
-% \end{algorithm}
-
-
 \RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
 causal order violation and multiple delivery by using all and only links that
 have been proven safe to use. Table~\ref{table:complexity} shows that it keeps
@@ -567,16 +561,9 @@ the next buffering phase.
   \end{center}
 \end{figure}
 
-
 \begin{algorithm}[h]
-  \input{./input/algorpcbroadcastsplitA.tex}
-  \caption{\label{algo:rpcbroadcastsplitA}Safety check of \RPCBROADCAST at Process $p$.}
-\end{algorithm}
-
-\begin{algorithm}[h]
-  \input{./input/algorpcbroadcastsplitB.tex}
-  \caption{\label{algo:rpcbroadcastsplitB}Dissemination and buffering of
-    \RPCBROADCAST at Process $p$.}
+  \input{./input/algorpcbroadcast.tex}
+  \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
 \end{algorithm}
 
 
