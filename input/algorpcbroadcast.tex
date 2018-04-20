@@ -34,7 +34,7 @@
   
   \Upon{$\textup{R-deliver}(m)$} {
     $\textup{buffering}(m)$ \;
-    $\textup{RPC-deliver}(m)$
+    $\textup{PRC-deliver}(m)$
   }
 
   \BlankLine
@@ -115,7 +115,7 @@
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
     \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
     {$\textup{receive}(m,\,from)$ \label{line:todeliver}}  %$ \tcp*[f]{to deliver}}
-    $D[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \;% \tcp*{to expect}
+    $E[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \;% \tcp*{to expect}
     $S \leftarrow S \setminus from$ \;
     $Q_i \leftarrow Q_i \cup from$ \; % \tcp*{safe to receive from $from$}
   }

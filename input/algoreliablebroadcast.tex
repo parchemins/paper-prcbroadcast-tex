@@ -9,10 +9,10 @@
 \LinesNumbered
 
 \Initially {} {
-  $Q_o$ \tcp*{Set of processes, $p$'s outview}
-  $Q_i$ \tcp*{Set of processes, $p$'s inview}
+  $Q_o$ \tcp*{Set of processes, $p$'s out-view}
+  $Q_i$ \tcp*{Set of processes, $p$'s in-view}
   \BlankLine
-  $D \leftarrow \varnothing$ \tcp*{Map of expected messages $Q_i \rightarrow M^*$}
+  $E \leftarrow \varnothing$ \tcp*{Map of expected messages $Q_i : M^*$}
 }
 
 \BlankLine
@@ -39,12 +39,12 @@
   
   \Function{$\textup{received}(m,\, l)$}{
     \textbf{let} $hasReceived \leftarrow true$ \;
-    \If {$\not\exists q \in D$ \textbf{\textup{such that}} $m \in D[q]$} {
-      \lForEach {$q \in Q_i$} {$D[q] \leftarrow D[q] \cup m$ \label{line:remembers}
+    \If {$\not\exists q \in E$ \textbf{\textup{such that}} $m \in E[q]$} {
+      \lForEach {$q \in Q_i$} {$E[q] \leftarrow E[q] \cup m$ \label{line:remembers}
       \tcp*[f]{to remember}}
       $hasReceived \leftarrow false$ \;
     }
-    $D[l] \leftarrow D[l] \setminus m$ \label{line:forgets} \tcp*{to forget}
+    $E[l] \leftarrow E[l] \setminus m$ \label{line:forgets} \tcp*{to forget}
     \Return $hasReceived$ \;
   }
   
