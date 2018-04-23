@@ -3,10 +3,12 @@
 \label{sec:proposal}
 
 In this section, we present \RPCBROADCAST, a causal broadcast protocol providing
-an original tradeoff in terms of complexity. \RPCBROADCAST exploits causal order
-to remove obsolete control information about broadcast messages. It removes the
-last linear and monotonic upper bound that remained on space complexity at the
-cost of few lightweight control messages.
+an original tradeoff in terms of complexity. It removes the last linear and
+monotonic upper bound that remained on space complexity at the cost of few
+lightweight control messages. The key idea consists in exploiting causal
+broadcast to improve its underlying reliable broadcast.  \RPCBROADCAST exploits
+causal order to remove batches of obsolete information while reasoning about
+temporarily buffered broadcast messages.
 
 \subsection{Model}
 
@@ -39,17 +41,11 @@ systems indifferently.
   processes.
 \end{definition}
 
-To characterize the order among events such as send, or receive, we define time
-in a logical sense using Lamport’s definition.
+Causal broadcast relies on reliable broadcast that provides guarantees on
+message delivery. Each process receives each broadcast message at least once and
+delivers it once despite possible multiple receipts.
 
-\begin{definition}[Happen before~\cite{lamport1978time}]
-  Happen before is a transitive, irreflexive, and antisymmetric relation
-  $\rightarrow$ that defines a strict partial orders of events. The sending of a
-  message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
-  messages are concurrent if none happens before the other.
-\end{definition}
-
-\begin{definition}[Uniform reliable broadcast] 
+\begin{definition}[\label{def:reliablebroadcast}Uniform reliable broadcast] 
   When a process~A broadcasts a message to all processes of its system $b_A(m)$,
   each correct process~B eventually receives it and delivers it
   $d_B(m)$. Uniform reliable broadcast guarantees 3 properties:
@@ -63,41 +59,66 @@ in a logical sense using Lamport’s definition.
   \end{itemize}
 \end{definition}
 
-From validity and uniform agreement, each correct process receives each
-broadcast message at least once. From uniform integrity, each correct process
-delivers each broadcast message once despite possible multiple receipts.
-% \begin{definition}[Exactly once delivery]
-%   Each process receives each broadcast message at least once. A process may receive
-%   a message multiple times but delivers it at most once:
-%   \begin{enumerate}
-%   \item $\forall A,\,B,\, b_A(m) \implies r_B(m)$
-%   \item $\forall m,\, d_A(m) \implies \exists r_A(m),\, r_A(m) \rightarrow d_A(m)$
-%   \item \label{enum:uniqueness}
-%     $\forall m,\,m',\, d_A(m) \rightarrow d_A(m') \implies m \neq m'$
-%   \end{enumerate}
-% \end{definition}
-This suggests a data structure ensuring uniqueness of messages such as sets or
-vectors. It allows processes to remember about prior delivery of messages in
-order to discard double receipts.
+% From validity and uniform agreement, each correct process receives each
+% broadcast message at least once. From uniform integrity, each correct process
+% delivers each broadcast message once despite possible multiple receipts.  This
+% suggests a data structure ensuring uniqueness of messages such as sets or
+% vectors. It allows processes to remember about prior delivery of messages in
+% order to discard double receipts.
 
-\begin{definition}[Remembering]
-  A process starts to remember a message at its delivery:
-  $remember_A(m) \equiv d_A(m)$.  A process delivers only messages not yet
-  remembered: \\ $\not\exists m,\, remember_A(m) \rightarrow d_A(m)$.
+% \begin{definition}[Remembering]
+%   A process starts to remember a message at its delivery:
+%   $remember_A(m) \equiv d_A(m)$.  A process delivers only messages not yet
+%   remembered: \\ $\not\exists m,\, remember_A(m) \rightarrow d_A(m)$.
+% \end{definition}
+
+% \begin{theorem}[\label{theo:rememberinganduniqueness}Remembering forbids
+%   multiple delivery]
+%   A process delivering only messages it does not remember delivers each received
+%   message exactly once.
+% \end{theorem}
+
+% \begin{proof}
+%   A process receiving a message either delivered this message or not. In the
+%   former case, it already remembers the message, hence discards it. In the
+%   latter case, it delivers the message for the first time and starts to remember
+%   it. Subsequent receipts fall in the former case. Consequently, a process
+%   delivers each message once and only once.
+% \end{proof}
+
+Definition~\ref{def:reliablebroadcast} suggests the use of data structures that
+saves delivered messages to ignore additional receipts. In static systems, such
+data structure can be non-monotonic~\cite{raynal2013distributed}. We define a
+non-monotonic link-wise memory to forbid multiple delivery.
+
+\begin{definition}[\label{def:memory}Link memory]
+  A link from Process~A to Process~B remembers among Process~B's delivered
+  messages those that will be received from Process~A; and forgets among
+  Process~B's delivered messages those that will never be received from
+  Process~A.\\
+  $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$ \\
+  $\forall m,\, remember_{BA}(m) \implies r_{BA}(m)$
 \end{definition}
 
-\begin{theorem}[\label{theo:rememberinganduniqueness}Remembering forbids
-  multiple delivery]
-  A process delivering only messages it does not remember delivers each received
-  message exactly once.
+
+\begin{theorem}[Link memory forbids multiple delivery]
+  Assuming that each link conveys each message at most once, link memory is
+  sufficient to forbid multiple delivery.
 \end{theorem}
 
 \begin{proof}
-  A process receiving a message either delivered this message or not. In the
-  former case, it already remembers the message, hence discards it. In the
-  latter case, it delivers the message for the first time and starts to remember
-  it. Subsequent receipts fall in the former case. Consequently, a process
-  delivers each message once and only once.
+  We must show that
+  $\not\exists m, d_B(m) \rightarrow r_{BA}(m) \wedge r_{BA}(m) \rightarrow
+  d_B(m)$.
+  The delivery $d_B(m)$ implies a prior receipt $r_B(m)$.  To deliver $m$ after
+  its receipt from Process~A, Process~B must not remember $m$ on this link.  If
+  Process~B does not remember $m$ from Process~A, either it already received $m$
+  from Process~A; or it did not received $m$ from any process. In the former
+  case, it cannot receive, hence deliver, $m$ from Process~A; in the latter
+  case, receiving $m$ from Process~A leads to the delivery of $m$. Again, since
+  a link conveys a message at most once, it cannot receive another $m$ from
+  Process~A that would lead to another delivery. \TODO{Missing non-monotonic.}
+  \TODO{Could be improved.}
 \end{proof}
 
 \begin{algorithm}[h]
@@ -105,47 +126,61 @@ order to discard double receipts.
   \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
 \end{algorithm}
 
-Vector clocks implement remembering but fail to remove obsolete control
-information.  Algorithm~\ref{algo:reliablebroadcast} shows the instructions of a
-uniform reliable broadcast that forbids multiple delivery in static systems. It
-features a data structure that remembers messages (see
-Line~\ref{line:remembers}) but forgets them as soon as they cannot be received
-any longer by the process (see Line~\ref{line:forgets}).  It uses the in-view
-and exploits the property that each process sends each message exactly once to
-each neighbor in their out-view. It associates with each link from the in-view a
-set of expected messages. A process forgets expected messages over receipts.
+%Vector clocks implement remembering but fail to remove obsolete control
+%information. 
 
-\begin{theorem}[Forgetting]
-  Assuming processes receive each message a finite number of times, remembering
-  a message from its delivery to its last receipt is necessary and sufficient to
-  forbid multiple delivery.
-\end{theorem}
+Algorithm~\ref{algo:reliablebroadcast} shows an implementation of uniform
+reliable broadcast that uses link memory to forbid multiple delivery in static
+systems. The link memory is non-monotonic. The first receipt of a broadcast
+message from a link tags the other links (see Line~\ref{line:remembers}). The
+receipt on other links of this broadcast message removes the corresponding tag
+(see Line~\ref{line:forgets}).
 
-\begin{proof}
-  Assuming a finite series of $k$ receipts of a message $m$ at Process~A:
-  $r^1_A(m) \rightarrow r^2_A(m) \wedge r^2_A(m) \rightarrow r^3_A(m) \wedge
-  \ldots \wedge r^{k-1}_A(m) \rightarrow r^k_A(m)$. \\
-  We must show that if Process~A remembers $m$ from its delivery until its
-  $k^{th}$ receipt, then Process~A delivers $m$ once. The proof is similar to
-  that of Theorem~\ref{theo:rememberinganduniqueness}. After the $k^{th}$
-  receipt, Process~A never receives -- hence delivers -- $m$ again. Remembering
-  $m$ until the $k^{th}$ receipt is sufficient.\\
-  We also must show that if Process~A does not strictly remember $m$ from its
-  delivery to its $k^{th}$ receipt, then Process~A delivers $m$ multiple
-  times. Process~A delivers and remembers $m$ after its first receipt. Let
-  $1\leq j<k$. Process~A stops remembering $m$ after the $j^{th}$ receipt. When
-  Process~A receives $m$ for the $(j+1)^{th}$ time, it considers it as a new
-  message and delivers it again. This issue may repeat multiple times leading to
-  that many deliveries of $m$.
-\end{proof}
+% Algorithm~\ref{algo:reliablebroadcast} shows an implementation of uniform
+% reliable broadcast that forbids multiple delivery in static systems. It features
+% a data structure that remembers messages (see Line~\ref{line:remembers}) but
+% forgets them as soon as they cannot be received any longer by the process (see
+% Line~\ref{line:forgets}).  It uses the in-view and exploits the property that
+% each process sends each message exactly once to each neighbor in their
+% out-view. It associates with each link from the in-view a set of expected
+% messages. A process forgets expected messages over receipts.
 
-However, forgetting becomes more challenging in dynamic systems where processes
-can start sending messages to any other process at any time. Any process can
-receive an already forgotten message from any other process. This may lead to
-double delivery with cascading effects in the
+
+% \begin{theorem}[Forgetting]
+%   Assuming processes receive each message a finite number of times, remembering
+%   a message from its delivery to its last receipt is necessary and sufficient to
+%   forbid multiple delivery.
+% \end{theorem}
+
+% \begin{proof}
+%   Assuming a finite series of $k$ receipts of a message $m$ at Process~A:
+%   $r^1_A(m) \rightarrow r^2_A(m) \wedge r^2_A(m) \rightarrow r^3_A(m) \wedge
+%   \ldots \wedge r^{k-1}_A(m) \rightarrow r^k_A(m)$. \\
+%   We must show that if Process~A remembers $m$ from its delivery until its
+%   $k^{th}$ receipt, then Process~A delivers $m$ once. The proof is similar to
+%   that of Theorem~\ref{theo:rememberinganduniqueness}. After the $k^{th}$
+%   receipt, Process~A never receives -- hence delivers -- $m$ again. Remembering
+%   $m$ until the $k^{th}$ receipt is sufficient.\\
+%   We also must show that if Process~A does not strictly remember $m$ from its
+%   delivery to its $k^{th}$ receipt, then Process~A delivers $m$ multiple
+%   times. Process~A delivers and remembers $m$ after its first receipt. Let
+%   $1\leq j<k$. Process~A stops remembering $m$ after the $j^{th}$ receipt. When
+%   Process~A receives $m$ for the $(j+1)^{th}$ time, it considers it as a new
+%   message and delivers it again. This issue may repeat multiple times leading to
+%   that many deliveries of $m$.
+% \end{proof}
+
+However, implementing link memory becomes more challenging in dynamic systems
+where processes can start sending messages to any other process at any time. Any
+process can receive an already forgotten message from any other process. This
+may lead to double delivery with cascading effects in the
 system. Algorithm~\ref{algo:reliablebroadcast} fails to forbid multiple delivery
 in dynamic systems (see Figure~\ref{fig:counterproblem}). In this paper, we
-exploit causal order to solve this issue.
+solve this issue by exploiting causal broadcast's ability to ensure a specific
+order on message delivery. To characterize the order among events such as send,
+or receive, we define time in a logical sense using Lamport’s definition.
+
+
 
 % \begin{definition}[Per link remembering]
 %   A process remembers a message from its delivery to its last receipt, i.e.,
@@ -178,6 +213,13 @@ exploit causal order to solve this issue.
 % $m$ from Process~B after having delivered all messages delivered by Process~B
 % before the sending of $m$. This order will prove useful to ensure the receipt of
 % set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
+
+\begin{definition}[Happen before~\cite{lamport1978time}]
+  Happen before is a transitive, irreflexive, and antisymmetric relation
+  $\rightarrow$ that defines a strict partial orders of events. The sending of a
+  message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
+  messages are concurrent if none happens before the other.
+\end{definition}
 
 \begin{definition}[Causal order]
   The delivery order of messages follows the happen before relationships of the
@@ -307,10 +349,13 @@ problem and provides its complexity analysis.
 
 \RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
 causal order violation and multiple delivery by using all and only links that
-have been proven safe to use. Table~\ref{table:complexity} shows that it keeps
-constant size message overhead while discarding local control information about
-messages over receipts. This costs only twice as much as \PCBROADCAST in terms
-of number of control messages.
+\begin{inparaenum}[(i)]
+\item have been proven safe to use and
+\item the memory of which is correctly initialized.
+\end{inparaenum}
+Table~\ref{table:complexity} shows that it keeps constant size message overhead
+while discarding local control information about messages over receipts. This
+costs only twice as much as \PCBROADCAST in terms of number of control messages.
 
 Figure~\ref{fig:counterproblem} shows that adding safe links is insufficient to
 forbid multiple delivery. At any time, a process may receive messages it already
@@ -327,15 +372,6 @@ from this link.
 %   its delivered messages the messages it will eventually receive via this new
 %   link from the messages it will never receive via this new link.
 % \end{definition}
-
-\begin{definition}[\label{def:extension}Safe link memory]
-  A safe link from Process~A to Process~B must remember among Process~B's
-  delivered messages those that will be received from Process~A; and forget
-  among Process~B's delivered messages those that will never be received from
-  Process~A.\\
-  $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$ \\
-  $\forall m,\, remember_{BA}(m) \implies r_{BA}(m)$
-\end{definition}
 
 % Definition~\ref{def:extension} implies that Process~B manages to distinguish
 % messages it delivered that are not delivered by Process~A from messages it did
@@ -360,23 +396,23 @@ included in buffers.
 % buffers, a process is able to retrieve the knowledge about old messages to
 % ignore, messages to expect, and new messages to deliver.
 
-\begin{definition}[Buffering phase]
-  Process~B starts and stops buffering upon receipt of control messages from
-  Process~A. Control messages are $\alpha$, $\beta$, and $\gamma$. Process~A
-  sends $\alpha$ to Process~B using safe links. Process~B starts buffering on
-  receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
-  communication means. Process~A sends $\gamma$ to Process~B using safe
-  links. Process~B stops buffering on receipt of $\gamma$.
-  The buffer $\mathcal{B}$ contains the messages delivered by Process~B.
-  $m \in \mathcal{B} \Longleftrightarrow 
-  (r_B(\alpha) \rightarrow d_B(m)) \wedge (d_B(m) \rightarrow r_B(\gamma))$
-\end{definition}
+% \begin{definition}[Buffering phase]
+%   Process~B starts and stops buffering upon receipt of control messages from
+%   Process~A. Control messages are $\alpha$, $\beta$, and $\gamma$. Process~A
+%   sends $\alpha$ to Process~B using safe links. Process~B starts buffering on
+%   receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
+%   communication means. Process~A sends $\gamma$ to Process~B using safe
+%   links. Process~B stops buffering on receipt of $\gamma$.
+%   The buffer $\mathcal{B}$ contains the messages delivered by Process~B.
+%   $m \in \mathcal{B} \Longleftrightarrow 
+%   (r_B(\alpha) \rightarrow d_B(m)) \wedge (d_B(m) \rightarrow r_B(\gamma))$
+% \end{definition}
 
 % \begin{lemma}[Messages of buffer]
-%   The buffer $\mathcal{B}$ includes messages delivered by Process~A but not
-%   delivered by Process~B before the receipt of $\alpha$. This excludes messages
-%   delivered by Process~A before the sending of $\alpha$ and messages delivered
-%   by Process~B before the receipt of $\alpha$.
+%   A buffer $\mathbb{B}$ includes messages delivered by Process~A but not delivered by
+%   Process~B before the receipt of $\alpha$. This excludes messages delivered by
+%   Process~A before the sending of $\alpha$ and messages delivered by Process~B
+%   before the receipt of $\alpha$.
 %   $\forall m,\,m',\,(m\neq m'),\, s_A(\alpha) \rightarrow d_A(m) \wedge d_A(m)
 %   \rightarrow s_A(\gamma) \wedge d_B(m') \rightarrow r_B(\alpha) \implies m \in
 %   \mathcal{B}$
@@ -419,9 +455,25 @@ included in buffers.
   \end{center}
 \end{figure}
 
-Figure~\ref{fig:timelineproof} shows that \RPCBROADCAST interlaces 3 buffering
-phases. One control message of a buffering phase becomes the control message of
-the next buffering phase.
+
+To provide safe links that cannot violate causal order, \PCBROADCAST sends a
+buffer of messages $B_\beta$ after a round-trip of messages $\pi$ and $\rho$. In
+\RPCBROADCAST, the receiver maintains 2 buffers $B_\alpha$ and $B_\pi$ in order
+to categorize the messages in $B_\beta$. \RPCBROADCAST interlaces the buffering
+phases to reason about the content of buffers. At receipt of $B_\beta$, the
+process identifies messages to deliver, messages to ignore, and messages to
+expect. The latter initializes the new link memory.
+
+% phases using control messages (see Figure~\ref{fig:timelineproof}) with the
+% objective to identify from the buffer of messages
+
+
+% One control message of a buffering phase becomes the control message of the next
+% buffering phase.
+
+\begin{lemma}[Messages of buffer $B_\alpha$]
+\end{lemma}
+
 
 \begin{theorem}[\RPCBROADCAST solves the problem statement]
   \TODO{Meow}
