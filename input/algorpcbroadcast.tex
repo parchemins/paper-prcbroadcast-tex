@@ -24,33 +24,39 @@
 \BlankLine
 
 \Dissemination{}{
-  
+
+  \begin{multicols}{2}
   \Function{$\RPCBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
 %    $\textup{buffering}(m)$ \;
     $\textup{R-broadcast}(m)$
   }
 
-  \BlankLine
+%  \BlankLine
   
   \Upon{$\textup{R-deliver}(m)$} {
     $\textup{buffering}(m)$ \;
     $\textup{PRC-deliver}(m)$
   }
 
-  \BlankLine
+%  \BlankLine
 
   \Function{$\textup{buffering}(m)$}{ 
     \lForEach {$q \in B$} {$B[q] \leftarrow B[q] \cup m$}
 
-    \lForEach{$q \in S$ \textup{\textbf{such that}}
-      $S[q] = \langle B_\alpha,\, \_,\, false \rangle$}
-    {$B_\alpha \leftarrow B_\alpha \cup m$}
+    \ForEach{$\langle B_\alpha,\, B_\pi,\, received_\pi\rangle \in S$}{
+      \lIf{$received_\pi$}{$B_\pi \leftarrow B_\pi \cup m$}
+      \lElse{$B_\alpha \leftarrow B_\alpha \cup m$}
+    }
+    
+    %   $S[q] = \langle B_\alpha,\, \_,\, false \rangle$}
+    % {$B_\alpha \leftarrow B_\alpha \cup m$}
 
-    \lForEach{$q \in S$ \textup{\textbf{such that}}
-      $S[q] = \langle\, \_,\,B_\pi,\, true \rangle$}
-    {$B_\pi \leftarrow B_\pi \cup m$}
+    % \lForEach{$q \in S$ \textup{\textbf{such that}}
+    %   $S[q] = \langle\, \_,\,B_\pi,\, true \rangle$}
+    % {$B_\pi \leftarrow B_\pi \cup m$}
 
   }
+  \end{multicols}
 }
 
 \BlankLine
@@ -60,7 +66,7 @@
     \tcp*[l]{$@$Sender}
   \Upon{$\textup{open}_o(to)$} {
     $Q_o \leftarrow Q_o \setminus to$  \; % \tcp*{unsafe to send to $to$}
-    $\textup{sendAlpha}(p,\,q)$ \label{line:sendalpha} \; %  \tcp*{$\alpha$}
+    $\textup{send-}\alpha(p,\,q)$ \label{line:sendalpha} \; %  \tcp*{$\alpha$}
   }
 
   \tcp*[l]{$@$Receiver}
@@ -72,15 +78,15 @@
   \BlankLine
   
   \begin{multicols}{2}
-  \Upon{$\textup{receiveBeta}(from,\,to)$}{% \tcp*[f]{$from=p$}} {
+  \Upon{$\textup{receive-}\beta(from,\,to)$}{% \tcp*[f]{$from=p$}} {
     $B[to] \leftarrow \varnothing$ \; %\tcp*{initialize $B_\beta$}
-    $\textup{sendPi}(from,\, to)$ \label{line:sendpi} \; % \tcp*{$\pi$}
+    $\textup{send-}\pi(from,\, to)$ \label{line:sendpi} \; % \tcp*{$\pi$}
   }
 
-  \Upon{$\textup{receiveAlpha}(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
+  \Upon{$\textup{receive-}\alpha(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
     $S[from] \leftarrow \langle \varnothing,\, \varnothing,\, false \rangle$ \;
     %% \tcp*{initialize $B_\alpha$}
-    $\textup{sendBeta}(from,\,to)$ \label{line:sendbeta} \; % \tcp*{$\beta$}
+    $\textup{send-}\beta(from,\,to)$ \label{line:sendbeta} \; % \tcp*{$\beta$}
   }
 
   \end{multicols}
@@ -88,16 +94,16 @@
   \BlankLine
   
   \begin{multicols}{2}
-  \Upon{$\textup{receiveRho}(from,\,to)$}{% \tcp*[f]{$from=p$}} {
-    $\textup{sendBuffer}(from,\,to,\, B[to])$ \label{line:sendbuffer}\;
+  \Upon{$\textup{receive-}\rho(from,\,to)$}{% \tcp*[f]{$from=p$}} {
+    $\textup{send-}B_\beta(from,\,to,\, B[to])$ \label{line:sendbuffer}\;
     $B \leftarrow B \setminus to$ \;
     $Q_o \leftarrow Q_o \cup to$ \; %\tcp*{safe to send to $to$}
   }
 
-  \Upon{$\textup{receivePi}(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
+  \Upon{$\textup{receive-}\pi(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
     \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
     $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \; % \tcp*{initialize $B_\pi$}
-    $\textup{sendRho}(from,\, to)$ \label{line:sendrho} \; % \tcp*{$\rho$}
+    $\textup{send-}\rho(from,\, to)$ \label{line:sendrho} \; % \tcp*{$\rho$}
   }
   \end{multicols}
 
@@ -110,7 +116,7 @@
     \tcp*[r]{to deliver $\rightarrow$\hspace{2.2em}}
     \tcp*[r]{to expect $\rightarrow$\hspace{2.2em}}
     \columnbreak
-  \Upon{$\textup{receiveBuffer}(from,\, to,\, B_\beta)$} {
+  \Upon{$\textup{receive-}B_\beta(from,\, to,\, B_\beta)$} {
     \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
     \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }

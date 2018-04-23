@@ -664,8 +664,8 @@ interactions~\cite{jelasity2007gossip,nedelec2017adaptive}. It achieves
 $O(\log(P))$ control messages when peer-sampling protocols allows processes to
 route their messages~\cite{jelasity2009tman,stoica2001chord}.  It achieves
 $O(4P^2)$ control messages when Process~A adds Process~B without knowledge of
-any route. Process~A and Process~B fall back to reliable broadcast to
-disseminate control messages.
+any route. Process~A and Process~B fall back to reliable broadcast instead of
+routing to disseminate control messages.
 
 Overall, this analysis shows that \RPCBROADCAST proposes an original tradeoff in
 terms of complexity. In systems allowing a form of routing, it constitutes an
