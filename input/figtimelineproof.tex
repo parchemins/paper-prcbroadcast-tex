@@ -3,7 +3,7 @@
 
   \small
   
-  \newcommand\X{1.8*\columnwidth/16pt};
+  \newcommand\X{1.9*\columnwidth/16pt};
   \newcommand\YA{0pt};
   \newcommand\YB{-60pt};
   
@@ -40,7 +40,7 @@
   % node[below right]{$\mathcal{D} = \mathcal{C} \cup \mathcal{C}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}' \cup \mathcal{C}'$} --
   % (5*\X, \YB - 2*\YSPACE);
 
-  \draw[<->] (3*\X, \YB - 1*\YSPACE) --
+  \draw[<->,very thick] (3*\X, \YB - 1*\YSPACE) --
   node[below]{$\bm{B_\alpha}$}
   node[above]{$\mathcal{A}_2 \cup \mathcal{B}_2$}
   (5*\X, \YB - 1*\YSPACE);
@@ -51,15 +51,16 @@
   % node[above right]{$\mathcal{E} = \mathcal{D} \cup \mathcal{D}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}' \cup \mathcal{C}' \cup \mathcal{D}'$} --
   % (6*\X, \YA + 3*\YSPACE);
 
-  \draw[<->] (4*\X, \YA +1*\YSPACE) -- node[above]{$\bm{B_\beta}$}
+  \draw[<->,very thick] (4*\X, \YA +1*\YSPACE) -- node[above]{$\bm{B_\beta}$}
   node[below]{$\mathcal{B}_2 \cup \mathcal{A}_3$} (6*\X, \YA + 1*\YSPACE);
 
 
   \draw[->, very thick] ( 6*\X, \YA ) -- node[sloped, above]{$\bm{B_\beta}$} (7*\X, \YB);
 
   
-  \draw[<->] (5*\X, \YB - 1*\YSPACE ) -- node[below]{$\bm{B_\pi}$}
-  node[above]{$\mathcal{A}_3' \cup \mathcal{B}_3 $} 
+  \draw[<->,very thick] (5*\X, \YB - 1*\YSPACE ) -- node[below]{$\bm{B_\pi}$}
+  node[above]{$\mathcal{A}_3' \cup \mathcal{B}_3$ with
+    $\mathcal{A}_3' \subseteq \mathcal{A}_3$} 
   (7*\X, \YB - 1*\YSPACE);
 
 

@@ -63,13 +63,13 @@
 
 \Safety{}{
   \begin{multicols}{2}
-    \tcp*[l]{$@$Sender}
+    \EmptyComment*[l]{\uline{$@$Sender}}
   \Upon{$\textup{open}_o(to)$} {
     $Q_o \leftarrow Q_o \setminus to$  \; % \tcp*{unsafe to send to $to$}
     $\textup{send-}\alpha(p,\,q)$ \label{line:sendalpha} \; %  \tcp*{$\alpha$}
   }
 
-  \tcp*[l]{$@$Receiver}
+  \EmptyComment*[l]{\uline{$@$Receiver}}
   \Upon{$\textup{open}_i(from)$} {
     $Q_i \leftarrow Q_i \setminus from$ \; % \tcp*{unsafe to receive from $from$}
   }
@@ -112,9 +112,9 @@
   \begin{multicols}{2}
     \EmptyComment*{}
     \EmptyComment*{}
-    \tcp*[r]{filter messages to ignore $\rightarrow$\hspace{2.2em}}
-    \tcp*[r]{to deliver $\rightarrow$\hspace{2.2em}}
-    \tcp*[r]{to expect $\rightarrow$\hspace{2.2em}}
+    \EmptyComment*[r]{filter messages to ignore $\rightarrow$\hspace{2.2em}}
+    \EmptyComment*[r]{to deliver $\rightarrow$\hspace{2.2em}}
+    \EmptyComment*[r]{to expect $\rightarrow$\hspace{2.2em}}
     \columnbreak
   \Upon{$\textup{receive-}B_\beta(from,\, to,\, B_\beta)$} {
     \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
