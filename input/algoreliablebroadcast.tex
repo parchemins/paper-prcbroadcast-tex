@@ -18,7 +18,9 @@
 \BlankLine
 
 \Dissemination{}{
-  
+
+  \begin{multicols}{2}
+
   \Function{$\textup{R-broadcast}(m)$} { %\tcp*[f]{$b_p(m)$}} { 
     % $\textup{received}(m,\, \_)$ \;
     % \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
@@ -30,24 +32,28 @@
   
   \Upon{$\textup{receive}(m,\, l)$}{
     \If {$\neg\textup{received}(m,\,l)$} {
-      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$) \tcp*[f]{broadcast or forward}}
+      \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
+      % \tcp*[f]{broadcast or forward}}
       \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
     }
   }
 
-  \BlankLine
+  %\BlankLine
   
   \Function{$\textup{received}(m,\, l)$}{
-    \textbf{let} $hasReceived \leftarrow true$ \;
-    \If {$\not\exists q \in E$ \textbf{\textup{such that}} $m \in E[q]$} {
-      \lForEach {$q \in Q_i$} {$E[q] \leftarrow E[q] \cup m$ \label{line:remembers}
-      \tcp*[f]{to remember}}
-      $hasReceived \leftarrow false$ \;
+    \textbf{let} $rcvd \leftarrow
+    \exists q \in E$ \textbf{\textup{with}} $m\in E[q]$ \;
+    \If {$\neg rcvd$} {
+      \ForEach {$q \in Q_i$} {$E[q] \leftarrow E[q] \cup m$ \label{line:remembers}}
+        % \tcp*[f]{to remember}}
     }
-    $E[l] \leftarrow E[l] \setminus m$ \label{line:forgets} \tcp*{to forget}
-    \Return $hasReceived$ \;
+    $E[l] \leftarrow E[l] \setminus m$ \label{line:forgets} \;%\tcp*{to forget}
+    \Return $rcvd$ \;
   }
-  
+
+  \end{multicols}
+
+  \BlankLine  
 }
 
 
