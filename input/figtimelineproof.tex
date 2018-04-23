@@ -15,44 +15,52 @@
   \draw[fill=white] (0*\X, \YA) node{\textbf{\textup{A}}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
   \draw[fill=white] (0*\X, \YB) node{\textbf{\textup{B}}} +(-5pt, -5pt) rectangle +(5pt, 5pt);
   
-  \draw[->] (0*\X, \YA + 1* \YSPACE) node[above right]{$\mathcal{A}$}
-  -- (2*\X, \YA + \YSPACE);
+  \draw[->] (0*\X, \YA + 1* \YSPACE)% node[above right]{$\mathcal{A}$}
+  -- node[below]{$\mathcal{A}_1$} (2*\X, \YA + \YSPACE);
   \draw[densely dashed,->] ( 2*\X, \YA ) -- node[sloped, above]{$\alpha$} (3*\X, \YB);
 
   \draw[->] (0*\X, \YB - 1* \YSPACE)
-  node[below right]{$\mathcal{B} = \mathcal{A} \cup \mathcal{A}'$} --
+  %node[below right]{$\mathcal{B} = \mathcal{A} \cup \mathcal{A}'$} 
+  -- node[above]{$\mathcal{A}_1 \cup \mathcal{B}_1$}
   (3*\X, \YB - \YSPACE);
 
   \draw[densely dashed,->] ( 3*\X, \YB ) -- node[sloped, above]{$\beta$} (4*\X, \YA);
 
-  \draw[->] (0*\X, \YA + 2* \YSPACE)
-  node[above right]{$\mathcal{C} = \mathcal{B} \cup \mathcal{B}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}'$} --
-  (4*\X, \YA + 2*\YSPACE);
+
+  \draw[<->] ( 2*\X, \YA + 1* \YSPACE ) --
+  node[below]{$\mathcal{B}_1 \cup \mathcal{A}_2$}
+  (4*\X, \YA + 1* \YSPACE);
+  % \draw[->] (0*\X, \YA + 2* \YSPACE)
+  % node[above right]{$\mathcal{C} = \mathcal{B} \cup \mathcal{B}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}'$} --
+  % (4*\X, \YA + 2*\YSPACE);
   
   \draw[densely dashed,->] ( 4*\X, \YA ) -- node[sloped, above]{$\pi$} (5*\X, \YB);
 
-  \draw[->] (0*\X, \YB - 2 * \YSPACE)
-  node[below right]{$\mathcal{D} = \mathcal{C} \cup \mathcal{C}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}' \cup \mathcal{C}'$} --
-  (5*\X, \YB - 2*\YSPACE);
+  % \draw[->] (0*\X, \YB - 2 * \YSPACE)
+  % node[below right]{$\mathcal{D} = \mathcal{C} \cup \mathcal{C}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}' \cup \mathcal{C}'$} --
+  % (5*\X, \YB - 2*\YSPACE);
 
   \draw[<->] (3*\X, \YB - 1*\YSPACE) --
-  node[below]{$\bm{B_\alpha} = \mathcal{D}\setminus\mathcal{B} = \mathcal{B}' \cup \mathcal{C}'$}
+  node[below]{$\bm{B_\alpha}$}
+  node[above]{$\mathcal{A}_2 \cup \mathcal{B}_2$}
   (5*\X, \YB - 1*\YSPACE);
 
   \draw[densely dashed,->] ( 5*\X, \YB ) -- node[sloped, above]{$\rho$} (6*\X, \YA);
 
-  \draw[->] (0*\X, \YA + 3 * \YSPACE)
-  node[above right]{$\mathcal{E} = \mathcal{D} \cup \mathcal{D}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}' \cup \mathcal{C}' \cup \mathcal{D}'$} --
-  (6*\X, \YA + 3*\YSPACE);
+  % \draw[->] (0*\X, \YA + 3 * \YSPACE)
+  % node[above right]{$\mathcal{E} = \mathcal{D} \cup \mathcal{D}' = \mathcal{A} \cup \mathcal{A}' \cup \mathcal{B}' \cup \mathcal{C}' \cup \mathcal{D}'$} --
+  % (6*\X, \YA + 3*\YSPACE);
 
-  \draw[<->] (4*\X, \YA +2*\YSPACE) -- node[above, yshift=-0.55ex]{$\bm{B_\beta} = \mathcal{E}\setminus\mathcal{C}= \mathcal{C}'\cup \mathcal{D}'$} (6*\X, \YA + 2*\YSPACE);
+  \draw[<->] (4*\X, \YA +1*\YSPACE) -- node[above]{$\bm{B_\beta}$}
+  node[below]{$\mathcal{B}_2 \cup \mathcal{A}_3$} (6*\X, \YA + 1*\YSPACE);
 
 
   \draw[->, very thick] ( 6*\X, \YA ) -- node[sloped, above]{$\bm{B_\beta}$} (7*\X, \YB);
 
   
-  \draw[<->] (5*\X, \YB - 2*\YSPACE ) -- node[below, align=center]{$\bm{B_\pi}= \mathcal{G} \cup \mathcal{H}$\\with $\mathcal{G} \subseteq \mathcal{D}'$ and $\mathcal{H} \cap \mathcal{D}' = \varnothing$} 
-  (7*\X, \YB - 2*\YSPACE);
+  \draw[<->] (5*\X, \YB - 1*\YSPACE ) -- node[below]{$\bm{B_\pi}$}
+  node[above]{$\mathcal{A}_3' \cup \mathcal{B}_3 $} 
+  (7*\X, \YB - 1*\YSPACE);
 
 
   % \draw[<-] (7*\X, -2+\YB ) -- (7.1*\X, \YB -  2*\YSPACE )
