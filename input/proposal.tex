@@ -165,7 +165,20 @@ reliable broadcast that uses link memory to forbid multiple delivery in static
 systems. The link memory is non-monotonic. The first receipt of a broadcast
 message from a link tags the other links (see Line~\ref{line:remembers}). The
 receipt on other links of this broadcast message removes the corresponding tag
-(see Line~\ref{line:forgets}).
+(see Line~\ref{line:forgets}). Figure~\ref{fig:memorylink} depicts its
+functioning in a system comprising 3 processes. In Figure~\ref{fig:memorylinkA},
+Process~B broadcasts $b$. It awaits a copy of $b$ from the only link in its
+in-view. In Figure~\ref{fig:memorylinkB}, Process~A receives $b$. It delivers
+it, for no link in its in-view is tagged with $b$, meaning this is a first
+receipt. It tags the other link in its in-view with $b$ and forwards $b$ to its
+out-view. In Figure~\ref{fig:memorylinkC}, Process~B receives the awaited copy
+of $b$ from Process~A. It removes the corresponding entry. Process~B does not
+consume space anymore for reliable broadcast. Process~C receives $b$. It detects
+a first receipt so it delivers and forwards $b$. It does not tag any link, for
+the only link from its in-view is the link from which it just received $b$. In
+Figure~\ref{fig:memorylinkD}, the last process to await a copy of $b$ finally
+receives it. None of processes remembers about $b$. No copy of $b$ travels in
+the system. This implementation forbids multiple delivery in static systems.
 
 % Algorithm~\ref{algo:reliablebroadcast} shows an implementation of uniform
 % reliable broadcast that forbids multiple delivery in static systems. It features
@@ -235,13 +248,25 @@ receipt on other links of this broadcast message removes the corresponding tag
 
 However, implementing link memory becomes more challenging in dynamic systems
 where processes can start sending messages to any other process at any time. Any
-process can receive an already forgotten message from any other process. This
-may lead to double delivery with cascading effects in the
-system. Algorithm~\ref{algo:reliablebroadcast} fails to forbid multiple delivery
-in dynamic systems (see Figure~\ref{fig:counterproblem}). In this paper, we
-solve this issue by exploiting causal broadcast's ability to ensure a specific
-order on message delivery. To characterize the order among events such as send,
-or receive, we define time in a logical sense using Lamport’s definition.
+process can receive an already forgotten message from any other
+process. Figure~\ref{fig:memoryfails} illustrates the issue. In
+Figure~\ref{fig:memorylinkfailsA}, Process~A broadcasts $a$. It expects a copy
+from both Process~B and Process~C. In Figure~\ref{fig:memorylinkfailsB},
+Process~C immediately receives, delivers, and forwards $a$. It does not tag any
+link and expects to never receive this message again. However, network condition
+delays the receipt of $b$ from Process~B. In Figure~\ref{fig:memorylinkfailsC}
+adds a communication link towards Process~C. Then it receives, delivers, and
+forwards $b$. Since Process~C now belongs to its out-view, the forwarding
+includes Process~C. In Figure~\ref{fig:memorylinkfailsD}, Process~C receives $a$
+again. However, it did not keep control information about this message. It
+mistakes it for a first receipt. It delivers and forwards $a$. Not only
+Process~C suffers multiple delivery but this has cascading effects over the
+whole system.
+
+In this paper, we solve this issue by exploiting causal broadcast's ability to
+ensure a specific order on message delivery. To characterize the order among
+events such as send, or receive, we define time in a logical sense using
+Lamport’s definition.
 
 
 
