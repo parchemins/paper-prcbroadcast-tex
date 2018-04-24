@@ -138,8 +138,8 @@ non-monotonic link-wise memory to forbid multiple delivery.
     ~
     \begin{subfigure}[t]{0.23\textwidth}
       \centering\input{input/figmemorylinkC.tex}%
-      \caption{\label{fig:memorylinkC}Process~B and Process~C receive $b$. They do
-not expect additional copies. Process~C delivers and forwards $b$.}
+      \caption{\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
+        do not expect additional copies. Process~C delivers and forwards $b$.}
     \end{subfigure}
     ~
     \begin{subfigure}[t]{0.23\textwidth}
@@ -147,7 +147,8 @@ not expect additional copies. Process~C delivers and forwards $b$.}
       \caption{\label{fig:memorylinkD}Process~A receives its last expected copy
         of $b$. The message $b$ is completely removed from the system.}
     \end{subfigure}
-    \caption{Link memory allows processes to forget past deliveries in static systems.}
+    \caption{\label{fig:memorylink}Link memory allows processes to forget past
+      deliveries in static systems.}
   \end{center}
 \end{figure}
 
@@ -199,6 +200,38 @@ receipt on other links of this broadcast message removes the corresponding tag
 %   message and delivers it again. This issue may repeat multiple times leading to
 %   that many deliveries of $m$.
 % \end{proof}
+
+
+\begin{figure}
+  \begin{center}
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsA.tex}%
+      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
+        from both Process~B and Process~C.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsB.tex}%
+      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
+        forwards $a$. It does not expect additional copies.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsC.tex}%
+      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
+        Then it receives, delivers, and forwards $a$.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsD.tex}%
+      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
+        for a new message. It delivers, and forwards $a$.}
+    \end{subfigure}
+    \caption{\label{fig:memoryfails}Reliable broadcast
+      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
+      in dynamic systems. }
+  \end{center}
+\end{figure}
 
 However, implementing link memory becomes more challenging in dynamic systems
 where processes can start sending messages to any other process at any time. Any
