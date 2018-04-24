@@ -121,6 +121,36 @@ non-monotonic link-wise memory to forbid multiple delivery.
   \TODO{Could be improved.}
 \end{proof}
 
+
+\begin{figure}
+  \begin{center}
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkA.tex}%
+      \caption{\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
+        of $b$ from Process~A.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkB.tex}%
+      \caption{\label{fig:memorylinkB}Process~A receives, delivers, and forwards
+        $b$. It expects a copy from Process~C.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkC.tex}%
+      \caption{\label{fig:memorylinkC}Process~B and Process~C receive $b$. They do
+not expect additional copies. Process~C delivers and forwards $b$.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkD.tex}%
+      \caption{\label{fig:memorylinkD}Process~A receives its last expected copy
+        of $b$. The message $b$ is completely removed from the system.}
+    \end{subfigure}
+    \caption{Link memory allows processes to forget past deliveries in static systems.}
+  \end{center}
+\end{figure}
+
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
   \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
