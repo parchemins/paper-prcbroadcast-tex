@@ -550,13 +550,87 @@ guarantees on messages included in buffers.
 \end{figure}
 
 
-To provide safe links that cannot violate causal order, \PCBROADCAST sends a
-buffer of messages $B_\beta$ after a round-trip of messages $\pi$ and $\rho$. In
-\RPCBROADCAST, the receiver maintains 2 buffers $B_\alpha$ and $B_\pi$ in order
-to categorize the messages in $B_\beta$. \RPCBROADCAST interlaces the buffering
-phases to reason about the content of buffers. At receipt of $B_\beta$, the
-process identifies messages to deliver, messages to ignore, and messages to
-expect. The latter initializes the new link memory.
+When a Process~A adds a link to Process~B, \RPCBROADCAST initializes safe link
+memory in 3 steps:
+\begin{enumerate}
+\item Process~A notifies Process~B using safe links. At receipt, Process~B
+  implicitly removes obsolete information: messages delivered by Process~A
+  before the sending of the notification $\mathcal{A}_1$. At receipt, Process~B
+  can start gathering control information about its delivered messages in a
+  buffer $B_\alpha$. Among other, Process~B wants to identify messages
+  concurrent to the safety check. Process~B acknowledges Process~A's
+  notification. When the latter receives the acknowledgment, it starts the
+  safety check of the new link (\REF). Once again, it removes obsolete
+  information: messages delivered by Process~B before the sending of the
+  acknowledgment $\mathcal{A}_1 \cup \mathcal{B}_1$. Process~A sends a control
+  message $\pi$ to Process~B using safe links, and starts to gather control
+  information about its delivered messages in a buffer $B_\beta$ in order to
+  ensure safe links. Upon receipt, Process~B closes its buffer $B_\alpha$.
+  
+  \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
+    The buffer $B_\alpha$ contains messages delivered by Process~B after the
+    sending of its acknowledgment $\beta$ and before the receipt of the control
+    message $\pi$.\\
+    This includes messages delivered by Process~A before the sending of $\pi$
+    that were not delivered by Process~B before the sending of $\beta$:
+    $\mathcal{A}_2$. Most importantly, this also includes messages delivered by
+    Process~B that were not delivered by Process~A at the sending of $\pi$:
+    $\mathcal{B}_2$.
+  \end{lemma}
+
+  \begin{proof}
+    Since safe links provides causal order among messages they convey, we have:
+    $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies m \not \in
+    B_\alpha$.
+    Since messages are delivered once,
+    $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge d_B(m) \rightarrow
+    s_B(\beta_{AB}) \implies m \not \in B_\alpha$.
+    This removes $\mathcal{A}_1$ and $\mathcal{B}_1$.\\
+    The buffer $B_\alpha$ contains the rest of messages delivered by Process~B
+    before the receipt of $\pi$. This includes messages delivered by Process~A
+    between the sending of $\alpha$ and $\pi$ but not delivered by Process~B
+    before the sending of $\beta$ ($\mathcal{A}_2$); and messages delivered by
+    Process~B but not delivered by Process~A before the sending of $\pi$
+    ($\mathcal{B}_2$).
+  \end{proof}
+
+\item Upon receipt of $\pi$, Process~B continues to gather control information
+  about its delivered messages in another buffer $B_\pi$. Some messages in this
+  buffer will be expected from Process~A, but Process~B cannot determine which
+  ones just yet. It sends the last acknowledgement $\rho$ to Process~A using
+  safe links. Upon receipt of this acknowledgment, Process~A closes its buffer
+  and sends it using the new link. Afterwards the link is safe to use by
+  Process~A for causal broadcast (see Definition~\ref{def:safe}).
+
+  \begin{lemma}[\label{lem:bbeta}Messages in buffer $B_\beta$]
+    The buffer $B_\beta$ contains messages delivered by Process~A after the
+    sending of $\pi$ and before the receipt of $\rho$.\\
+    This includes messages delivered by Process~B before the sending of $\rho$
+    that were not delivered by Process~A before the sending of $\pi$:
+    $\mathcal{B}_2$. This also includes messages delivered by Process~A that
+    were not delivered by Process~B at the sending of $\rho$: $\mathcal{A}_3$.
+  \end{lemma}
+  
+  \begin{proof}
+    The proof is similar to that of Lemma~\ref{lem:balpha}. Control messages
+    shift roles. $\pi$ becomes $\rho$; $\beta$ becomes $\pi$; $\alpha$ becomes
+    $\beta$.
+  \end{proof}
+
+\item Upon receipt of $B_\beta$, Process~B is able to identify messages in
+  $B_\beta$ it must deliver against messages it must ignore, and messages in
+  $B_\pi$ it must receive from Process~A.  \TODO{To continue.}
+\end{enumerate}
+
+
+
+% To provide safe links that cannot violate causal order, \PCBROADCAST sends a
+% buffer of messages $B_\beta$ after a round-trip of messages $\pi$ and $\rho$. In
+% \RPCBROADCAST, the receiver maintains 2 buffers $B_\alpha$ and $B_\pi$ in order
+% to categorize the messages in $B_\beta$. \RPCBROADCAST interlaces the buffering
+% phases to reason about the content of buffers. At receipt of $B_\beta$, the
+% process identifies messages to deliver, messages to ignore, and messages to
+% expect. The latter initializes the new link memory.
 
 % phases using control messages (see Figure~\ref{fig:timelineproof}) with the
 % objective to identify from the buffer of messages
@@ -565,69 +639,61 @@ expect. The latter initializes the new link memory.
 % One control message of a buffering phase becomes the control message of the next
 % buffering phase.
 
-\begin{lemma}[Messages of buffer $B_\alpha$]
-\end{lemma}
-
-
-\begin{theorem}[\RPCBROADCAST solves the problem statement]
-  \TODO{Meow}
-\end{theorem}
-
-\begin{proof}
-  Figure~\ref{fig:timeline} exposes the different steps of this proof. Assuming
-  that Process~A adds Process~B in its out-view. Before sending $\alpha$,
-  Process~A delivered a set of messages $\mathcal{A}$. Since $\alpha$ travels
-  using causal communication, all messages delivered by Process~A at the moment
-  of the sending are delivered by Process~B at the moment of the receipt:
-  $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies d_B(m) \rightarrow
-  r_B(\alpha_{AB})$.
-  Thus, Process~B delivered a set of messages $\mathcal{B}$ that comprises
-  $\mathcal{A}$ and another set of delivered messages $\mathcal{A}'$ unknown to
-  Process~A at the moment of the sending. $\mathcal{A}$ and $\mathcal{A}'$ are
-  disjoint.\\
-  When Process~A receives $\beta$, it delivered $\mathcal{C}$ that comprises
-  $\mathcal{B}$ and $\mathcal{B}'$, $\mathcal{B}'$ being a set of messages
-  unknown to Process~B at the moment of the sending of $\beta$. \\
-  When Process~B receives $\pi$, it delivered $\mathcal{D}$ that comprises
-  $\mathcal{C}$ and $\mathcal{C}'$, $\mathcal{C}'$ being the set of messages
-  unknown to Process~A at the moment of the sending of $\pi$. Hence, Buffer
-  $B_\alpha$ contains the set of messages delivered between the sending of
-  $\beta$ and the receipt of $\pi$:
-  $\mathcal{D} \setminus \mathcal{B} = \mathcal{A} \cup \mathcal{A'} \cup
-  \mathcal{B}' \cup \mathcal{C'} \setminus (\mathcal{A} \cup \mathcal{A}') =
-  \mathcal{B}' \cup
-  \mathcal{C}'$. \\
-  When Process~A receives $\rho$, it delivered $\mathcal{E}$ that comprises
-  $\mathcal{D}$ and $\mathcal{D}'$, $\mathcal{D}'$ being a set of messages
-  unknown to Process~B at the moment of the sending of $\rho$. Hence, Buffer
-  $B_\beta$ contains the array of messages delivered between the receipt of
-  $\beta$ and the receipt of $\rho$:
-  $\mathcal{E} \setminus \mathcal{C} = \mathcal{C}' \cup \mathcal{D}'$.\\
-  When Process~B receives the buffer $B_\beta$, it delivered a set of messages
-  that follows the receipt of $\pi$. The buffer $B_\pi$ comprises a set of
-  messages $\mathcal{G}$ delivered by Process~A before the sending of $B_\beta$
-  and a set of messages $\mathcal{H}$ not delivered by Process~A before the
-  sending of $B_\beta$.
+% \begin{proof}
+%   Figure~\ref{fig:timeline} exposes the different steps of this proof. Assuming
+%   that Process~A adds Process~B in its out-view. Before sending $\alpha$,
+%   Process~A delivered a set of messages $\mathcal{A}$. Since $\alpha$ travels
+%   using causal communication, all messages delivered by Process~A at the moment
+%   of the sending are delivered by Process~B at the moment of the receipt:
+%   $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies d_B(m) \rightarrow
+%   r_B(\alpha_{AB})$.
+%   Thus, Process~B delivered a set of messages $\mathcal{B}$ that comprises
+%   $\mathcal{A}$ and another set of delivered messages $\mathcal{A}'$ unknown to
+%   Process~A at the moment of the sending. $\mathcal{A}$ and $\mathcal{A}'$ are
+%   disjoint.\\
+%   When Process~A receives $\beta$, it delivered $\mathcal{C}$ that comprises
+%   $\mathcal{B}$ and $\mathcal{B}'$, $\mathcal{B}'$ being a set of messages
+%   unknown to Process~B at the moment of the sending of $\beta$. \\
+%   When Process~B receives $\pi$, it delivered $\mathcal{D}$ that comprises
+%   $\mathcal{C}$ and $\mathcal{C}'$, $\mathcal{C}'$ being the set of messages
+%   unknown to Process~A at the moment of the sending of $\pi$. Hence, Buffer
+%   $B_\alpha$ contains the set of messages delivered between the sending of
+%   $\beta$ and the receipt of $\pi$:
+%   $\mathcal{D} \setminus \mathcal{B} = \mathcal{A} \cup \mathcal{A'} \cup
+%   \mathcal{B}' \cup \mathcal{C'} \setminus (\mathcal{A} \cup \mathcal{A}') =
+%   \mathcal{B}' \cup
+%   \mathcal{C}'$. \\
+%   When Process~A receives $\rho$, it delivered $\mathcal{E}$ that comprises
+%   $\mathcal{D}$ and $\mathcal{D}'$, $\mathcal{D}'$ being a set of messages
+%   unknown to Process~B at the moment of the sending of $\rho$. Hence, Buffer
+%   $B_\beta$ contains the array of messages delivered between the receipt of
+%   $\beta$ and the receipt of $\rho$:
+%   $\mathcal{E} \setminus \mathcal{C} = \mathcal{C}' \cup \mathcal{D}'$.\\
+%   When Process~B receives the buffer $B_\beta$, it delivered a set of messages
+%   that follows the receipt of $\pi$. The buffer $B_\pi$ comprises a set of
+%   messages $\mathcal{G}$ delivered by Process~A before the sending of $B_\beta$
+%   and a set of messages $\mathcal{H}$ not delivered by Process~A before the
+%   sending of $B_\beta$.
   
-  \noindent\textbf{To ignore:} Process~B ignores messages in $\mathcal{C}'$,
-  for they are
-  delivered by both processes: $B_\beta \setminus B_\alpha = \mathcal{D}'$.
-  $\mathcal{G}$ is a subset of the remaining $\mathcal{D}'$ that should be
-  ignored: $(B_\beta \setminus B_\alpha) \wedge B_\pi$.
+%   \noindent\textbf{To ignore:} Process~B ignores messages in $\mathcal{C}'$,
+%   for they are
+%   delivered by both processes: $B_\beta \setminus B_\alpha = \mathcal{D}'$.
+%   $\mathcal{G}$ is a subset of the remaining $\mathcal{D}'$ that should be
+%   ignored: $(B_\beta \setminus B_\alpha) \wedge B_\pi$.
 
-  \noindent \textbf{To deliver:} Process~B delivers messages in $\mathcal{D}'$
-  that it did not delivered yet:
-  $(B_\beta\setminus B_\alpha) \setminus B_\pi = \mathcal{D}' \setminus
-  \mathcal{G}$.
+%   \noindent \textbf{To deliver:} Process~B delivers messages in $\mathcal{D}'$
+%   that it did not delivered yet:
+%   $(B_\beta\setminus B_\alpha) \setminus B_\pi = \mathcal{D}' \setminus
+%   \mathcal{G}$.
   
-  \noindent \textbf{To expect from Process~A:} Process~B expects messages that
-  are not in $\mathcal{D}'$:
-  $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$.  Assuming the
-  link is not removed, since $\mathcal{H}$ comprises messages delivered by
-  Process~B only, and since all processes eventually receive, deliver, and
-  forward all messages, Process~B will eventually receive all the expected
-  messages $\mathcal{H}$ from this link in causal order.
-\end{proof}
+%   \noindent \textbf{To expect from Process~A:} Process~B expects messages that
+%   are not in $\mathcal{D}'$:
+%   $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$.  Assuming the
+%   link is not removed, since $\mathcal{H}$ comprises messages delivered by
+%   Process~B only, and since all processes eventually receive, deliver, and
+%   forward all messages, Process~B will eventually receive all the expected
+%   messages $\mathcal{H}$ from this link in causal order.
+% \end{proof}
 
 
 \begin{figure}
