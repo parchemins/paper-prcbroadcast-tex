@@ -1,5 +1,5 @@
 
-\begin{tikzpicture}[scale=0.9]
+\begin{tikzpicture}[scale=0.88]
 
   \small
   
@@ -15,7 +15,7 @@
   \draw[pattern=north east lines, pattern color=red!35] (\RADX*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
 
   \draw (0*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
-  \draw (0*\X, \RADY*\Y) node[below]{\textbf{\COLOR{blue!80!black!70}{\uline{Delivered by Process~B}}}};
+  \draw (0*\X, \RADY*\Y) node[below, align=center]{\textbf{\COLOR{blue!80!black!70}{\uline{Delivered by}}}\\\textbf{\COLOR{blue!80!black!70}{\uline{Process~B}}}};
 
   \draw (\OFFX-\RADX*\X, 0pt) node[right, align=left] {
     \textbf{\COLOR{blue!80!black!70}{To deliver:}}\\%\tiny
@@ -39,5 +39,5 @@
     \COLOR{purple}{$\{ b_1,\, c_2 \}$}
   };
   \draw (\RADX*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
-  \draw (\RADX*\X, \RADY*\Y) node[below]{\textbf{\COLOR{red!80!black!70}{\uline{Delivered by Process~C}}}};
+  \draw (\RADX*\X, \RADY*\Y) node[below, align=center]{\textbf{\COLOR{red!80!black!70}{\uline{Delivered by}}}\\\textbf{\COLOR{red!80!black!70}{\uline{Process~C}}}};
 \end{tikzpicture}
