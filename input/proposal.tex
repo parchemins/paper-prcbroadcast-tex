@@ -558,13 +558,13 @@ Process~A notifies Process~B using a control message $\alpha$. This control
 message $\alpha$, as all control messages that will follow ($\beta$, $\pi$,
 $\rho$), are delivered in causal order regarding broadcast messages. Hence, at
 receipt, Process~B implicitly removes obsolete information: messages delivered
-by Process~A before the sending of the notification $\mathcal{A}_1$. At receipt,
-Process~B can start gathering control information about its delivered messages
-in a buffer $B_\alpha$. Among other, Process~B wants to identify messages
-concurrent to the correct establishment of the new link. Process~B acknowledges
-Process~A's notification using a control message $\beta$. When Process~A
-receives $\beta$, it removes obsolete information: messages delivered by
-Process~B before the sending of the acknowledgment
+by Process~A before the sending of the notification $\mathcal{A}_1$. At receipt
+of $\alpha$, Process~B can start gathering control information about its
+delivered messages in a buffer $B_\alpha$. Among other, Process~B wants to
+identify messages concurrent to the correct establishment of the new
+link. Process~B acknowledges Process~A's notification using a control message
+$\beta$. At receipt of $\beta$, Process~A removes obsolete information: messages
+delivered by Process~B before the sending of the acknowledgment
 $\mathcal{A}_1 \cup \mathcal{B}_1$. Process~A sends a control message $\pi$ to
 Process~B, and starts to gather control information about its delivered messages
 in a buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
@@ -572,8 +572,7 @@ $B_\alpha$.
   
 \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
   The buffer $B_\alpha$ contains messages delivered by Process~B after the
-  sending of its acknowledgment $\beta$ and before the receipt of the control
-  message $\pi$.\\
+  sending of $\beta$ and before the receipt of $\pi$.\\
   This includes all messages delivered by Process~A before the sending of $\pi$
   that were not delivered by Process~B before the sending of $\beta$:
   $\mathcal{A}_2$. Most importantly, this also includes all messages delivered
