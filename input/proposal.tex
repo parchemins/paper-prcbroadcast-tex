@@ -537,14 +537,13 @@ guarantees on messages included in buffers.
       \RPCBROADCAST when Process~A adds a link to Process~B in its out-view. We
       hide intermediate processes for the purpose of clarity. Control messages
       $\alpha$, $\beta$, $\pi$, and $\rho$ travel by safe links. Process~A sends
-      $B_\beta$ using the new link. Messages arrive in causal order. From 
+      $B_\beta$ using the new link. Messages arrive in causal order. From
       $B_\beta$,
-      $B_\beta \wedge (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
+      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
       are messages to ignore, and
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
       \mathcal{A}_3'$
-      are messages to deliver.
-      $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{B}_3$ are
+      are messages to deliver.  $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
       messages to expect from Process~A.}
   \end{center}
 \end{figure}
@@ -553,7 +552,6 @@ guarantees on messages included in buffers.
 Figure~\ref{fig:timelineproof} depicts the principle of \RPCBROADCAST. When a
 Process~A adds a link to Process~B. %, \RPCBROADCAST initializes safe link memory
 % in 3 steps.
-
 Process~A notifies Process~B using a control message $\alpha$. This control
 message $\alpha$, as all control messages that will follow ($\beta$, $\pi$,
 $\rho$), are delivered in causal order regarding broadcast messages. Hence, at
@@ -598,7 +596,7 @@ $B_\alpha$.
   ($\mathcal{B}_2$).
 \end{proof}
 
-Upon receipt of $\pi$, Process~B continues to gather control information about
+\noindent Upon receipt of $\pi$, Process~B continues to gather control information about
 its delivered messages in another buffer $B_\pi$. Some messages in this buffer
 will be expected from Process~A, but Process~B cannot determine which ones just
 yet. It sends the last acknowledgment $\rho$ to Process~A. Upon receipt of this
@@ -626,7 +624,7 @@ new link memory.
   $\beta$.
 \end{proof}
 
-Upon receipt of $B_\beta$, Process~B stops buffering in $B_\pi$.
+\noindent Upon receipt of $B_\beta$, Process~B stops buffering in $B_\pi$.
   
 \begin{lemma}[\label{lem:bpi}Messages in buffer $B_\pi$]
   The buffer $B_\pi$ contains messages delivered by Process~B after the
@@ -646,17 +644,41 @@ Upon receipt of $B_\beta$, Process~B stops buffering in $B_\pi$.
   $\mathcal{A}_3' \subseteq \mathcal{A}_3$.
 \end{proof}
 
-Using $B_\alpha$, $B_\beta$, and $B_\pi$ buffers, Process~B identifies messages
-in $B_\beta$ it must deliver against messages it must ignore, and messages in
-$B_\pi$ it must receive from Process~A. This allows Process~B to initialize link
-memory.
+\noindent Using $B_\alpha$, $B_\beta$, and $B_\pi$ buffers, Process~B identifies
+messages in $B_\beta$ it must deliver against messages it must ignore, and
+messages in $B_\pi$ it must receive from Process~A. This allows Process~B to
+initialize link memory.
 
 \begin{theorem}[$B_\alpha$, $B_\beta$, and $B_\pi$ build link memory]
   The memory of a new link becomes correct at receipt of $B_\beta$.
 \end{theorem}
 
 \begin{proof}
-  \TODO{Meow.}
+  From Lemma~\ref{lem:balpha}, $B_\alpha = \mathcal{A}_2 \cup \mathcal{B}_2$.
+  From Lemma~\ref{lem:bbeta}, $B_\beta= \mathcal{B}_2 \cup \mathcal{A}_3$. From
+  Lemma~\ref{lem:bpi}, $B_\pi = \mathcal{A}_3' \cup \mathcal{B}_3$. \\ First,
+  for the maintenance of link memory, we must show that Process~B delivers all
+  and only messages from $B_\beta$ it did not deliver yet:
+  $\mathcal{A}_3 \setminus \mathcal{A}_3'$. Since
+  $B_\beta \setminus B_\alpha \setminus B_\pi = (\mathcal{B}_2 \cup
+  \mathcal{A}_3) \setminus (\mathcal{A}_2 \cup \mathcal{B}_2) \setminus
+  (\mathcal{A}_3' \cup \mathcal{B}_3) = \mathcal{A}_3 \setminus \mathcal{A}_3'
+  \cup \mathcal{B}_3 = \mathcal{A}_3'\setminus \mathcal{A}_3$
+  (since $\mathcal{B}_3 \cap \mathcal{A}_3 = \varnothing$), Process~B identifies
+  the set of messages to deliver using $B_\alpha$, $B_\beta$, and $B_\pi$. \\
+  Second, for the initialization of link memory, we must show that Process~B
+  initializes the new link memory with all and only messages from $B_\pi$ that
+  Process~A did not deliver at the sending of $B_\beta$:
+  $m \in \mathcal{B}_3 \Leftrightarrow d_B(m) \neg r_{BA}(m)$ and
+  $m \in \mathcal{B}_3 \implies r_{BA}(m)$.  Since
+  $B_\pi \cap B_\alpha = \varnothing$,
+  $B_\pi \setminus (B_\beta \setminus B_\alpha)= B_\pi \setminus B_\beta =
+  (\mathcal{A}_3' \cup \mathcal{B}_3) \setminus (\mathcal{B}_2 \cup
+  \mathcal{A}_3) = \mathcal{B}_3$
+  (since $\mathcal{B}_3 \cap \mathcal{B}_2 = \varnothing$ and
+  $\mathcal{A}_3' \subseteq \mathcal{A}_3$), Process~B identifies the set of
+  messages to await from Process~A using $B_\pi$ and $B_\beta$. This is the new
+  link memory.
 \end{proof}
 
 
@@ -803,8 +825,8 @@ memory.
     \end{subfigure}
     \begin{subfigure}[t]{0.99\textwidth}
       \centering\input{input/figsolveJ.tex}%
-      \caption{\label{fig:solveJ}Process~C categorizes each message of
-        $B_\beta$ using its two own buffers $B_\alpha$ and $B_\pi$.}
+      \caption{\label{fig:solveJ}Process~C categorizes each message of $B_\beta$
+        and $B_\pi$ to maintain and initialize link memory.}
     \end{subfigure}
     \caption{\label{fig:solve}Using buffers and control messages, \RPCBROADCAST 
       provides reliable causal broadcast.}
@@ -817,9 +839,9 @@ memory.
 \end{algorithm}
 
 Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST.  It
-uses \PCBROADCAST's principle of using all and only safe links to provide causal
-order.  In dynamic settings, \RPCBROADCAST embeds safety checking of links in
-its memory link initialization.
+uses \PCBROADCAST's principle of using all and only safe FIFO links to provide
+causal order.  In dynamic settings, \RPCBROADCAST embeds safety checking of
+links in its memory link initialization.
 % \RPCBROADCAST implements safe link memory in dynamic systems.
 Figure~\ref{fig:solve} illustrates its operation in a scenario involving 3
 processes. In this example, Process~B adds a link to Process~C.
