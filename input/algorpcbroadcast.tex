@@ -66,7 +66,7 @@
     \EmptyComment*[l]{\uline{$@$Sender}}
   \Upon{$\textup{open}_o(to)$} {
     $Q_o \leftarrow Q_o \setminus to$  \; % \tcp*{unsafe to send to $to$}
-    $\textup{send-}\alpha(p,\,q)$ \label{line:sendalpha} \; %  \tcp*{$\alpha$}
+    $\textup{send-}\alpha(p,\,to)$ \label{line:sendalpha} \; %  \tcp*{$\alpha$}
   }
 
   \EmptyComment*[l]{\uline{$@$Receiver}}
@@ -112,17 +112,18 @@
   \begin{multicols}{2}
     \EmptyComment*{}
     \EmptyComment*{}
+    \EmptyComment*{}
     \EmptyComment*[r]{filter messages to ignore $\rightarrow$\hspace{2.2em}}
     \EmptyComment*[r]{to deliver $\rightarrow$\hspace{2.2em}}
     \EmptyComment*[r]{to expect $\rightarrow$\hspace{2.2em}}
     \columnbreak
   \Upon{$\textup{receive-}B_\beta(from,\, to,\, B_\beta)$} {
     \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
+    $S \leftarrow S \setminus from$ \;
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
     \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
     {$\textup{receive}(m,\,from)$ \label{line:todeliver}}  %$ \tcp*[f]{to deliver}}
-    $E[from] \leftarrow B_\pi \setminus (B_\beta\setminus B_\alpha)$ \label{line:toexpect} \;% \tcp*{to expect}
-    $S \leftarrow S \setminus from$ \;
+    $E[from] \leftarrow B_\pi \setminus B_\beta$ \label{line:toexpect} \;% \tcp*{to expect}
     $Q_i \leftarrow Q_i \cup from$ \; % \tcp*{safe to receive from $from$}
   }
   \end{multicols}
