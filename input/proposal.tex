@@ -476,9 +476,9 @@ costs only twice as much as \PCBROADCAST in terms of number of control messages.
 % (see Figure~\ref{fig:generalproblem}).
 
 Figure~\ref{fig:memorylink} shows that Algorithm~\ref{algo:reliablebroadcast}
-already implements the maintenance of safe link memory over receipts. Processes
+already implements the maintenance of link memory over receipts. Processes
 discards obsolete control information over receipts.  However, new safe links
-require consistent initialization. The challenge consists in initializing such
+lack of consistent initialization. The challenge consists in initializing such
 memory without history of past messages. \RPCBROADCAST starts to build the
 knowledge on-demand, i.e., when a process wants to add a link to another
 process. \RPCBROADCAST disables new links while round-trips of control messages
@@ -550,22 +550,24 @@ guarantees on messages included in buffers.
 \end{figure}
 
 
-Figure~\ref{fig:timelineproof} depicts the functioning of \RPCBROADCAST. When a
-Process~A adds a link to Process~B, \RPCBROADCAST initializes safe link memory
-in 3 steps.
+Figure~\ref{fig:timelineproof} depicts the principle of \RPCBROADCAST. When a
+Process~A adds a link to Process~B. %, \RPCBROADCAST initializes safe link memory
+% in 3 steps.
 
-Process~A notifies Process~B using safe links. At receipt, Process~B implicitly
-removes obsolete information: messages delivered by Process~A before the sending
-of the notification $\mathcal{A}_1$. At receipt, Process~B can start gathering
-control information about its delivered messages in a buffer $B_\alpha$. Among
-other, Process~B wants to identify messages concurrent to the safety
-check. Process~B acknowledges Process~A's notification. When the latter receives
-the acknowledgment, it starts the safety check of the new link (\REF). Once
-again, it removes obsolete information: messages delivered by Process~B before
-the sending of the acknowledgment $\mathcal{A}_1 \cup \mathcal{B}_1$. Process~A
-sends a control message $\pi$ to Process~B using safe links, and starts to
-gather control information about its delivered messages in a buffer $B_\beta$ in
-order to ensure safe links. Upon receipt, Process~B closes its buffer
+Process~A notifies Process~B using a control message $\alpha$. This control
+message $\alpha$, as all control messages that will follow ($\beta$, $\pi$,
+$\rho$), are delivered in causal order regarding broadcast messages. Hence, at
+receipt, Process~B implicitly removes obsolete information: messages delivered
+by Process~A before the sending of the notification $\mathcal{A}_1$. At receipt,
+Process~B can start gathering control information about its delivered messages
+in a buffer $B_\alpha$. Among other, Process~B wants to identify messages
+concurrent to the correct establishment of the new link. Process~B acknowledges
+Process~A's notification using a control message $\beta$. When Process~A
+receives $\beta$, it removes obsolete information: messages delivered by
+Process~B before the sending of the acknowledgment
+$\mathcal{A}_1 \cup \mathcal{B}_1$. Process~A sends a control message $\pi$ to
+Process~B, and starts to gather control information about its delivered messages
+in a buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
   
 \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
@@ -580,7 +582,7 @@ $B_\alpha$.
 \end{lemma}
 
 \begin{proof}
-  Since safe links provides causal order among messages they convey, all
+  Since causal broadcast ensures causal order among messages it conveys, all
   messages delivered by Process~A before the sending of $\alpha$ precede the
   buffering:
   $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies m \not \in
@@ -594,16 +596,21 @@ $B_\alpha$.
   between the sending of $\alpha$ and $\pi$ but not delivered by Process~B
   before the sending of $\beta$ ($\mathcal{A}_2$); and messages delivered by
   Process~B but not delivered by Process~A before the sending of $\pi$
-  ($\mathcal{B}_2$). \TODO{Double check.}
+  ($\mathcal{B}_2$).
 \end{proof}
 
 Upon receipt of $\pi$, Process~B continues to gather control information about
 its delivered messages in another buffer $B_\pi$. Some messages in this buffer
 will be expected from Process~A, but Process~B cannot determine which ones just
-yet. It sends the last acknowledgment $\rho$ to Process~A using safe
-links. Upon receipt of this acknowledgment, Process~A closes its buffer and
-sends it using the new link. Afterwards the link is safe to use by Process~A for
-causal broadcast (see Definition~\ref{def:safe}).
+yet. It sends the last acknowledgment $\rho$ to Process~A. Upon receipt of this
+acknowledgment, Process~A closes its buffer and sends it using the new
+link. Afterwards, Process~A uses the new link for causal broadcast, for it knows
+that Process~B will receive $B_\beta$ before upcoming broadcast messages on this
+new link, and the receipt of $B_\beta$ will allow Process~B to initialize this
+new link memory.
+
+% Afterwards the link is safe to use by Process~A for causal broadcast (see
+% Definition~\ref{def:safe}).
 
 \begin{lemma}[\label{lem:bbeta}Messages in buffer $B_\beta$]
   The buffer $B_\beta$ contains messages delivered by Process~A after the
@@ -634,28 +641,23 @@ Upon receipt of $B_\beta$, Process~B stops buffering in $B_\pi$.
 
 \begin{proof}
   The proof is similar to that of Lemmas~\ref{lem:bbeta}~and~\ref{lem:bpi}. The
-  difference being that an unsafe link conveys $B_\beta$. Hence, Process~B
-  cannot state if it received all, part, or none of messages in
-  $\mathcal{A}_3$. Thus, $\mathcal{A}_3' \subseteq \mathcal{A}_3$.
+  difference being that $B_\beta$ is not causally delivered. Hence, the receipt
+  of $B_\beta$ follows the sending of $\rho$ but Process~B cannot state if it
+  received all, part, or none of messages in $\mathcal{A}_3$. Thus,
+  $\mathcal{A}_3' \subseteq \mathcal{A}_3$.
 \end{proof}
 
 Using $B_\alpha$, $B_\beta$, and $B_\pi$ buffers, Process~B identifies messages
 in $B_\beta$ it must deliver against messages it must ignore, and messages in
-$B_\pi$ it must receive from Process~A. This allows Process~B to initialize safe
-link memory.
+$B_\pi$ it must receive from Process~A. This allows Process~B to initialize link
+memory.
 
-\begin{theorem}[$B_\alpha$, $B_\beta$, and $B_\pi$ build safe links and their
-  memory]
-  A new link becomes safe at the sending of $B_\beta$. The memory of this new
-  safe link becomes correct at receipt of $B_\beta$.
+\begin{theorem}[$B_\alpha$, $B_\beta$, and $B_\pi$ build link memory]
+  The memory of a new link becomes correct at receipt of $B_\beta$.
 \end{theorem}
 
 \begin{proof}
-  The proof that a new link becomes safe at sending of $B_\beta$ is similar to
-  that of \PCBROADCAST (\REF).  We must show that the memory of a new safe link
-  becomes correct at receipt of $B_\beta$. \\ 
-  
-  
+  \TODO{Meow.}
 \end{proof}
 
 
@@ -815,9 +817,11 @@ link memory.
   \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
 \end{algorithm}
 
-\TODO{Change prior things so it does not use safe links to travel but require
-  causal order.}  Algorithm~\ref{algo:rpcbroadcast} shows the instructions of
-\RPCBROADCAST. It implements safe link memory in dynamic systems.
+Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST.  It
+uses \PCBROADCAST's principle of using all and only safe links to provide causal
+order.  In dynamic settings, \RPCBROADCAST embeds safety checking of links in
+its memory link initialization.
+% \RPCBROADCAST implements safe link memory in dynamic systems.
 Figure~\ref{fig:solve} illustrates its operation in a scenario involving 3
 processes. In this example, Process~B adds a link to Process~C.
 
