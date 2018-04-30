@@ -8,7 +8,7 @@ complexity. In this section, we evaluate the impact of the actual system on the
 space consumed by processes. The experiments run on the \PEERSIM
 simulator~\cite{montresor2009peersim} that allows to build large and dynamic
 systems. Our implementation is available on the Github platform at
-\url{http://github.com/chat-wane/peersim-prcbroadcast}.
+\url{http://github.com/chat-wane/peersim-prcbroadcast}. \\
 
 
 % \begin{figure}
@@ -100,9 +100,23 @@ evolution of transmission delays.
   100-processes systems and 1k-processes system respectively.
 \end{itemize}
 
-\noindent Overall, the overhead of \PCBROADCAST depends on the system at a given
-time while the overhead vector-based approaches (\REF) depends on past messages
-that increases monotonically. 
+\noindent Overall, this experiment empirically confirms that the space
+complexity of \RPCBROADCAST is non-monotonic and depends on the
+system. Section~\ref{subsec:complexity} states that the space complexity is
+$O(Q_i.M)$ where $Q_i$ is the size of the in-view built by peer-sampling
+protocols, and $M$ is the number of messages that have been delivered but that
+will be received again. This experiment shows that the space consumed by each
+process increases and decreases over time. \\
+In this experiment, the underlying peer-sampling protocol builds random graph
+topologies that have numerous desirable properties such as crash resilience, or
+load balancing~\cite{jelasity2007gossip}. This is ideal for systems where
+numerous processes join and leave continuously. However, it is worth noting that
+it remains in the hands of developers to choose the best peer-sampling protocol
+for their system.
+
+Using \RPCBROADCAST, processes pay at the height of their current use instead of
+their past use. The next section reviews state-of-the-art approaches designed to
+forbid multiple delivery.
 
 
 

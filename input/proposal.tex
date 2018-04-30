@@ -889,16 +889,9 @@ This set constitutes the memory of the new safe link.  Afterwards, messages
 received by this new link are processed normally.
 
 
-
-
-Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
-intermediate processes are faulty. Control messages never reach their
-destination. \PCBROADCAST handles such crashes using a timeout and retry
-policy. Such strategy fits \RPCBROADCAST as well. Both involved processes can
-halt and retry the safety check of the new link. Either the origin process does
-not send its buffer $B_\beta$, or the destination process does not accept
-incoming messages. \TODO{Maybe position this paragraph in complexity and find
-  better outro.}
+\RPCBROADCAST builds safe link memory using control messages that follow causal
+order. Link memory implies non-monotonic space complexity. In the next section,
+we analyze the complexity of our causal broadcast implementation.
 
 \subsection{Complexity}
 \label{subsec:complexity}
@@ -924,6 +917,14 @@ information of a message during at most $D$ time where $D$ is the diameter of
 the system. The local space consumption depends on the system (e.g. ring or tree
 topologies do not consume any space) and its usage (e.g. when no process
 broadcasts any message, processes do not consume any space).
+% Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
+% intermediate processes are faulty. Control messages never reach their
+% destination. \PCBROADCAST handles such crashes using a timeout and retry
+% policy. Such strategy fits \RPCBROADCAST as well. Both involved processes can
+% halt and retry the safety check of the new link. Either the origin process does
+% not send its buffer $B_\beta$, or the destination process does not accept
+% incoming messages. \TODO{Maybe position this paragraph in complexity and find
+%   better outro.}
 
 \noindent The overhead in terms of \textbf{number of control messages} per added
 link in an out-view varies from $6$ to $4P^2$ depending on the overlay network;
@@ -938,8 +939,8 @@ $O(4P^2)$ control messages when Process~A adds Process~B without knowledge of
 any route. Process~A and Process~B fall back to reliable broadcast instead of
 routing to disseminate control messages.
 
-Overall, this analysis shows that \RPCBROADCAST proposes an original tradeoff in
-terms of complexity. In systems allowing a form of routing, it constitutes an
+This complexity analysis shows that \RPCBROADCAST proposes an original tradeoff
+in terms of complexity. In systems allowing a form of routing, it constitutes an
 advantageous tradeoff that depends on the actual system instead of past
 deliveries. The next section describes an experiment highlighting the effects of
 the system settings on the space consumed by processes.
