@@ -2,102 +2,68 @@
 \section{Related work}
 \label{sec:relatedwork}
 
-Causal broadcast relies on reliable broadcast to forbid multiple delivery of
-messages. This section reviews state-of-the-art from physical clock techniques
-to vector-based approaches; from probabilistic approaches to deterministic ones.
-
-
-Uniform reliable broadcast must ensure that
+Causal broadcast protocols rely on reliable
+broadcast~\cite{hadzilacos1994modular}. Uniform reliable broadcast must ensure
+that
 \begin{inparaenum}[(i)]
 \item all processes receive broadcast messages and
 \item each process delivers each broadcast message once despite multiple
   receipts.
-\end{inparaenum} In large and dynamic systems comprising from hundreds to
-millions of processes, gossiping constitutes the \TODO{only?} scalable mean to
-disseminate messages. Non-deterministic gossip-based approaches (\REF) guarantee
-that each process receives each broadcast message with high probability. In this
-paper, we rely on deterministic gossip-based approaches (\REF) where
+\end{inparaenum} This section reviews state-of-the-art from probabilistic
+dissemination approaches to deterministic ones; from physical clock techniques
+to vector-based approaches;
+
+In large and dynamic systems comprising from hundreds to millions of processes,
+gossiping constitutes the \TODO{only?} scalable mean to disseminate
+messages. Non-deterministic gossip-based
+approaches~\cite{birman1999bimodal,demers1987epidemic} guarantee that each
+process receives each broadcast message with high probability. In this paper, we
+rely on deterministic gossip-based approaches~\cite{nedelec2017adaptive} where
 peer-sampling protocols build connected graph topology. Using all provided
 reliable links for broadcast ensures that each process eventually receives each
 message.
 
-Non-deterministic gossip-based approaches consist in choosing a random subset of
-processes among the whole system membership to sends the broadcast message
-to. Upon receipt, they forward broadcast messages similarly. However, the union
-of random subsets may not include all processes of the system. Processes missing
-messages must ask them to others.
+Despite possible multiple receipts, processes must deliver messages at most
+once. Approaches based on dissemination
+pattern~\cite{bravo2017saturn,raynal2013distributed} build topologies such as
+tree or ring. Each process receives each message once, hence delivers it once,
+without saving any control information. However, they stay confined to systems
+where failures are uncommon. \RPCBROADCAST does not assume any specific
+topology. It remains in the hand of developers to choose the best peer-sampling
+protocol for their requirement and resources.
 
+When multiple receipts can occur, each process maintains a local structure to
+detect and discard copies of broadcast messages. Using physical clocks allows
+removing control information over time. Control information is considered
+obsolete above an age threshold. The structure is non-monotonic. However,
+defining the age threshold is error prone. Set too small and processes may
+suffer multiple delivery with cascading effects as in
+Figure~\ref{fig:memorylinkfailsD}. \RPCBROADCAST maintains a non-monotonic
+structure but makes sure that removed control information is truly obsolete.
 
-
-This requires
-\begin{itemize}
-\item a structure to identify missing messages.  Interval version
-  vectors~\cite{mukund2014optimized} or concise version
-  vectors~\cite{malkhi2007concise} allow to identify missing messages but their
-  size increases linearly and monotonically with the number of processes that
-  ever broadcast a message;
-\item of processes that they keep these messages as long as any process may ask
-  them. In asynchronous systems, this is unbounded. Garbaging them using
-  physical clocks is prone to error: 
-
-  Processes needs to remember all messages forever. Safely garbaging them
-  requires to run an overcostly consensus protocol.
-\end{itemize}
-
-
-
-In this paper, we rely on peer-sampling protocols that build connected
-systems. Using all provided FIFO reliable links for broadcast guarantees that
-processes eventually receive messages. However,
-
-
-
-% Overhead: we must maintain an inview. We must send control messages. 
-
-% Major difference, vector track the origin of the message while we track the
-% direct sender. 
-
-% We cannot antientropy with any process. (But its better that way).
-
-%% talk about spanning tree and reliable broadcast. graph of first delivery
-%% build spanning tree but we do not assume any.
-
-Causal broadcast relies on reliable broadcast. 
-% Former reliable broadcast (\REF) are probabilistic. Each process infects -- or
-% gossips to -- a subset of random processes among all processes of the
-% system. Processes receiving the rumour spreads it to a random
-% processes. Infected process
-Contrarily to former reliable broadcast protocols (\REF), \RPCBROADCAST belongs
-to deterministic approaches. While non-deterministic approaches guarantee that
-all processes receive each message with high probability, deterministic
-approaches rely on a peer-sampling protocol that build overlay networks without
-partitions to guarantee that all processes receive each message. \\
-Deterministic reliable broadcast in dynamic systems either maintains
-\begin{inparaenum}[(i)]
-\item a set of received messages that increases linearly with the number of
-  broadcast messages (\REF), or
-\item a summary of received messages that increases linearly with the number of
-  processes that ever broadcast a message (\REF). 
-\end{inparaenum}
-This restricts the usage of causal broadcast and reliable broadcast. Most
-importantly, it dampens the usage of these broadcast protocols on humble devices
-where local memory consumption remains an important criteria. \\
-These structures allow each process to perform anti-entropy with any other
-process at any time, i.e., the former identifies missing messages and already
-received messages. On the opposite, processes using \RPCBROADCAST cannot perform
-anti-entropy at any time. They do not maintain any structure collecting past
-messages. Instead, reliable broadcast exploits the causal order property of
-\RPCBROADCAST to perform anti-entropy in a window of time. As stated in
+Using logical clocks~\cite{malkhi2007concise,mukund2014optimized} allows to
+discard all copies of broadcast messages. However, each process maintains a
+vector with one entry per process that ever broadcast a message.  Processes
+cannot reclaim entries, for it would require running an overcostly distributed
+garbage collection that is equivalent to a distributed consensus. As
+consequence, the vector size increases linearly and monotonically. Vector-based
+approaches do not scale in large and dynamic systems where any process can
+broadcast a message at any time~\cite{nedelec2016crate}. \RPCBROADCAST's core
+uses logical clocks too. Instead of encoding the global state of the system in a
+vector, it only maintains its receipt state with its direct
+neighborhood. Neighborhood being far smaller than the full system membership,
+\RPCBROADCAST scales in large and dynamic systems. However, vectors allow each
+process to perform anti-entropy with any other process at any time, i.e., the
+former identifies missing messages and already received messages. On the
+opposite, processes using \RPCBROADCAST cannot perform anti-entropy at any
+time. They do not maintain any structure collecting past messages. Instead,
+reliable broadcast exploits the causal order property of \RPCBROADCAST to
+perform anti-entropy in a window of time. As stated in
 Section~\ref{subsec:complexity}, this window of time and generated traffic
 remain small when the overlay network allows a form of routing. Afterwards,
 broadcast messages travel normally using this link and checking if received
 messages should be delivered or ignored is inexpensive.
 
-% \TODO{Talk about early version of reliable broadcast with probabilistic guaranties?}
-
-% It implicitly performs an anti-entropy between the two involved processes, for
-% the added neighbor becomes able to identify already received messages and new
-% messages among upcoming messages from the new link.
 
 %%% Local Variables:
 %%% mode: latex
