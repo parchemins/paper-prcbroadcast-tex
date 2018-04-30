@@ -2,10 +2,54 @@
 \section{Related work}
 \label{sec:relatedwork}
 
-Causal broadcast relies on reliable broadcast to forbid multiple delivery.  This
-section reviews data structures of reliable broadcast. 
+Causal broadcast relies on reliable broadcast to forbid multiple delivery of
+messages. This section reviews state-of-the-art from physical clock techniques
+to vector-based approaches; from probabilistic approaches to deterministic ones.
 
-Vector 
+
+Uniform reliable broadcast must ensure that
+\begin{inparaenum}[(i)]
+\item all processes receive broadcast messages and
+\item each process delivers each broadcast message once despite multiple
+  receipts.
+\end{inparaenum} In large and dynamic systems comprising from hundreds to
+millions of processes, gossiping constitutes the \TODO{only?} scalable mean to
+disseminate messages. Non-deterministic gossip-based approaches (\REF) guarantee
+that each process receives each broadcast message with high probability. In this
+paper, we rely on deterministic gossip-based approaches (\REF) where
+peer-sampling protocols build connected graph topology. Using all provided
+reliable links for broadcast ensures that each process eventually receives each
+message.
+
+Non-deterministic gossip-based approaches consist in choosing a random subset of
+processes among the whole system membership to sends the broadcast message
+to. Upon receipt, they forward broadcast messages similarly. However, the union
+of random subsets may not include all processes of the system. Processes missing
+messages must ask them to others.
+
+
+
+This requires
+\begin{itemize}
+\item a structure to identify missing messages.  Interval version
+  vectors~\cite{mukund2014optimized} or concise version
+  vectors~\cite{malkhi2007concise} allow to identify missing messages but their
+  size increases linearly and monotonically with the number of processes that
+  ever broadcast a message;
+\item of processes that they keep these messages as long as any process may ask
+  them. In asynchronous systems, this is unbounded. Garbaging them using
+  physical clocks is prone to error: 
+
+  Processes needs to remember all messages forever. Safely garbaging them
+  requires to run an overcostly consensus protocol.
+\end{itemize}
+
+
+
+In this paper, we rely on peer-sampling protocols that build connected
+systems. Using all provided FIFO reliable links for broadcast guarantees that
+processes eventually receive messages. However,
+
 
 
 % Overhead: we must maintain an inview. We must send control messages. 

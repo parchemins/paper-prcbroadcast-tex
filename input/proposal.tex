@@ -890,15 +890,16 @@ received by this new link are processed normally.
 
 
 \RPCBROADCAST builds safe link memory using control messages that follow causal
-order. Link memory implies non-monotonic space complexity. In the next section,
-we analyze the complexity of our causal broadcast implementation.
+order. Link memory forbids multiple delivery and implies non-monotonic space
+complexity. In the next section, we analyze the complexity of our causal
+broadcast implementation.
 
 \subsection{Complexity}
 \label{subsec:complexity}
 
 In this section, we analyze the complexity of \RPCBROADCAST in terms of
 broadcast message overhead, delivery execution time, local space consumption,
-and number of control messages. 
+and number of control messages.
 
 \noindent The \textbf{broadcast message overhead} is constant $O(1)$. Messages
 must travel using FIFO links.
