@@ -46,13 +46,14 @@ are difficult to maintain in dynamic systems subject to failures (\REF). To
 forbid multiple delivery, state-of-the-art protocols maintains local structure
 to identify and discard additional copies of an original message at
 receipt. They either rely on physical clocks (\REF) or on vectors of logical
-Lamport's clocks (\REF). Physical clocks allow to remove obsolete control
-information over time. However, they may remove useful information leading to
-multiple deliveries with cascading effects in the system. Vector clocks forbid
-multiple delivery in dynamic systems. However, their size increases linearly and
-monotonically with the number of processes that ever broadcast a message. They
-eventually become inefficient, for processes cannot safely reclaim entries
-without running an overcostly distributed consensus protocol (\REF).
+Lamport's clocks~\cite{malkhi2007concise,mukund2014optimized}. Physical clocks
+allow to remove obsolete control information over time. However, they may remove
+useful information leading to multiple deliveries with cascading effects in the
+system. Vector clocks forbid multiple delivery in dynamic systems. However,
+their size increases linearly and monotonically with the number of processes
+that ever broadcast a message. They eventually become inefficient, for processes
+cannot safely reclaim entries without running an overcostly distributed
+consensus protocol (\REF).
 
 
 % \TODO{We do reliable broadcast on top of causal broadcast. Did not make sense
