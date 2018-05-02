@@ -52,8 +52,8 @@ useful information leading to multiple deliveries with cascading effects in the
 system. Vector clocks forbid multiple delivery in dynamic systems. However,
 their size increases linearly and monotonically with the number of processes
 that ever broadcast a message. They eventually become inefficient, for processes
-cannot safely reclaim entries without running an overcostly distributed
-consensus protocol (\REF).
+cannot safely reclaim entries without running an overcostly distributed garbage
+collecting protocol~\cite{abdullahi1998garbage}.
 
 
 % \TODO{We do reliable broadcast on top of causal broadcast. Did not make sense

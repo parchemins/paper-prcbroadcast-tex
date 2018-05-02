@@ -20,9 +20,9 @@ approaches~\cite{birman1999bimodal,demers1987epidemic} guarantee that each
 process receives each broadcast message with high probability. Processes must be
 able to identify and retrieve missing messages by themselves. In this paper, we
 rely on \textbf{deterministic} gossip-based
-approaches~\cite{nedelec2017adaptive} where peer-sampling protocols build
-connected graph topology. Using all provided reliable links for broadcast
-ensures that each process eventually receives each message.
+approaches~\cite{friedman2004causal,nedelec2017adaptive} where peer-sampling
+protocols build connected graph topology. Using all provided reliable links for
+broadcast ensures that each process eventually receives each message.
 
 Despite possible multiple receipts, processes must deliver messages at most
 once. Approaches based on \textbf{dissemination
@@ -39,8 +39,9 @@ detect and discard copies of broadcast messages. Using \textbf{physical clocks
 considered obsolete above an age threshold. The structure is
 non-monotonic. However, defining the age threshold is error prone. Set too small
 and processes may suffer multiple delivery with cascading effects as in
-Figure~\ref{fig:memorylinkfailsD}. \RPCBROADCAST maintains a non-monotonic
-structure but makes sure that removed control information is truly obsolete.
+Figure~\ref{fig:memorylinkfailsD}. \TODO{TALK ABOUT SYNCHRO OF CLOCKS.}
+\RPCBROADCAST maintains a non-monotonic structure but makes sure that removed
+control information is truly obsolete.
 
 Using \textbf{logical clocks}~\cite{malkhi2007concise,mukund2014optimized}
 allows to discard all copies of broadcast messages. However, each process
