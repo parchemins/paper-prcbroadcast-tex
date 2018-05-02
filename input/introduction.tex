@@ -8,10 +8,10 @@ collaborative software~\cite{heinrich2012exploiting,nedelec2016crate}, or
 distributed data
 stores~\cite{bailis2013bolton,bravo2017saturn,demers1987epidemic,lloyd2011cops,shapiro2011comprehensive}
 use causal broadcast to ensure consistency criteria.  Causal broadcast ensures
-the reliable delivery of broadcast messages, exactly once, following Lamport's
-happen before relationship~\cite{lamport1978time}. When Alice comments Bob's
-picture, nobody sees Alice's comment without Bob's picture, and nobody sees
-multiple occurrences of Alice's comment or Bob's picture.
+reliable receipt of broadcast messages, and exactly-once delivery following
+Lamport's happen before relationship~\cite{lamport1978time}. When Alice comments
+Bob's picture, nobody sees Alice's comment without Bob's picture, and nobody
+sees multiple occurrences of Alice's comment or Bob's picture.
 % If the sending of a message $m$ precedes the sending of a message $m'$ then all
 % processes that deliver these two messages need to deliver $m$ before
 % $m'$. Otherwise they deliver them in any order.
@@ -38,17 +38,21 @@ or transitively.
 % message copy from this new incoming link. It may cause multiple deliveries of a
 % same message.
 
-However, processes may receive a broadcast message multiples times from
-different sources.  To deliver each message exactly once, reliable broadcast
-discards the additional copies of the original message at
-receipt~\cite{hadzilacos1994modular}.  To forbid multiple delivery,
-state-of-the-art broadcast protocols maintain a local vector of Lamport's clocks
-with 1 entry per process that ever broadcast a
-message~\cite{hadzilacos1994modular}. While it allows to discard already
-delivered messages in constant time $O(1)$, its size increases monotonically
-over deliveries $O(N)$ where $N$ is the number of processes that ever broadcast
-a message. This eventually becomes inefficient, for processes cannot safely
-reclaim entries without running an overcostly consensus protocol.
+Processes may receive a broadcast message multiples times from different
+sources.  To forbid multiple delivery, state-of-the-art protocols constrain the
+dissemination topology to tree or ring that ensures single receipt hence single
+delivery~\cite{bravo2017saturn,raynal2013distributed}. However, such topologies
+are difficult to maintain in dynamic systems subject to failures (\REF). To
+forbid multiple delivery, state-of-the-art protocols maintains local structure
+to identify and discard additional copies of an original message at
+receipt. They either rely on physical clocks (\REF) or on vectors of logical
+Lamport's clocks (\REF). Physical clocks allow to remove obsolete control
+information over time. However, they may remove useful information leading to
+multiple deliveries with cascading effects in the system. Vector clocks forbid
+multiple delivery in dynamic systems. However, their size increases linearly and
+monotonically with the number of processes that ever broadcast a message. They
+eventually become inefficient, for processes cannot safely reclaim entries
+without running an overcostly distributed consensus protocol (\REF).
 
 
 % \TODO{We do reliable broadcast on top of causal broadcast. Did not make sense
@@ -66,31 +70,34 @@ reclaim entries without running an overcostly consensus protocol.
     \caption{\label{table:complexity} Complexity of broadcast algorithms at each
       process. $N$ the number of processes that ever broadcast a message. $P$
       the number of processes in the system. $W$ the number of messages received
-      but not delivered yet. $Q_i$ is the number of processes in the inview. $M$
+      but not delivered yet. $Q_i$ is the number of processes in the in-view. $M$
       is the number of messages already delivered that should be received again
       from at least one process in $Q_i$.}
     \input{input/tablecomplexity.tex}
   \end{center}
 \end{table}
 
-In this paper, we introduce an implementation of causal broadcast that gets rid
-of this last monotonically increasing upper bound on space complexity.  Our
-contribution is threefold:
+In this paper, we introduce an implementation of causal broadcast that removes
+the last monotonic upper bound on space complexity without constraining the
+topology.  Our contribution is threefold:
 \begin{itemize}[leftmargin=*]
-\item We provide the scientific problem to solve: identifying processes that
-  will broadcast or forward a message while discarding obsolete control
-  information about messages that will never be received again. We provide an
-  algorithm and the proof that it solves this problem in dynamic systems where
-  processes can join, leave, or self-reconfigure at any time.
-\item Our protocol provides an original tradeoff where message overhead remains
-  constant while space consumption depends on the actual system (see
-  Table~\ref{table:complexity}). It exploits causal order to safely discard
-  obsolete control information about broadcast messages by transmitting
-  lightweight control messages. The number of control messages depends on
-  routing capabilities of the system and its dynamicity. For instance,
-  gossip-based peer-sampling
-  protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} needs
-  8 control messages per added link during periodic shuffles.
+\item We provide the scientific problem to solve: locally identifying processes
+  that will broadcast or forward a message while discarding obsolete control
+  information about messages that will never be received again. Assuming causal
+  order, we prove that each process can build such knowledge even in dynamic
+  systems where processes join, leave, or self-reconfigure their neighborhood at
+  any time.
+\item Our implementation provides an original tradeoff that actually depends on
+  the system and its current usage. Table~\ref{table:complexity} shows that it
+  keeps constant size overhead on messages while its space consumption is
+  non-monotonic. It exploits causal order to safely purge obsolete control
+  information about broadcast messages. This costs only few lightweight control
+  messages in dynamic systems.  Our implementation does not maintain any
+  specific topology. However, the number of control messages depends on routing
+  capabilities of the system and its dynamicity. For instance, gossip-based
+  peer-sampling
+  protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} need
+  only 8 control messages per added link during periodic shuffles.
 \item Our experiments highlights the space consumed by our protocol in dynamic
   systems with varying latency. It confirms that the proposed approach scales
   with the system settings instead of past broadcast messages. Processes
@@ -104,8 +111,9 @@ efficient implementation of reliable broadcast.
 The rest of this paper is organized as follows. 
 % Section~\ref{sec:motivations}
 % shows the issue and motivates this work.
-Section~\ref{sec:proposal} presents the proposed causal broadcast and
-corresponding proofs. Section~\ref{sec:experimentation} shows the
+Section~\ref{sec:proposal} presents the model, the problem, the proposed causal
+broadcast along with its corresponding proofs and complexity
+analysis. Section~\ref{sec:experimentation} shows the
 experiments. Section~\ref{sec:relatedwork} reviews related work. We conclude in
 Section~\ref{sec:conclusion}.
 
