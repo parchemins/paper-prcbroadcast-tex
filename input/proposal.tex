@@ -239,7 +239,7 @@ the system. This implementation forbids multiple delivery in static systems.
       \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
         for a new message. It delivers, and forwards $a$.}
     \end{subfigure}
-    \caption{\label{fig:memoryfails}Reliable broadcast
+    \caption{\label{fig:memorylinkfails}Reliable broadcast
       (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
       in dynamic systems. }
   \end{center}
@@ -248,7 +248,7 @@ the system. This implementation forbids multiple delivery in static systems.
 However, implementing link memory becomes more challenging in dynamic systems
 where processes can start sending messages to any other process at any time. Any
 process can receive an already forgotten message from any other
-process. Figure~\ref{fig:memoryfails} illustrates the issue. In
+process. Figure~\ref{fig:memorylinkfails} illustrates the issue. In
 Figure~\ref{fig:memorylinkfailsA}, Process~A broadcasts $a$. It expects a copy
 from both Process~B and Process~C. In Figure~\ref{fig:memorylinkfailsB},
 Process~C immediately receives, delivers, and forwards $a$. It does not tag any
@@ -334,19 +334,6 @@ Lamport’s definition.
 % \subsection{Problem statement}
 % \label{subsec:problemstatement}
 
-\PCBROADCAST (\REF) constitutes an efficient and lightweight implementation of
-causal broadcast.  It uses FIFO links, gossiping, control messages, and buffers
-to ensure causal order in dynamic systems. A process broadcasting a message
-sends the message to an out-view of safe links that cannot lead to causal order
-violations.
-
-\begin{definition}[\label{def:safe}Safe link (\REF)]
-  A link from Process~A to Process~B is safe if and only if Process~B received
-  or will receive all messages delivered by Process~A before receiving any
-  message that Process~A will
-  deliver. $safe_{AB} \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
-  \implies r_B(m) \rightarrow r_{BA}(m')$
-\end{definition}
 
 %
 % Links start unsafe, for messages traveling by the new links may arrive before
@@ -431,25 +418,13 @@ violations.
 % this new safe link. Process~B must remember these messages to discard them at
 % their receipt.
 
-The rest of this section describes a causal broadcast protocol that removes the
-last linear and monotonic upper bound on space complexity by exploiting
-\PCBROADCAST's safe link principle to implement link memory in dynamic systems.
-We provide the formal proof along with the complexity analysis.
+The rest of this section describes how reliable broadcast can exploit causal
+order to initialize safe link memory. Then, we provide an implementation of such
+broadcast along with its complexity analysis.
 
 
 %\subsection{A reliable causal broadcast}
 \subsection{Causal improves reliable}
-
-
-\RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
-causal order violation and multiple delivery by using all and only links that
-\begin{inparaenum}[(i)]
-\item have been proven safe to use and
-\item the memory of which is correctly initialized.
-\end{inparaenum}
-Table~\ref{table:complexity} shows that it keeps constant size message overhead
-while discarding local control information about messages over receipts. This
-costs only twice as much as \PCBROADCAST in terms of number of control messages.
 
 % Figure~\ref{fig:counterproblem} shows that adding safe links is insufficient to
 % forbid multiple delivery. At any time, a process may receive messages it already
@@ -476,15 +451,22 @@ costs only twice as much as \PCBROADCAST in terms of number of control messages.
 % receipts. However, it may fail when processes add neighbors in their out-view
 % (see Figure~\ref{fig:generalproblem}).
 
+This section demonstrates that reliable broadcast can use causal order brought
+by causal broadcast to initialize safe link memory, hence provide a
+non-monotonic local structure that removes all and only obsolete information in
+large and dynamic systems.
+
 Figure~\ref{fig:memorylink} shows that Algorithm~\ref{algo:reliablebroadcast}
 already implements the maintenance of link memory over receipts. Processes
-discards obsolete control information over receipts.  However, new safe links
-lack of consistent initialization. The challenge consists in initializing such
-memory without history of past messages. \RPCBROADCAST starts to build the
-knowledge on-demand, i.e., when a process wants to add a link to another
-process. \RPCBROADCAST disables new links while round-trips of control messages
-and buffering occur.  \RPCBROADCAST takes advantage of causal order to provide
-guarantees on messages included in buffers.
+discard obsolete control information over receipts.  However,
+Figure~\ref{fig:memorylinkfails} shows that new links lack of consistent
+initialization. The challenge consists in initializing such memory without
+history of past messages. Causal broadcast starts to build the knowledge
+on-demand, i.e., when a process wants to add a link to another process.  The
+protocol disables the new link until it is initialized. This initialization
+requires round-trips of control messages and message buffering.  Causal
+broadcast takes advantage of causal order to provide guarantees on messages
+included in buffers.
 
 % It builds temporary buffers in order to remember messages as long as they might
 % be received again, taking into account the dynamicity of the system. Using these
@@ -547,8 +529,9 @@ guarantees on messages included in buffers.
 \end{figure}
 
 
-Figure~\ref{fig:timelineproof} depicts the principle of \RPCBROADCAST. When a
-Process~A adds a link to Process~B. %, \RPCBROADCAST initializes safe link memory
+Figure~\ref{fig:timelineproof} depicts the principle of the approach. When a
+Process~A adds a link to
+Process~B. %, \RPCBROADCAST initializes safe link memory
 % in 3 steps.
 Process~A notifies Process~B using a control message $\alpha$. This control
 message $\alpha$, as all control messages that will follow ($\beta$, $\pi$,
@@ -754,6 +737,33 @@ initialize link memory.
 
 \subsection{Implementation}
 
+\RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
+causal order violation and multiple delivery by using all and only links that
+\begin{inparaenum}[(i)]
+\item have been proven safe to use and
+\item the memory of which is correctly initialized and maintained.
+\end{inparaenum}
+This guarantees causal order and non-monotonic local data structure in large and
+dynamic systems. 
+
+%% Table~\ref{table:complexity} shows that it keeps constant size message overhead
+%% while discarding local control information about messages over receipts.
+
+To provide causal order at marginal cost, \RPCBROADCAST uses the principle of
+\PCBROADCAST (\REF). It uses FIFO links, gossiping, control messages, and
+buffers to ensure causal order in dynamic systems. A process broadcasting a
+message sends the message to an out-view of safe links that cannot lead to
+causal order violations. \RPCBROADCAST embeds safe link establishment in its
+link memory initialization.
+
+\begin{definition}[\label{def:safe}Safe link (\REF)]
+  A link from Process~A to Process~B is safe if and only if Process~B received
+  or will receive all messages delivered by Process~A before receiving any
+  message that Process~A will
+  deliver. $safe_{AB} \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
+  \implies r_B(m) \rightarrow r_{BA}(m')$
+\end{definition}
+
 \begin{figure}
   \begin{center}
     \begin{subfigure}[t]{0.31\textwidth}
@@ -838,14 +848,11 @@ initialize link memory.
 \end{algorithm}
 
 
-
-Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST.  It
-uses \PCBROADCAST's principle of using all and only safe FIFO links to provide
-causal order.  In dynamic settings, \RPCBROADCAST embeds safety checking of
-links in its memory link initialization.
-% \RPCBROADCAST implements safe link memory in dynamic systems.
+Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST.
 Figure~\ref{fig:solve} illustrates its operation in a scenario involving 3
-processes. In this example, Process~B adds a link to Process~C.
+processes. In this example, Process~B adds a link to Process~C. Process~B
+disables the new link for causal broadcast until it is safe and guaranteed that
+Process~C correctly initialized its memory.
 
 \noindent Process~B sends a first control message $\alpha$ to Process~B using
 safe links (see Line~\ref{line:sendalpha} and Figure~\ref{fig:solveA}).
