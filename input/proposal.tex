@@ -117,8 +117,7 @@ non-monotonic link-wise memory to forbid multiple delivery.
   case, it cannot receive, hence deliver, $m$ from Process~A; in the latter
   case, receiving $m$ from Process~A leads to the delivery of $m$. Again, since
   a link conveys a message at most once, it cannot receive another $m$ from
-  Process~A that would lead to another delivery. \TODO{Missing non-monotonic.}
-  \TODO{Could be improved.}
+  Process~A that would lead to another delivery.
 \end{proof}
 
 
@@ -543,7 +542,7 @@ guarantees on messages included in buffers.
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
       \mathcal{A}_3'$
       are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
-      messages to expect from Process~A.}
+      messages to expect.}
   \end{center}
 \end{figure}
 
@@ -753,6 +752,7 @@ initialize link memory.
 %   messages $\mathcal{H}$ from this link in causal order.
 % \end{proof}
 
+\subsection{Implementation}
 
 \begin{figure}
   \begin{center}
@@ -836,6 +836,8 @@ initialize link memory.
   \input{./input/algorpcbroadcast.tex}
   \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
 \end{algorithm}
+
+
 
 Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST.  It
 uses \PCBROADCAST's principle of using all and only safe FIFO links to provide
