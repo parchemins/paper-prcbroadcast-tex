@@ -78,27 +78,29 @@ among all processes broadcast a message.
 \noindent \textbf{Results:} Figure~\ref{fig:overhead} shows the result of this
 experiment. The x-axis denotes the time in minute. The top part of the figure
 shows local space overhead while the bottom part of the figure shows the
-evolution of transmission delays.
-\begin{itemize}
-\item Figure~\ref{fig:overhead} confirms that the local space consumption
+evolution of transmission delays. 
+
+\noindent Figure~\ref{fig:overhead} confirms that the local space consumption
   depends on the in-view size. Systems with larger in-views consume more
   space. Each new delivered message adds control information on each link of the
-  in-view (see Algorithm~\ref{algo:reliablebroadcast}).
-\item Figure~\ref{fig:overhead} confirms that the local space consumption
+  in-view (see Algorithm~\ref{algo:reliablebroadcast}). 
+
+\noindent Figure~\ref{fig:overhead} confirms that the local space consumption
   depends on network condition. The overhead increases as the latency
   increases. Latency increases the time between the first and the last receipt
   of each message. Processes store messages longer until they can be safely
-  removed.
-\item Figure~\ref{fig:overhead} confirms that the local space consumption
+  removed. 
+
+\noindent Figure~\ref{fig:overhead} confirms that the local space consumption
   depends on broadcast messages. When processes stops broadcasting, the space
   consumed at each process drops to 0. Each process eventually receive each
   message and safely remove the corresponding entry.
-\item Figure~\ref{fig:overhead} shows that at a rate of 10 broadcasts per second
+
+\noindent Figure~\ref{fig:overhead} shows that at a rate of 10 broadcasts per second
   and when latency stays under a realistic bound ($300ms$), the overhead is
   lower than vector-based approaches. Whatever system conditions, it would
   require a vector of 100, 1k entries to forbid double delivery in the
-  100-processes systems and 1k-processes system respectively.
-\end{itemize}
+  100-processes systems and 1k-processes system respectively. 
 
 \noindent Overall, this experiment empirically confirms that the space
 complexity of \RPCBROADCAST is non-monotonic and depends on the
@@ -106,17 +108,19 @@ system. Section~\ref{subsec:complexity} states that the space complexity is
 $O(Q_i.M)$ where $Q_i$ is the size of the in-view built by peer-sampling
 protocols, and $M$ is the number of messages that have been delivered but that
 will be received again. This experiment shows that the space consumed by each
-process increases and decreases over time. \\
-In this experiment, the underlying peer-sampling protocol builds random graph
-topologies that have numerous desirable properties such as crash resilience, or
-load balancing~\cite{jelasity2007gossip}. This is ideal for systems where
-numerous processes join and leave continuously. However, it is worth noting that
-it remains in the hands of developers to choose the best peer-sampling protocol
-for their system.
+process increases and decreases over time.
 
-Using \RPCBROADCAST, processes pay at the height of their current use instead of
-their past use. The next section reviews state-of-the-art approaches designed to
-forbid multiple delivery.
+\noindent In this experiment, the underlying peer-sampling protocol builds
+random graph topologies that have numerous desirable properties such as crash
+resilience, or load balancing~\cite{jelasity2007gossip}. This is ideal for
+systems where numerous processes join and leave continuously. However, it is
+worth noting that it remains in the hands of developers to choose the best
+peer-sampling protocol for their system.
+
+%Using \RPCBROADCAST, processes pay at the height of their current use instead of
+%their past use.
+The next section reviews state-of-the-art approaches designed to forbid multiple
+delivery.
 
 
 
