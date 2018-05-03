@@ -42,13 +42,14 @@ Processes may receive a broadcast message multiples times from different
 sources.  To forbid multiple delivery, state-of-the-art protocols constrain the
 dissemination topology to tree or ring that ensures single receipt hence single
 delivery~\cite{bravo2017saturn,raynal2013distributed}. However, such topologies
-are difficult to maintain in dynamic systems subject to failures (\REF). To
-forbid multiple delivery, state-of-the-art protocols maintains local structure
-to identify and discard additional copies of an original message at
-receipt. They either rely on physical clocks (\REF) or on vectors of logical
-Lamport's clocks~\cite{malkhi2007concise,mukund2014optimized}. Physical clocks
-allow to remove obsolete control information over time. However, they may remove
-useful information leading to multiple deliveries with cascading effects in the
+are difficult to maintain in dynamic systems subject to
+failures~\cite{krasikova2016hashtable}. To forbid multiple delivery,
+state-of-the-art protocols maintains local structure to identify and discard
+additional copies of an original message at receipt. They either rely on
+physical clocks (\REF) or on vectors of logical
+clocks~\cite{malkhi2007concise,mukund2014optimized}. Physical clocks allow to
+remove obsolete control information over time. However, they may remove useful
+information leading to multiple deliveries with cascading effects in the
 system. Vector clocks forbid multiple delivery in dynamic systems. However,
 their size increases linearly and monotonically with the number of processes
 that ever broadcast a message. They eventually become inefficient, for processes
@@ -89,14 +90,14 @@ topology.  Our contribution is threefold:
   systems where processes join, leave, or self-reconfigure their neighborhood at
   any time.
 \item Our implementation provides an original tradeoff that actually depends on
-  the system and its current usage. Table~\ref{table:complexity} shows that it
-  keeps constant size overhead on messages while its space consumption is
-  non-monotonic. It exploits causal order to safely purge obsolete control
-  information about broadcast messages. This costs only few lightweight control
-  messages in dynamic systems.  Our implementation does not maintain any
-  specific topology. However, the number of control messages depends on routing
-  capabilities of the system and its dynamicity. For instance, gossip-based
-  peer-sampling
+  the system and its current usage. Quiescent systems suffer from no
+  overhead. Table~\ref{table:complexity} shows that it keeps constant size
+  overhead on messages while its space consumption is non-monotonic. It exploits
+  causal order to purge all and only obsolete control information. This costs
+  only few lightweight control messages in dynamic systems.  Our implementation
+  does not maintain any specific topology. However, the number of control
+  messages depends on routing capabilities of the system and its dynamicity. For
+  instance, gossip-based peer-sampling
   protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} need
   only 8 control messages per added link during periodic shuffles.
 \item Our experiments highlights the space consumed by our protocol in dynamic
@@ -104,10 +105,9 @@ topology.  Our contribution is threefold:
   with the system settings instead of past broadcast messages. Processes
   actually pay at the height of their current use.
 \end{itemize}
-The proposed causal broadcast constitutes an advantageous tradeoff that makes
-causal broadcast a lightweight and efficient middleware in large and dynamic
-systems. We argue that this tradeoff even makes the protocol a lightweight and
-efficient implementation of reliable broadcast.
+Our implementation offers an advantageous tradeoff that makes causal broadcast a
+lightweight and efficient middleware in large and dynamic systems. This tradeoff
+even makes a lightweight and efficient implementation of reliable broadcast.
 
 The rest of this paper is organized as follows. 
 % Section~\ref{sec:motivations}

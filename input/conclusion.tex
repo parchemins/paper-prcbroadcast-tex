@@ -27,13 +27,11 @@ reliable broadcast. %As consequence, causal broadcast and reliable broadcast can
 
 As future work, we plan to investigate on ways to retrieve the partial order of
 messages out of \RPCBROADCAST. Using \RPCBROADCAST, each process experiences a
-flatten version of the partial order. However, several applications (\REF)
-require more than causal order, they also need to identify concurrent
+flatten version of the partial order. However, applications may require more
+than causal order, they also may need to identify concurrent
 messages. \RPCBROADCAST discards a lot of information by ignoring multiple
 receipts altogether. Analyzing the receipt order could provide insight on the
-partial order. Instead of using vector clocks the cost of which increases with
-the number of processes that ever broadcast, the cost could depend on the actual
-concurrency of the system.
+partial order. The cost could depend on the actual concurrency of the system.
 
 %%% Local Variables:
 %%% mode: latex
