@@ -16,15 +16,17 @@ sees multiple occurrences of Alice's comment or Bob's picture.
 % processes that deliver these two messages need to deliver $m$ before
 % $m'$. Otherwise they deliver them in any order.
 
-In large and dynamic systems comprising from hundreds to millions of processes,
-no process can afford to maintain an up-to-date knowledge of the full
+However, causal broadcast implementations do not scale in large and dynamic
+systems comprising from hundreds to millions of processes joining, leaving, and
+self-reconfiguring at any time. In such systems, no process can afford to
+maintain an up-to-date knowledge of the full
 membership~\cite{birman1999bimodal,demers1987epidemic}. Instead, each process
 builds a partial view of neighbors to communicate
 with~\cite{jelasity2007gossip}. Gossiping exploits these neighborhoods to
 efficiently broadcast a message to all processes. To broadcast a message, a
 process sends the message to its neighbors; each process receiving such message
 forwards it to its own neighbors. Processes receive the message either directly
-or transitively. 
+or transitively.
 
 
 % In static systems where processes cannot join, leave, or self-reconfigure their
@@ -52,9 +54,11 @@ allow to remove obsolete control information over time. However, they may remove
 useful information leading to multiple deliveries with cascading effects in the
 system. Vector clocks forbid multiple delivery in dynamic systems. However,
 their size increases linearly and monotonically with the number of processes
-that ever broadcast a message. They eventually become inefficient, for processes
-cannot safely reclaim entries without running an overcostly distributed garbage
-collecting protocol~\cite{abdullahi1998garbage}.
+that ever broadcast a message. Processes pay for their past usage. They
+eventually become inefficient, for processes cannot safely reclaim entries
+without running an overcostly distributed garbage collecting
+protocol~\cite{abdullahi1998garbage}. State-of-the-art implementations do not
+scale in large and dynamic systems.
 
 
 % \TODO{We do reliable broadcast on top of causal broadcast. Did not make sense
@@ -83,12 +87,13 @@ In this paper, we introduce an implementation of causal broadcast that removes
 the last monotonic upper bound on space complexity without constraining the
 topology.  Our contribution is threefold:
 \begin{itemize}[leftmargin=*]
-\item We provide the scientific problem to solve: locally identifying processes
-  that will broadcast or forward a message while discarding obsolete control
-  information about messages that will never be received again. Assuming causal
-  order, we prove that each process can build such knowledge even in dynamic
-  systems where processes join, leave, or self-reconfigure their neighborhood at
-  any time.
+\item We define link memory as a mean for each process to forbid multiple
+  delivery using a non-monotonic local structure. Link memory allows each
+  process to identify neighbors that will send a broadcast message while
+  removing obsolete control information about broadcast messages that will never
+  be received again. Assuming causal order, we prove that each process can build
+  such knowledge even in dynamic systems where processes join, leave, or
+  self-reconfigure their neighborhood at any time.
 \item Our implementation provides an original tradeoff that actually depends on
   the system and its current usage. Quiescent systems suffer from no
   overhead. Table~\ref{table:complexity} shows that it keeps constant size

@@ -424,7 +424,7 @@ broadcast along with its complexity analysis.
 
 
 %\subsection{A reliable causal broadcast}
-\subsection{Causal improves reliable}
+\subsection{Principle}
 
 % Figure~\ref{fig:counterproblem} shows that adding safe links is insufficient to
 % forbid multiple delivery. At any time, a process may receive messages it already
@@ -750,19 +750,19 @@ dynamic systems.
 %% while discarding local control information about messages over receipts.
 
 To provide causal order at marginal cost, \RPCBROADCAST uses the principle of
-\PCBROADCAST (\REF). It uses FIFO links, gossiping, control messages, and
-buffers to ensure causal order in dynamic systems. A process broadcasting a
-message sends the message to an out-view of safe links that cannot lead to
-causal order violations. \RPCBROADCAST embeds safe link establishment in its
-link memory initialization.
+\PCBROADCAST~\cite{nedelec2018pcbroadcast}. It uses FIFO links, gossiping,
+control messages, and buffers to ensure causal order in dynamic systems. A
+process broadcasting a message sends the message to an out-view of safe links
+that cannot lead to causal order violations. \RPCBROADCAST embeds safe link
+establishment in its link memory initialization.
 
-\begin{definition}[\label{def:safe}Safe link (\REF)]
-  A link from Process~A to Process~B is safe if and only if Process~B received
-  or will receive all messages delivered by Process~A before receiving any
-  message that Process~A will
-  deliver. $safe_{AB} \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
-  \implies r_B(m) \rightarrow r_{BA}(m')$
-\end{definition}
+% \begin{definition}[\label{def:safe}Safe link (\REF)]
+%   A link from Process~A to Process~B is safe if and only if Process~B received
+%   or will receive all messages delivered by Process~A before receiving any
+%   message that Process~A will
+%   deliver. $safe_{AB} \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
+%   \implies r_B(m) \rightarrow r_{BA}(m')$
+% \end{definition}
 
 \begin{figure}
   \begin{center}

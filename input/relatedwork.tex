@@ -1,5 +1,5 @@
 
-\section{Related work}
+\section{Related works}
 \label{sec:relatedwork}
 
 Causal broadcast protocols rely on reliable
@@ -31,9 +31,11 @@ once. Approaches based on \textbf{dissemination
   pattern~\cite{bravo2017saturn,raynal2013distributed}} build topologies such as
 tree or ring. Each process receives each message once, hence delivers it once,
 without saving any control information. However, they stay confined to systems
-where failures are uncommon~\cite{krasikova2016hashtable}. \RPCBROADCAST does
-not assume any specific topology. It remains in the hand of developers to choose
-the best peer-sampling protocol for their requirement and resources.
+where failures are uncommon~\cite{krasikova2016hashtable}. \RPCBROADCAST
+supports dynamicity without assuming any specific topology. 
+% It remains in the
+% hand of developers to choose the best peer-sampling protocol for their
+% requirement and resources.
 
 When multiple receipts can occur, each process maintains a local structure to
 detect and discard copies of broadcast messages. Using \textbf{physical
