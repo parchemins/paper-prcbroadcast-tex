@@ -20,23 +20,23 @@
   \draw (\OFFX-\RADX*\X, 0pt) node[right, align=left] {
     \textbf{\COLOR{blue!80!black!70}{To deliver:}}\\%\tiny
     $B_\beta \setminus B_\alpha \setminus B_\pi$\\\tiny
-    $[b_1,\,b_2,\,c_2]\setminus\{c_1,\,c_2\}\setminus\{b_1,\,c_3\}$\\\tiny
+    $[c_1,\,b_1,\,b_2,\,c_2]\setminus\{c_1,\,c_2\}\setminus\{b_1,\,c_3\}$\\\tiny
     $[b_1,\,b_2] \setminus \{b_1,\,c_3\}$\\%\tiny
     \COLOR{blue!80!black!70}{$[b_2]$}
   };
   \draw (-\OFFX+2*\RADX*\X, 0pt) node[left, align=right] {
     \textbf{\COLOR{red!80!black!70}{To expect from B:}}\\%\tiny
     $B_\pi \setminus B_\beta$\\\tiny
-    $\{b_1,\,c_3\} \setminus [b_1,\,b_2,\,c_2]$\\\tiny
+    $\{b_1,\,c_3\} \setminus [c_1,\,b_1,\,b_2,\,c_2]$\\\tiny
     \\
     \COLOR{red!80!black!70}{$\{c_3\}$}
   };
   \draw (0.5*\RADX*\X, 0pt) node[align=center] {
     \textbf{\COLOR{purple}{To ignore:}}\\%\tiny
     $B_\beta \wedge (B_\alpha \cup B_\pi)$\\\tiny
-    $[b_1,\,b_2,\,c_2] \wedge (\{c_1,\,c_2\} \cup \{ b_1,\,c_3\})$\\\tiny
-    $[b_1,\,b_2,\, c_2] \wedge \{ b_1,\, c_1,\, c_2,\, c_3 \}$\\%\tiny
-    \COLOR{purple}{$\{ b_1,\, c_2 \}$}
+    $[c_1,\,b_1,\,b_2,\,c_2] \wedge (\{c_1,\,c_2\} \cup \{ b_1,\,c_3\})$\\\tiny
+    $[c_1,\,b_1,\,b_2,\, c_2] \wedge \{b_1,\, c_1,\, c_2,\, c_3 \}$\\%\tiny
+    \COLOR{purple}{$\{c_1,\, b_1,\, c_2 \}$}
   };
   \draw (\RADX*\X, 0pt) circle [x radius=\RADX*\X, y radius = \RADY*\Y];
   \draw (\RADX*\X, \RADY*\Y) node[below, align=center]{\textbf{\COLOR{red!80!black!70}{\uline{Delivered by}}}\\\textbf{\COLOR{red!80!black!70}{\uline{Process~C}}}};
