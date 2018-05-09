@@ -5,10 +5,20 @@
 In this section, we present a causal broadcast protocol providing an original
 tradeoff in terms of complexity. It removes the last linear and monotonic upper
 bound that remained on space complexity at the cost of few lightweight control
-messages. The key idea consists in exploiting causal broadcast to improve its
-underlying reliable broadcast.  It exploits causal order to remove batches of
-obsolete information while reasoning about temporarily buffered broadcast
-messages.
+messages. The key ideas are:
+\begin{enumerate}
+\item Each process broadcasts or forwards a message once, hence each link convey
+  a message once. After the first receipt, the process expects to receive
+  another copy of this message from each other link pointing to it. Once the
+  process received all copies, the control information associated to the message
+  is entirely and safely removed.
+\item Adding links between processes adds uncertainty. Processes cannot tell if
+  they should expect a message from a link any longer.
+\item By exploiting causal order, processes remove this uncertainty. Causal
+  order allows to remove batches of obsolete information while reasoning about
+  temporarily buffered broadcast messages. In this paper, we exploit causal
+  broadcast to improve its underlying reliable broadcast.
+\end{enumerate}
 
 \subsection{Model}
 

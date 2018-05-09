@@ -41,11 +41,12 @@ or transitively.
 % same message.
 
 Processes may receive a broadcast message multiples times from different
-sources. Unfortunately, state-of-the-art protocols designed to forbid multiple
-delivery do not scale in large and dynamic systems. Either they build a specific
-dissemination topology (e.g. tree or ring) that ensures single receipt hence
-single delivery~\cite{bravo2017saturn,raynal2013distributed} but such topologies
-are difficult to maintain in dynamic systems subject to
+sources. Causal broadcast rely on reliable broadcast to forbid multiple
+delivery~\cite{hadzilacos1994modular}. Unfortunately, reliable broadcast
+implementations do not scale in large and dynamic systems. Either they build a
+specific dissemination topology (e.g. tree or ring) that ensures single receipt
+hence single delivery~\cite{bravo2017saturn,raynal2013distributed} but such
+topologies are difficult to maintain in dynamic systems subject to
 failures~\cite{krasikova2016hashtable}; or they maintain a local structure to
 identify and discard additional copies of an original message at receipt. These
 structures are either based on physical
@@ -75,7 +76,7 @@ implementations do not scale in large and dynamic systems.
 \begin{table}
   \begin{center}
     \caption{\label{table:complexity} Complexity of broadcast algorithms at each
-      process (detailed in Section~\cite{subsec:complexity}). $N$ the number of
+      process (detailed in Section~\ref{subsec:complexity}). $N$ the number of
       processes that ever broadcast a message. $P$ the number of processes in
       the system. $W$ the number of messages received but not delivered
       yet. $Q_i$ is the number of processes in the in-view. $M$ is the number of
