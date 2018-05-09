@@ -16,12 +16,12 @@ sees multiple occurrences of Alice's comment or Bob's picture.
 % processes that deliver these two messages need to deliver $m$ before
 % $m'$. Otherwise they deliver them in any order.
 
-However, causal broadcast implementations do not scale in large and dynamic
-systems comprising from hundreds to millions of processes joining, leaving, and
-self-reconfiguring at any time. In such systems, no process can afford to
-maintain an up-to-date knowledge of the full
-membership~\cite{birman1999bimodal,demers1987epidemic}. Instead, each process
-builds a partial view of neighbors to communicate
+Causal broadcast implementations rely on gossiping to efficiently propagate
+broadcast messages to all processes in dynamic systems comprising from hundreds
+to millions of processes joining, leaving, and self-reconfiguring at any
+time. In such systems, no process can afford to maintain an up-to-date knowledge
+of the full membership~\cite{birman1999bimodal,demers1987epidemic}. Instead,
+each process builds a partial view of neighbors to communicate
 with~\cite{jelasity2007gossip}. Gossiping exploits these neighborhoods to
 efficiently broadcast a message to all processes. To broadcast a message, a
 process sends the message to its neighbors; each process receiving such message
@@ -41,24 +41,25 @@ or transitively.
 % same message.
 
 Processes may receive a broadcast message multiples times from different
-sources.  To forbid multiple delivery, state-of-the-art protocols constrain the
-dissemination topology to tree or ring that ensures single receipt hence single
-delivery~\cite{bravo2017saturn,raynal2013distributed}. However, such topologies
+sources. Unfortunately, state-of-the-art protocols designed to forbid multiple
+delivery do not scale in large and dynamic systems. Either they build a specific
+dissemination topology (e.g. tree or ring) that ensures single receipt hence
+single delivery~\cite{bravo2017saturn,raynal2013distributed} but such topologies
 are difficult to maintain in dynamic systems subject to
-failures~\cite{krasikova2016hashtable}. To forbid multiple delivery,
-state-of-the-art protocols maintains local structure to identify and discard
-additional copies of an original message at receipt. They either rely on
-physical clocks~\cite{cachin2011introduction,demers1987epidemic} or on vectors
-of logical clocks~\cite{malkhi2007concise,mukund2014optimized}. Physical clocks
-allow to remove obsolete control information over time. However, they may remove
-useful information leading to multiple deliveries with cascading effects in the
-system. Vector clocks forbid multiple delivery in dynamic systems. However,
-their size increases linearly and monotonically with the number of processes
-that ever broadcast a message. Processes pay for their past usage. They
-eventually become inefficient, for processes cannot safely reclaim entries
-without running an overcostly distributed garbage collecting
-protocol~\cite{abdullahi1998garbage}. State-of-the-art implementations do not
-scale in large and dynamic systems.
+failures~\cite{krasikova2016hashtable}; or they maintain a local structure to
+identify and discard additional copies of an original message at receipt. These
+structures are either based on physical
+clocks~\cite{cachin2011introduction,demers1987epidemic} or on vectors of logical
+clocks~\cite{malkhi2007concise,mukund2014optimized}. Physical clocks allow to
+remove obsolete control information over time. However, they may remove useful
+information leading to multiple deliveries with cascading effects in the
+system. Vectors of logical clocks forbid multiple delivery in dynamic
+systems. However, their size increases linearly and monotonically with the
+number of processes that ever broadcast a message. Processes pay for their past
+usage. They eventually become inefficient, for processes cannot safely reclaim
+entries without running an overcostly distributed garbage collecting
+protocol~\cite{abdullahi1998garbage}. State-of-the-art causal broadcast
+implementations do not scale in large and dynamic systems.
 
 
 % \TODO{We do reliable broadcast on top of causal broadcast. Did not make sense
@@ -74,12 +75,13 @@ scale in large and dynamic systems.
 \begin{table}
   \begin{center}
     \caption{\label{table:complexity} Complexity of broadcast algorithms at each
-      process. $N$ the number of processes that ever broadcast a message. $P$
-      the number of processes in the system. $W$ the number of messages received
-      but not delivered yet. $Q_i$ is the number of processes in the in-view. $M$
-      is the number of messages already delivered that should be received again
-      from at least one process in $Q_i$.}
-    \input{input/tablecomplexity.tex}
+      process (detailed in Section~\cite{subsec:complexity}). $N$ the number of
+      processes that ever broadcast a message. $P$ the number of processes in
+      the system. $W$ the number of messages received but not delivered
+      yet. $Q_i$ is the number of processes in the in-view. $M$ is the number of
+      messages already delivered that should be received again from at least one
+      process in $Q_i$.}
+  \input{input/tablecomplexity.tex}
   \end{center}
 \end{table}
 
@@ -105,14 +107,18 @@ topology.  Our contribution is threefold:
   instance, gossip-based peer-sampling
   protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} need
   only 8 control messages per added link during periodic shuffles.
-\item Our experiments highlights the space consumed by our protocol in dynamic
-  systems with varying latency. It confirms that the proposed approach scales
-  with the system settings instead of past broadcast messages. Processes
-  actually pay at the height of their current use.
+\item Our experiments highlight the space consumed and the traffic generated by
+  our protocol in dynamic systems with varying latency. It confirms that the
+  proposed approach scales with the system settings instead of past broadcast
+  messages.
 \end{itemize}
-Our implementation offers an advantageous tradeoff that makes causal broadcast a
-lightweight and efficient middleware in large and dynamic systems. This tradeoff
-even makes a lightweight and efficient implementation of reliable broadcast.
+Instead of encoding the global state of the system in a vector of logical
+clocks, our implementation only maintains its receipt state with its direct
+neighborhood. Neighborhood being far smaller than the full system membership,
+this scales in large and dynamic systems.  Our implementation offers an
+advantageous tradeoff that makes causal broadcast a lightweight and efficient
+middleware in large and dynamic systems. This tradeoff even makes a lightweight
+and efficient implementation of reliable broadcast.
 
 The rest of this paper is organized as follows. 
 % Section~\ref{sec:motivations}
