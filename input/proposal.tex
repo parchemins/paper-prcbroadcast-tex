@@ -69,33 +69,6 @@ delivers it once despite possible multiple receipts.
   \end{itemize}
 \end{definition}
 
-% From validity and uniform agreement, each correct process receives each
-% broadcast message at least once. From uniform integrity, each correct process
-% delivers each broadcast message once despite possible multiple receipts.  This
-% suggests a data structure ensuring uniqueness of messages such as sets or
-% vectors. It allows processes to remember about prior delivery of messages in
-% order to discard double receipts.
-
-% \begin{definition}[Remembering]
-%   A process starts to remember a message at its delivery:
-%   $remember_A(m) \equiv d_A(m)$.  A process delivers only messages not yet
-%   remembered: \\ $\not\exists m,\, remember_A(m) \rightarrow d_A(m)$.
-% \end{definition}
-
-% \begin{theorem}[\label{theo:rememberinganduniqueness}Remembering forbids
-%   multiple delivery]
-%   A process delivering only messages it does not remember delivers each received
-%   message exactly once.
-% \end{theorem}
-
-% \begin{proof}
-%   A process receiving a message either delivered this message or not. In the
-%   former case, it already remembers the message, hence discards it. In the
-%   latter case, it delivers the message for the first time and starts to remember
-%   it. Subsequent receipts fall in the former case. Consequently, a process
-%   delivers each message once and only once.
-% \end{proof}
-
 Definition~\ref{def:reliablebroadcast} suggests the use of data structures that
 saves delivered messages to ignore additional receipts. In static systems, such
 data structure can be non-monotonic~\cite{raynal2013distributed}. We define a
@@ -189,41 +162,6 @@ Figure~\ref{fig:memorylinkD}, the last process to await a copy of $b$ finally
 receives it. None of processes remembers about $b$. No copy of $b$ travels in
 the system. This implementation forbids multiple delivery in static systems.
 
-% Algorithm~\ref{algo:reliablebroadcast} shows an implementation of uniform
-% reliable broadcast that forbids multiple delivery in static systems. It features
-% a data structure that remembers messages (see Line~\ref{line:remembers}) but
-% forgets them as soon as they cannot be received any longer by the process (see
-% Line~\ref{line:forgets}).  It uses the in-view and exploits the property that
-% each process sends each message exactly once to each neighbor in their
-% out-view. It associates with each link from the in-view a set of expected
-% messages. A process forgets expected messages over receipts.
-
-
-% \begin{theorem}[Forgetting]
-%   Assuming processes receive each message a finite number of times, remembering
-%   a message from its delivery to its last receipt is necessary and sufficient to
-%   forbid multiple delivery.
-% \end{theorem}
-
-% \begin{proof}
-%   Assuming a finite series of $k$ receipts of a message $m$ at Process~A:
-%   $r^1_A(m) \rightarrow r^2_A(m) \wedge r^2_A(m) \rightarrow r^3_A(m) \wedge
-%   \ldots \wedge r^{k-1}_A(m) \rightarrow r^k_A(m)$. \\
-%   We must show that if Process~A remembers $m$ from its delivery until its
-%   $k^{th}$ receipt, then Process~A delivers $m$ once. The proof is similar to
-%   that of Theorem~\ref{theo:rememberinganduniqueness}. After the $k^{th}$
-%   receipt, Process~A never receives -- hence delivers -- $m$ again. Remembering
-%   $m$ until the $k^{th}$ receipt is sufficient.\\
-%   We also must show that if Process~A does not strictly remember $m$ from its
-%   delivery to its $k^{th}$ receipt, then Process~A delivers $m$ multiple
-%   times. Process~A delivers and remembers $m$ after its first receipt. Let
-%   $1\leq j<k$. Process~A stops remembering $m$ after the $j^{th}$ receipt. When
-%   Process~A receives $m$ for the $(j+1)^{th}$ time, it considers it as a new
-%   message and delivers it again. This issue may repeat multiple times leading to
-%   that many deliveries of $m$.
-% \end{proof}
-
-
 \begin{figure}
   \begin{center}
     \begin{subfigure}[t]{0.23\textwidth}
@@ -277,40 +215,6 @@ ensure a specific order on message delivery. To characterize the order among
 events such as send, or receive, we define time in a logical sense using
 Lamport’s definition.
 
-
-
-% \begin{definition}[Per link remembering]
-%   A process remembers a message from its delivery to its last receipt, i.e.,
-%   once the process received the message from its whole in-view.
-%   $remember_B(m) \equiv \exists A \in Q_i,\, r_B(m) \wedge \neg r_{BA}(m)$
-% \end{definition}
-
-% \begin{lemma}[Per link remembering ensures delivery uniqueness]
-%   Assuming a static network where processes cannot join, nor leave, nor
-%   self-reconfigure their partial views, per link remembering ensures uniqueness
-%   of delivery.
-% \end{lemma}
-
-% \begin{proof}
-%   When a process receives a message $m$ for the first time, it expects to
-%   receive one copy of $m$ for each other neighbor in its in-view. Assuming $k$
-%   neighbors in its in-view, the process remembers $m$ until it receives $k$
-%   copies in total. Assuming that each process delivers -- hence forwards -- each
-%   message exactly once, the former process does not receive more than $k$ copies
-%   of $m$. Consequently, each process deliver each message exactly once despite
-%   receiving multiple copies.
-% \end{proof}
-
-% Algorithm~\ref{algo:reliablebroadcast} guarantees exactly once delivery of
-% messages in static systems. The local data structure is safely purged over
-% receipts. 
-
-% In addition to reliable delivery, broadcast protocols can guarantee a delivery
-% order of messages. We focus on causal order. Process~A should deliver a message
-% $m$ from Process~B after having delivered all messages delivered by Process~B
-% before the sending of $m$. This order will prove useful to ensure the receipt of
-% set of messages. %\TODO{Explain that ordering messages will be usefull for us?}
-
 \begin{definition}[Happen before~\cite{lamport1978time}]
   Happen before is a transitive, irreflexive, and antisymmetric relation
   $\rightarrow$ that defines a strict partial orders of events. The sending of a
@@ -341,57 +245,6 @@ Lamport’s definition.
 %   \end{center}
 % \end{figure}
 
-% \subsection{Problem statement}
-% \label{subsec:problemstatement}
-
-
-%
-% Links start unsafe, for messages traveling by the new links may arrive before
-% preceding messages that took longer paths. \PCBROADCAST ensures safety by
-% sending control messages. Section~\ref{sec:motivations} described its
-% functioning. Process~A sends a control message $\pi$ to Process~B using safe
-% links and awaits its answer $\rho$. This is a ping phase. While awaiting
-% Process~B's response, Process~A buffers its delivered messages. Upon receipt of
-% $\rho$, Process~A empties its buffer to Process~A. The link is safe. Process~A
-% can use it normally for causal broadcast.
-%
-% \begin{definition}[Ping phase (\REF)]
-%   Ping phase starts when Process~A pings Process~B. Ping messages $\pi$ travel
-%   using safe links. When Process~B receives this ping, it replies to
-%   Process~A. Replies $\rho$ travel using any communication mean. Ping phase ends
-%   when Process~A receives the reply of Process~B.
-% \end{definition}
-%
-% \begin{lemma}[\label{lemma:ping}Ping phases acknowledge broadcast receipts (\REF)]
-%   A ping phase from Process~A to Process~B acknowledges the receipt by B of all
-%   messages delivered by Process~A before this ping phase.
-%   $\forall m,\, d_A(m) \rightarrow s_A(\pi_{AB}) \wedge r_A(\rho_{AB}) \implies
-%   r_B(m)$
-% \end{lemma}
-%
-%\PCBROADCAST ensures that all preceding messages arrive before new messages by
-%acknowledging the receipt of most messages while buffering messages concurrent
-%to the acknowledgment. Processes receive all messages at least once and deliver
-%them following causal order. 
-
-% However, \PCBROADCAST does not forbid multiple delivery by itself. It relies on
-% a reliable broadcast that either use vector clocks, or fails to handle dynamic
-% systems.  In Figure~\ref{fig:counterproblem}, the issue comes from Process~C
-% being unable to remember messages it will receive from Process~B's buffer (i.e.,
-% the message $a$) while forgetting about messages it will never receive from
-% Process~B (i.e., the message $b$).  To remove the last linear and monotonic
-% upper bound that remains on space complexity, causal broadcast must forget
-% obsolete control information and handle dynamic systems where processes can
-% join, leave, or self-reconfigure their partial view.
-
-
-% To provide a bound on remembering, upon receipt of a broadcast message, a
-% process must
-% \begin{inparaenum}[(i)]
-% \item identify if it already delivered this message, and
-% \item identify all other processes that will send it this message.
-% \end{inparaenum}
-
 % \begin{problem*}
 %   Figure~\ref{fig:problemstatement} depicts this problem. Assuming Process~A
 %   sends a buffer of messages to Process~B in order to finalize the safety of
@@ -418,48 +271,11 @@ Lamport’s definition.
 %   \end{center}
 % \end{figure}
 
-% Figure~\ref{fig:problemstatement} depicts the scientific problem. The buffer of
-% messages sent by Process~A includes messages that are delivered by Process~A
-% only. Process~B must deliver these messages normally. The buffer of messages
-% also includes messages already delivered by Process~B. Process~B must remember
-% these messages to discard them when the buffer arrives. Finally, Process~B
-% delivered messages that Process~A did not deliver. Since each process delivers
-% and forwards each message exactly once, Process~B will receive these messages by
-% this new safe link. Process~B must remember these messages to discard them at
-% their receipt.
-
 The rest of this section describes how reliable broadcast can exploit causal
 order to initialize safe link memory. Then, we provide an implementation of such
 broadcast along with its complexity analysis.
 
-
-%\subsection{A reliable causal broadcast}
 \subsection{Principle}
-
-% Figure~\ref{fig:counterproblem} shows that adding safe links is insufficient to
-% forbid multiple delivery. At any time, a process may receive messages it already
-% forgot and deliver them again. To solve this, we provide each link with a memory
-% that must be consistent with Process~B's past deliveries and upcoming receipts
-% from this link.
-
-% \begin{definition}[\label{def:extension}Safe link extension]
-%   % In addition to Definition~\ref{def:safe}, a link from Process~A to Process~B
-%   % is safe if it guarantees to Process~A that messages received by Process~B via
-%   % this link are delivered exactly once.
-
-%   A link from Process~A to Process~B is safe if Process~B differentiates among
-%   its delivered messages the messages it will eventually receive via this new
-%   link from the messages it will never receive via this new link.
-% \end{definition}
-
-% Definition~\ref{def:extension} implies that Process~B manages to distinguish
-% messages it delivered that are not delivered by Process~A from messages it did
-% not delivered that are just delivered by Process~A. The former constitutes
-% messages Process~B expects to receive from the link while the latter constitutes
-% messages Process~B receives for the first time and should
-% deliver. Algorithm~\ref{algo:reliablebroadcast} maintains this knowledge over
-% receipts. However, it may fail when processes add neighbors in their out-view
-% (see Figure~\ref{fig:generalproblem}).
 
 This section demonstrates that reliable broadcast can use causal order brought
 by causal broadcast to initialize safe link memory, hence provide a
@@ -477,42 +293,6 @@ protocol disables the new link until it is initialized. This initialization
 requires round-trips of control messages and message buffering.  Causal
 broadcast takes advantage of causal order to provide guarantees on messages
 included in buffers.
-
-% It builds temporary buffers in order to remember messages as long as they might
-% be received again, taking into account the dynamicity of the system. Using these
-% buffers, a process is able to retrieve the knowledge about old messages to
-% ignore, messages to expect, and new messages to deliver.
-
-% \begin{definition}[Buffering phase]
-%   Process~B starts and stops buffering upon receipt of control messages from
-%   Process~A. Control messages are $\alpha$, $\beta$, and $\gamma$. Process~A
-%   sends $\alpha$ to Process~B using safe links. Process~B starts buffering on
-%   receipt of $\alpha$. Process~B sends $\beta$ to Process~A using any
-%   communication means. Process~A sends $\gamma$ to Process~B using safe
-%   links. Process~B stops buffering on receipt of $\gamma$.
-%   The buffer $\mathcal{B}$ contains the messages delivered by Process~B.
-%   $m \in \mathcal{B} \Longleftrightarrow 
-%   (r_B(\alpha) \rightarrow d_B(m)) \wedge (d_B(m) \rightarrow r_B(\gamma))$
-% \end{definition}
-
-% \begin{lemma}[Messages of buffer]
-%   A buffer $\mathbb{B}$ includes messages delivered by Process~A but not delivered by
-%   Process~B before the receipt of $\alpha$. This excludes messages delivered by
-%   Process~A before the sending of $\alpha$ and messages delivered by Process~B
-%   before the receipt of $\alpha$.
-%   $\forall m,\,m',\,(m\neq m'),\, s_A(\alpha) \rightarrow d_A(m) \wedge d_A(m)
-%   \rightarrow s_A(\gamma) \wedge d_B(m') \rightarrow r_B(\alpha) \implies m \in
-%   \mathcal{B}$
-% \end{lemma}
-
-% \begin{proof}
-%   Since control messages $\alpha$ and $\gamma$ travel by reliable FIFO links,
-%   the receipt of all messages delivered by Process~A before the sending of
-%   $\alpha$ precedes the receipt of $\alpha$ by Process~B:\\
-%   $\forall m,\, d_A(m) \rightarrow s_A(\alpha) \implies d_B(m) \rightarrow
-%   r_B(m) \implies m \not\in \mathcal{B}$\\
-%   \TODO{Not sure where we are going.}
-% \end{proof}
 
 % \begin{figure*}
 %   \begin{center}
@@ -597,9 +377,6 @@ that Process~B will receive $B_\beta$ before upcoming broadcast messages on this
 new link, and the receipt of $B_\beta$ will allow Process~B to initialize this
 new link memory.
 
-% Afterwards the link is safe to use by Process~A for causal broadcast (see
-% Definition~\ref{def:safe}).
-
 \begin{lemma}[\label{lem:bbeta}Messages in buffer $B_\beta$]
   The buffer $B_\beta$ contains messages delivered by Process~A after the
   sending of $\pi$ and before the receipt of $\rho$.\\
@@ -672,79 +449,6 @@ initialize link memory.
   link memory.
 \end{proof}
 
-
-
-% To provide safe links that cannot violate causal order, \PCBROADCAST sends a
-% buffer of messages $B_\beta$ after a round-trip of messages $\pi$ and $\rho$. In
-% \RPCBROADCAST, the receiver maintains 2 buffers $B_\alpha$ and $B_\pi$ in order
-% to categorize the messages in $B_\beta$. \RPCBROADCAST interlaces the buffering
-% phases to reason about the content of buffers. At receipt of $B_\beta$, the
-% process identifies messages to deliver, messages to ignore, and messages to
-% expect. The latter initializes the new link memory.
-
-% phases using control messages (see Figure~\ref{fig:timelineproof}) with the
-% objective to identify from the buffer of messages
-
-
-% One control message of a buffering phase becomes the control message of the next
-% buffering phase.
-
-% \begin{proof}
-%   Figure~\ref{fig:timeline} exposes the different steps of this proof. Assuming
-%   that Process~A adds Process~B in its out-view. Before sending $\alpha$,
-%   Process~A delivered a set of messages $\mathcal{A}$. Since $\alpha$ travels
-%   using causal communication, all messages delivered by Process~A at the moment
-%   of the sending are delivered by Process~B at the moment of the receipt:
-%   $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies d_B(m) \rightarrow
-%   r_B(\alpha_{AB})$.
-%   Thus, Process~B delivered a set of messages $\mathcal{B}$ that comprises
-%   $\mathcal{A}$ and another set of delivered messages $\mathcal{A}'$ unknown to
-%   Process~A at the moment of the sending. $\mathcal{A}$ and $\mathcal{A}'$ are
-%   disjoint.\\
-%   When Process~A receives $\beta$, it delivered $\mathcal{C}$ that comprises
-%   $\mathcal{B}$ and $\mathcal{B}'$, $\mathcal{B}'$ being a set of messages
-%   unknown to Process~B at the moment of the sending of $\beta$. \\
-%   When Process~B receives $\pi$, it delivered $\mathcal{D}$ that comprises
-%   $\mathcal{C}$ and $\mathcal{C}'$, $\mathcal{C}'$ being the set of messages
-%   unknown to Process~A at the moment of the sending of $\pi$. Hence, Buffer
-%   $B_\alpha$ contains the set of messages delivered between the sending of
-%   $\beta$ and the receipt of $\pi$:
-%   $\mathcal{D} \setminus \mathcal{B} = \mathcal{A} \cup \mathcal{A'} \cup
-%   \mathcal{B}' \cup \mathcal{C'} \setminus (\mathcal{A} \cup \mathcal{A}') =
-%   \mathcal{B}' \cup
-%   \mathcal{C}'$. \\
-%   When Process~A receives $\rho$, it delivered $\mathcal{E}$ that comprises
-%   $\mathcal{D}$ and $\mathcal{D}'$, $\mathcal{D}'$ being a set of messages
-%   unknown to Process~B at the moment of the sending of $\rho$. Hence, Buffer
-%   $B_\beta$ contains the array of messages delivered between the receipt of
-%   $\beta$ and the receipt of $\rho$:
-%   $\mathcal{E} \setminus \mathcal{C} = \mathcal{C}' \cup \mathcal{D}'$.\\
-%   When Process~B receives the buffer $B_\beta$, it delivered a set of messages
-%   that follows the receipt of $\pi$. The buffer $B_\pi$ comprises a set of
-%   messages $\mathcal{G}$ delivered by Process~A before the sending of $B_\beta$
-%   and a set of messages $\mathcal{H}$ not delivered by Process~A before the
-%   sending of $B_\beta$.
-  
-%   \noindent\textbf{To ignore:} Process~B ignores messages in $\mathcal{C}'$,
-%   for they are
-%   delivered by both processes: $B_\beta \setminus B_\alpha = \mathcal{D}'$.
-%   $\mathcal{G}$ is a subset of the remaining $\mathcal{D}'$ that should be
-%   ignored: $(B_\beta \setminus B_\alpha) \wedge B_\pi$.
-
-%   \noindent \textbf{To deliver:} Process~B delivers messages in $\mathcal{D}'$
-%   that it did not delivered yet:
-%   $(B_\beta\setminus B_\alpha) \setminus B_\pi = \mathcal{D}' \setminus
-%   \mathcal{G}$.
-  
-%   \noindent \textbf{To expect from Process~A:} Process~B expects messages that
-%   are not in $\mathcal{D}'$:
-%   $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{H}$.  Assuming the
-%   link is not removed, since $\mathcal{H}$ comprises messages delivered by
-%   Process~B only, and since all processes eventually receive, deliver, and
-%   forward all messages, Process~B will eventually receive all the expected
-%   messages $\mathcal{H}$ from this link in causal order.
-% \end{proof}
-
 \subsection{Implementation}
 
 \RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
@@ -765,14 +469,6 @@ control messages, and buffers to ensure causal order in dynamic systems. A
 process broadcasting a message sends the message to an out-view of safe links
 that cannot lead to causal order violations. \RPCBROADCAST embeds safe link
 establishment in its link memory initialization.
-
-% \begin{definition}[\label{def:safe}Safe link (\REF)]
-%   A link from Process~A to Process~B is safe if and only if Process~B received
-%   or will receive all messages delivered by Process~A before receiving any
-%   message that Process~A will
-%   deliver. $safe_{AB} \equiv \forall m,\, m',\, d_A(m) \rightarrow s_{AB}(m')
-%   \implies r_B(m) \rightarrow r_{BA}(m')$
-% \end{definition}
 
 \begin{figure}
   \begin{center}
@@ -946,8 +642,7 @@ broadcasts any message, processes do not consume any space).
 % policy. Such strategy fits \RPCBROADCAST as well. Both involved processes can
 % halt and retry the safety check of the new link. Either the origin process does
 % not send its buffer $B_\beta$, or the destination process does not accept
-% incoming messages. \TODO{Maybe position this paragraph in complexity and find
-%   better outro.}
+% incoming messages. 
 
 \noindent The overhead in terms of \textbf{number of control messages} per added
 link in an out-view varies from $6$ to $4P^2$ depending on the overlay network;
