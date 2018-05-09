@@ -97,8 +97,8 @@ evolution of transmission delays.
 \item Figure~\ref{fig:overhead} shows that at a rate of 10 broadcasts per second
   and when latency stays under a realistic bound ($300ms$), the overhead is
   lower than vector-based approaches. Whatever system conditions, it would
-  require a vector of 100, 1k entries, 10k entries to forbid double delivery in
-  the 100-processes systems, 1k-processes system, 10k-processes system
+  require a vector of 100, 1k entries, 10k entries to forbid multiple delivery
+  in the 100-processes systems, 1k-processes system, 10k-processes system
   respectively.
 \end{itemize}
 
@@ -160,22 +160,22 @@ transmission delays.
   spreads control messages over time, hence the smoothing in measurements.
 \end{itemize}
 
-
 Overall, this section empirically confirms that the space complexity of
-\RPCBROADCAST is non-monotonic, depends on the system and its
+\RPCBROADCAST is non-monotonic and depends on the system and its
 usage. Section~\ref{subsec:complexity} states that the space complexity is
 $O(Q_i.M)$ where $Q_i$ is the size of the in-view built by peer-sampling
 protocols, and $M$ is the number of messages that have been delivered but that
 will be received again. This experiment confirms that the space consumed by each
 process increases and decreases over time. In dynamic settings, this comes at
-the cost of control messages \TODO{better conclusion.}
-
-\noindent In this experiment, the underlying peer-sampling protocol builds
-random graph topologies that have numerous desirable properties such as crash
-resilience, or load balancing~\cite{jelasity2007gossip}. This is ideal for
-systems where numerous processes join and leave continuously. However, it is
-worth noting that it remains in the hands of developers to choose the best
-peer-sampling protocol for their system.
+the cost of control messages to initialize memory link. This section shows that
+this number remains small even in highly dynamic systems when peer-sampling
+protocols allow a form of routing.  In this experiment, the underlying
+peer-sampling protocol builds random graph topologies that have numerous
+desirable properties such as crash resilience, or load
+balancing~\cite{jelasity2007gossip}. This is ideal for systems where numerous
+processes join and leave continuously. However, it is worth noting that it
+remains in the hands of developers to choose the best peer-sampling protocol for
+their system.
 
 
 %Using \RPCBROADCAST, processes pay at the height of their current use instead of
