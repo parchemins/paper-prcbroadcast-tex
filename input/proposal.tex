@@ -104,6 +104,11 @@ non-monotonic link-wise memory to forbid multiple delivery.
 \end{proof}
 
 
+\begin{algorithm}[h]
+  \input{./input/algoreliablebroadcast.tex}
+  \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
+\end{algorithm}
+
 \begin{figure}
   \begin{center}
     \begin{subfigure}[t]{0.23\textwidth}
@@ -134,10 +139,7 @@ non-monotonic link-wise memory to forbid multiple delivery.
   \end{center}
 \end{figure}
 
-\begin{algorithm}[h]
-  \input{./input/algoreliablebroadcast.tex}
-  \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
-\end{algorithm}
+
 
 %Vector clocks implement remembering but fail to remove obsolete control
 %information. 
@@ -161,37 +163,6 @@ the only link from its in-view is the link from which it just received $b$. In
 Figure~\ref{fig:memorylinkD}, the last process to await a copy of $b$ finally
 receives it. None of processes remembers about $b$. No copy of $b$ travels in
 the system. This implementation forbids multiple delivery in static systems.
-
-\begin{figure}
-  \begin{center}
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsA.tex}%
-      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
-        from both Process~B and Process~C.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsB.tex}%
-      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
-        forwards $a$. It does not expect additional copies.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsC.tex}%
-      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
-        Then it receives, delivers, and forwards $a$.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsD.tex}%
-      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
-        for a new message. It delivers, and forwards $a$.}
-    \end{subfigure}
-    \caption{\label{fig:memorylinkfails}Reliable broadcast
-      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
-      in dynamic systems. }
-  \end{center}
-\end{figure}
 
 However, implementing link memory becomes more challenging in dynamic systems
 where processes can start sending messages to any other process at any time. Any
@@ -231,6 +202,38 @@ Lamport’s definition.
 \begin{definition}[Causal broadcast]
   Causal broadcast is a uniform reliable broadcast ensuring causal order.
 \end{definition}
+
+\begin{figure}
+  \begin{center}
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsA.tex}%
+      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
+        from both Process~B and Process~C.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsB.tex}%
+      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
+        forwards $a$. It does not expect additional copies.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsC.tex}%
+      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
+        Then it receives, delivers, and forwards $a$.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsD.tex}%
+      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
+        for a new message. It delivers, and forwards $a$.}
+    \end{subfigure}
+    \caption{\label{fig:memorylinkfails}Reliable broadcast
+      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
+      in dynamic systems. }
+  \end{center}
+\end{figure}
+
 
 
 
@@ -327,14 +330,18 @@ Process~A notifies Process~B using a control message $\alpha$. This control
 message $\alpha$, as all control messages that will follow ($\beta$, $\pi$,
 $\rho$), are delivered in causal order regarding broadcast messages. Hence, at
 receipt, Process~B implicitly removes obsolete information: messages delivered
-by Process~A before the sending of the notification $\mathcal{A}_1$. At receipt
+by Process~A before the sending of the notification $\mathcal{A}_1$. 
+At receipt
 of $\alpha$, Process~B can start gathering control information about its
 delivered messages in a buffer $B_\alpha$. Among other, Process~B wants to
 identify messages concurrent to the correct establishment of the new
 link. Process~B acknowledges Process~A's notification using a control message
 $\beta$. At receipt of $\beta$, Process~A removes obsolete information: messages
 delivered by Process~B before the sending of the acknowledgment
-$\mathcal{A}_1 \cup \mathcal{B}_1$. Process~A sends a control message $\pi$ to
+$\mathcal{A}_1 \cup \mathcal{B}_1$. This solves the issue
+identified in Figure~\ref{fig:memorylinkfails}, for $a$ would belong to $\mathcal{A}_1$
+or $\mathcal{B}_1$. However, this is not sufficient to initialize link memory.
+Process~A sends a control message $\pi$ to
 Process~B, and starts to gather control information about its delivered messages
 in a buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
