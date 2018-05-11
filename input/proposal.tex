@@ -97,7 +97,7 @@ non-monotonic link-wise memory to forbid multiple delivery.
   its receipt from Process~A, Process~B must not remember $m$ on this link.  If
   Process~B does not remember $m$ from Process~A, either it already received $m$
   from Process~A; or it did not received $m$ from any process. In the former
-  case, it cannot receive, hence deliver, $m$ from Process~A; in the latter
+  case, it cannot receive, hence deliver $m$ from Process~A; in the latter
   case, receiving $m$ from Process~A leads to the delivery of $m$. Again, since
   a link conveys a message at most once, it cannot receive another $m$ from
   Process~A that would lead to another delivery.
@@ -206,13 +206,13 @@ Figure~\ref{fig:memorylinkfailsA}, Process~A broadcasts $a$. It expects a copy
 from both Process~B and Process~C. In Figure~\ref{fig:memorylinkfailsB},
 Process~C immediately receives, delivers, and forwards $a$. It does not tag any
 link and expects to never receive this message again. However, network condition
-delays the receipt of $b$ from Process~B. In Figure~\ref{fig:memorylinkfailsC}
-adds a communication link towards Process~C. Then it receives, delivers, and
-forwards $b$. Since Process~C now belongs to its out-view, the forwarding
-includes Process~C. In Figure~\ref{fig:memorylinkfailsD}, Process~C receives $a$
-again. However, it did not keep control information about this message. It
-mistakes it for a first receipt. It delivers and forwards $a$. Not only
-Process~C suffers multiple delivery but this has cascading effects over the
+delays the receipt of $b$ from Process~B. In Figure~\ref{fig:memorylinkfailsC},
+Process~B adds a communication link towards Process~C. Then it receives,
+delivers, and forwards $b$. Since Process~C now belongs to its out-view, the
+forwarding includes Process~C. In Figure~\ref{fig:memorylinkfailsD}, Process~C
+receives $a$ again. However, it did not keep control information about this
+message. It mistakes it for a first receipt. It delivers and forwards $a$. Not
+only Process~C suffers multiple delivery but this has cascading effects over the
 whole system.
 
 In this paper, we solve this issue by exploiting causal broadcast's ability to
