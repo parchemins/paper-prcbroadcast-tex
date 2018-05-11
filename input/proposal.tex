@@ -134,8 +134,8 @@ non-monotonic link-wise memory to forbid multiple delivery.
       \caption{\label{fig:memorylinkD}Process~A receives its last expected copy
         of $b$. The message $b$ is completely removed from the system.}
     \end{subfigure}
-    \caption{\label{fig:memorylink}Link memory allows processes to forget past
-      deliveries in static systems.}
+    \caption{\label{fig:memorylink}Link memory allows processes to safely remove
+      obsolete control information about past deliveries in static systems.}
   \end{center}
 \end{figure}
 
@@ -163,6 +163,40 @@ the only link from its in-view is the link from which it just received $b$. In
 Figure~\ref{fig:memorylinkD}, the last process to await a copy of $b$ finally
 receives it. None of processes remembers about $b$. No copy of $b$ travels in
 the system. This implementation forbids multiple delivery in static systems.
+
+
+\begin{figure}
+  \begin{center}
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsA.tex}%
+      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
+        from both Process~B and Process~C.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsB.tex}%
+      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
+        forwards $a$. It does not expect additional copies.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsC.tex}%
+      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
+        Then it receives, delivers, and forwards $a$.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
+      \centering\input{input/figmemorylinkfailsD.tex}%
+      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
+        for a new message. It delivers, and forwards $a$.}
+    \end{subfigure}
+    \caption{\label{fig:memorylinkfails}Reliable broadcast
+      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
+      in dynamic systems. }
+  \end{center}
+\end{figure}
+
+
 
 However, implementing link memory becomes more challenging in dynamic systems
 where processes can start sending messages to any other process at any time. Any
@@ -202,40 +236,6 @@ Lamport’s definition.
 \begin{definition}[Causal broadcast]
   Causal broadcast is a uniform reliable broadcast ensuring causal order.
 \end{definition}
-
-\begin{figure}
-  \begin{center}
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsA.tex}%
-      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
-        from both Process~B and Process~C.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsB.tex}%
-      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
-        forwards $a$. It does not expect additional copies.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsC.tex}%
-      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
-        Then it receives, delivers, and forwards $a$.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsD.tex}%
-      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
-        for a new message. It delivers, and forwards $a$.}
-    \end{subfigure}
-    \caption{\label{fig:memorylinkfails}Reliable broadcast
-      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
-      in dynamic systems. }
-  \end{center}
-\end{figure}
-
-
-
 
 % \begin{figure}
 %   \begin{center}
@@ -306,22 +306,6 @@ included in buffers.
 %   \end{center}
 % \end{figure*}
 
-\begin{figure}
-  \begin{center}
-    \input{input/figtimelineproof.tex}
-    \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
-      memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
-      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not.
-      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
-      are messages to ignore;
-      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
-      \mathcal{A}_3'$
-      are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
-      messages to expect.}
-  \end{center}
-\end{figure}
-
-
 Figure~\ref{fig:timelineproof} depicts the principle of the approach. When a
 Process~A adds a link to
 Process~B. %, \RPCBROADCAST initializes safe link memory
@@ -345,6 +329,24 @@ Process~A sends a control message $\pi$ to
 Process~B, and starts to gather control information about its delivered messages
 in a buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
+
+\begin{figure}
+  \begin{center}
+    \input{input/figtimelineproof.tex}
+    \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
+      memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
+      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not.
+      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
+      are messages to ignore;
+      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
+      \mathcal{A}_3'$
+      are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
+      messages to expect.}
+  \end{center}
+\end{figure}
+
+
+
   
 \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
   The buffer $B_\alpha$ contains messages delivered by Process~B after the
