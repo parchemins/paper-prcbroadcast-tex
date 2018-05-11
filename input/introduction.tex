@@ -36,11 +36,12 @@ self-reconfiguring at any time.
 %Processes may receive a broadcast message multiples times from different
 %sources. 
 Causal broadcast rely on reliable broadcast to forbid multiple
-delivery~\cite{hadzilacos1994modular}. Unfortunately, reliable broadcast
-implementations do not scale in large and dynamic systems. Either they build a
-specific dissemination topology (e.g. tree or ring) that ensures single receipt
-hence single delivery~\cite{bravo2017saturn,raynal2013distributed} but such
-topologies are difficult to maintain in dynamic systems subject to
+delivery~\cite{hadzilacos1994modular}. % Unfortunately, reliable broadcast
+% implementations do not scale in large and dynamic systems.
+Either they build a specific dissemination topology (e.g. tree or ring) that
+ensures single receipt hence single
+delivery~\cite{bravo2017saturn,raynal2013distributed} but such topologies are
+difficult to maintain in dynamic systems subject to
 failures~\cite{krasikova2016hashtable}; or they maintain a local structure to
 identify and discard additional copies of an original message at receipt. These
 structures are either based on physical
@@ -63,7 +64,7 @@ implementations do not scale in large and dynamic systems.
       process (detailed in Section~\ref{subsec:complexity}). $N$ the number of
       processes that ever broadcast a message. $P$ the number of processes in
       the system. $W$ the number of messages received but not delivered
-      yet. $Q_i$ is the number of processes in the in-view. $M$ is the number of
+      yet. $Q_i$ is the number of incoming communication means. $M$ is the number of
       messages already delivered that should be received again from at least one
       process in $Q_i$.}
   \input{input/tablecomplexity.tex}
@@ -71,18 +72,13 @@ implementations do not scale in large and dynamic systems.
 \end{table}
 
 In this paper, we introduce an implementation of causal broadcast that belongs
-to approaches forbiding multiple delivery by using local
-structures. Our proposal assumes that processes belongs to an overlay
-network and messages are broadcast using
-gossiping~\cite{jelasity2007gossip}. Each process builds a partial
-view of neighbors to communicate, so each process has an in-view ie. a
-set of incoming communication links. To broadcast a message, a
-process sends the message to its neighbors; each process receiving such message
-forwards it to its own neighbors. Processes receive the message either directly
-or transitively.
-%
-Our
-contribution is threefold:
+to approaches forbidding multiple delivery by using local structures. A process
+belongs to an overlay network and has neighbors to communicate with via incoming
+and outgoing links.  Broadcast efficiently disseminates messages by
+gossiping~\cite{jelasity2007gossip}: the broadcaster sends the message by its
+outgoing links; each process receiving such message forwards it by its own
+outgoing links. Processes receive the message either directly or
+transitively. Our contribution is threefold:
 \begin{itemize}[leftmargin=*]
 \item We define link memory as a mean for each process to forbid multiple
   delivery using a non-monotonic local structure. Link memory allows each
