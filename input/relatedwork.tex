@@ -65,7 +65,7 @@ However, vector of logical clocks allow each process to perform anti-entropy
 with any other process at any time. The former identifies its missing messages
 compared to the latter.  The latter sends them to keep consistent states. This
 is useful when applications can go
-offline~\cite{demers1987epidemic}. \RPCBROADCAST implicitely performs
+offline~\cite{demers1987epidemic}. \RPCBROADCAST implicitly performs
 anti-entropy on-demand to initialize memory link but cannot provide it as a
 feature for applications. If required, this is the responsibility of
 applications to allow anti-entropy (e.g. using Merkle

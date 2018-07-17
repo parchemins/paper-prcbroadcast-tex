@@ -2,16 +2,16 @@
 \section{Proposal}
 \label{sec:proposal}
 
-In this section, we present a causal broadcast protocol providing an original
+In this section, we present a causal broadcast protocol providing a novel
 tradeoff in terms of complexity. It removes the last linear and monotonic upper
 bound that remained on space complexity at the cost of few lightweight control
 messages. The key ideas are:
 \begin{enumerate}
-\item Each process broadcasts or forwards a message once, hence each link convey
-  a message once. After the first receipt, the process expects to receive
-  another copy of this message from each other link pointing to it. Once the
-  process received all copies, the control information associated to the message
-  is entirely and safely removed.
+\item Each process broadcasts or forwards a message once, hence each link
+  conveys a message once. After the first receipt, the process expects to
+  receive another copy of this message from each other link pointing to
+  itself. Once the process received all copies, the control information
+  associated to the message is entirely and safely removed.
 \item Adding links between processes adds uncertainty. Processes cannot tell if
   they should expect a message from a link any longer.
 \item By exploiting causal order, processes remove this uncertainty. Causal
@@ -31,12 +31,12 @@ actual system size. We speak of overlay networks, networks, or distributed
 systems indifferently.
 
 \begin{definition}[Overlay network]
-  An overlay network $G: P \times E$ comprises a set of processes $P$ and a set
-  of directed links $E: P \times P$.  An overlay network is static if both sets
-  $P$ and $G$ are immutable. Otherwise, the overlay network is dynamic. An
-  overlay network is unpartitioned if their exists a path -- i.e. a link or an
-  array of links -- from any process to any other process. We only consider
-  unpartitioned overlay networks.
+  An overlay network $G = (P,\, E)$ comprises a set of processes $P$ and a set
+  of directed links $E \subseteq P \times P$.  An overlay network is static if
+  both sets $P$ and $E$ are immutable. Otherwise, the overlay network is
+  dynamic. An overlay network is strongly connected if there exists a path --
+  i.e. a link or an sequence of links -- from any process to any other
+  process. We only consider strongly connected overlay networks.
 \end{definition}
 
 \begin{definition}[Process]
@@ -47,7 +47,7 @@ systems indifferently.
   process sends messages to the set of links departing from it, called
   neighborhood, or partial view, or out-view $Q_o$. A process receives messages
   from the set of links arriving to it, called in-view $Q_i$.  Processes are
-  faulty if they crash, otherwise they are correct. We do not consider byzantine
+  faulty if they crash, otherwise they are correct. We do not consider Byzantine
   processes.
 \end{definition}
 
@@ -70,7 +70,7 @@ delivers it once despite possible multiple receipts.
 \end{definition}
 
 Definition~\ref{def:reliablebroadcast} suggests the use of data structures that
-saves delivered messages to ignore additional receipts. In static systems, such
+save delivered messages to ignore additional receipts. In static systems, such
 data structure can be non-monotonic~\cite{raynal2013distributed}. We define a
 non-monotonic link-wise memory to forbid multiple delivery.
 
@@ -91,7 +91,7 @@ non-monotonic link-wise memory to forbid multiple delivery.
 
 \begin{proof}
   We must show that
-  $\not\exists m, d_B(m) \rightarrow r_{BA}(m) \wedge r_{BA}(m) \rightarrow
+  $\nexists m, d_B(m) \rightarrow r_{BA}(m) \wedge r_{BA}(m) \rightarrow
   d_B(m)$.
   The delivery $d_B(m)$ implies a prior receipt $r_B(m)$.  To deliver $m$ after
   its receipt from Process~A, Process~B must not remember $m$ on this link.  If
@@ -291,27 +291,23 @@ included in buffers.
 % \end{figure*}
 
 Figure~\ref{fig:timelineproof} depicts the principle of the approach. When a
-Process~A adds a link to
-Process~B. %, \RPCBROADCAST initializes safe link memory
-% in 3 steps.
-Process~A notifies Process~B using a control message $\alpha$. This control
-message $\alpha$, as all control messages that will follow ($\beta$, $\pi$,
-$\rho$), are delivered in causal order regarding broadcast messages. Hence, at
-receipt, Process~B implicitly removes obsolete information: messages delivered
-by Process~A before the sending of the notification $\mathcal{A}_1$. 
-At receipt
-of $\alpha$, Process~B can start gathering control information about its
-delivered messages in a buffer $B_\alpha$. Among other, Process~B wants to
-identify messages concurrent to the correct establishment of the new
-link. Process~B acknowledges Process~A's notification using a control message
-$\beta$. At receipt of $\beta$, Process~A removes obsolete information: messages
-delivered by Process~B before the sending of the acknowledgment
-$\mathcal{A}_1 \cup \mathcal{B}_1$. This solves the issue
-identified in Figure~\ref{fig:memorylinkfails}, for $a$ would belong to $\mathcal{A}_1$
-or $\mathcal{B}_1$. However, this is not sufficient to initialize link memory.
-Process~A sends a control message $\pi$ to
-Process~B, and starts to gather control information about its delivered messages
-in a buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
+Process~A adds a link to Process~B, Process~A notifies Process~B using a control
+message $\alpha$. This control message $\alpha$, as all control messages that
+will follow ($\beta$, $\pi$, $\rho$), is delivered in causal order regarding
+broadcast messages. Hence, at receipt, Process~B implicitly removes obsolete
+information: messages delivered by Process~A before the sending of the
+notification $\mathcal{A}_1$.  At receipt of $\alpha$, Process~B can start
+gathering control information about its delivered messages in a buffer
+$B_\alpha$. Among other, Process~B wants to identify messages concurrent to the
+correct establishment of the new link. Process~B acknowledges Process~A's
+notification using a control message $\beta$. At receipt of $\beta$, Process~A
+removes obsolete information: messages delivered by Process~B before the sending
+of the acknowledgment $\mathcal{A}_1 \cup \mathcal{B}_1$. This solves the issue
+identified in Figure~\ref{fig:memorylinkfails}, for $a$ would belong to
+$\mathcal{A}_1$ or $\mathcal{B}_1$. However, this is not sufficient to
+initialize link memory.  Process~A sends a control message $\pi$ to Process~B,
+and starts to gather control information about its delivered messages in a
+buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
 
 \begin{figure*}
@@ -605,7 +601,7 @@ associated to each link in the in-view.
 and the size of the in-view. Each link in the in-view has its buffer of control
 information about messages. A message appears in the structure after its first
 receipt and disappears at its last receipt. So the local space complexity is
-$O(Q_i.M)$ where $M$ is the number of messages already delivered that should be
+$O(Q_i \cdot M)$ where $M$ is the number of messages already delivered that should be
 received again from at least one process in $Q_i$. A process stores the control
 information of a message during at most $D$ time where $D$ is the diameter of
 the system. The local space consumption depends on the system (e.g. ring or tree
@@ -632,7 +628,7 @@ $O(4P^2)$ control messages when Process~A adds Process~B without knowledge of
 any route. Process~A and Process~B fall back to reliable broadcast instead of
 routing to disseminate control messages.
 
-This complexity analysis shows that \RPCBROADCAST proposes an original tradeoff
+This complexity analysis shows that \RPCBROADCAST proposes a novel tradeoff
 in terms of complexity. In systems allowing a form of routing, it constitutes an
 advantageous tradeoff that depends on the actual system instead of past
 deliveries. The next section describes an experiment highlighting the effects of
