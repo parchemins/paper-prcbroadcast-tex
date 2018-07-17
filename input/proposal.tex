@@ -114,15 +114,15 @@ non-monotonic link-wise memory to forbid multiple delivery.
     \subfloat[\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
     of $b$ from Process~A.]
     {\input{input/figmemorylinkA.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:memorylinkB}Process~A receives, delivers, and forwards
     $b$. It expects a copy from Process~C.]
     {\input{input/figmemorylinkB.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
     do not expect additional copies. Process~C delivers and forwards $b$.]
     {\input{input/figmemorylinkC.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:memorylinkD}Process~A receives its last expected copy
     of $b$. The message $b$ is completely removed from the system.]
     {\input{input/figmemorylinkD.tex}}
@@ -162,15 +162,15 @@ the system. This implementation forbids multiple delivery in static systems.
     \subfloat[\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
     from both Process~B and Process~C.]
     {\input{input/figmemorylinkfailsA.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:memorylinkfailsB}Process C receives, delivers, and
     forwards $a$. It does not expect additional copies.]
     {\input{input/figmemorylinkfailsB.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
     Then it receives, delivers, and forwards $a$.]
     {\input{input/figmemorylinkfailsC.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
     for a new message. It delivers, and forwards $a$.]
     {\input{input/figmemorylinkfailsD.tex}}
@@ -467,11 +467,11 @@ establishment in its link memory initialization.
     Process~C. \RPCBROADCAST ensures its safety. Process~B sends a first
     control message $\alpha$ to Process~C using Process~A as mediator.]
     {\input{input/figsolveA.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:solveB}Process~A receives $\alpha$ and routes it to
     Process~C.]
     {\input{input/figsolveB.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:solveC}Process~C receives $\alpha$ and answers by
     sending $\beta$ to Process~B using Process~A as mediator. Then,
     Process~C broadcasts $c_1$ and registers it in $B_\alpha$.]
@@ -481,7 +481,7 @@ establishment in its link memory initialization.
     Process~B.  Process~A receives $c_1$ and forwards it to both its
     neighbors.]
     {\input{input/figsolveD.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:solveE}Process~C receives and discards
     $c_1$.  Process~B receives $\beta$ and replies $\pi$ to
     Process~C using Process~A as mediator.  Process~B receives
@@ -494,7 +494,7 @@ establishment in its link memory initialization.
     $b_1$ and forwards it to its neighbors. Process~C broadcasts $c_2$ and
     registers it in $B_\alpha$.]
     {\input{input/figsolveF.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:solveG}Process~A receives $c_2$ and forwards it to
     its neighbors.  Process~B broadcasts $b_2$ and registers it in
     $B_\beta$. Process~C receives $\pi$ and replies $\rho$ to Process~B
@@ -508,7 +508,7 @@ establishment in its link memory initialization.
     registers $c_2$. Then Process~B receives $\rho$ and sends $B_\beta$ to
     Process~C using the new link.]
     {\input{input/figsolveH.tex}}
-    ~
+    \hspace{30pt}
     \subfloat[\label{fig:solveI}Once Process~A sent $B_\beta$, the new link is
     safe.  Process~C receives $B_\beta$. Process~C does not deliver $c_1$, $b_1$
     and $c_2$, for it already delivered them. Process~C delivers $b_2$ and
