@@ -109,35 +109,27 @@ non-monotonic link-wise memory to forbid multiple delivery.
   \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
 \end{algorithm}
 
-\begin{figure}
+\begin{figure*}
   \begin{center}
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkA.tex}%
-      \caption{\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
-        of $b$ from Process~A.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
+    of $b$ from Process~A.]
+    {\input{input/figmemorylinkA.tex}}
     ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkB.tex}%
-      \caption{\label{fig:memorylinkB}Process~A receives, delivers, and forwards
-        $b$. It expects a copy from Process~C.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkB}Process~A receives, delivers, and forwards
+    $b$. It expects a copy from Process~C.]
+    {\input{input/figmemorylinkB.tex}}
     ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkC.tex}%
-      \caption{\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
-        do not expect additional copies. Process~C delivers and forwards $b$.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
+    do not expect additional copies. Process~C delivers and forwards $b$.]
+    {\input{input/figmemorylinkC.tex}}
     ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkD.tex}%
-      \caption{\label{fig:memorylinkD}Process~A receives its last expected copy
-        of $b$. The message $b$ is completely removed from the system.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkD}Process~A receives its last expected copy
+    of $b$. The message $b$ is completely removed from the system.]
+    {\input{input/figmemorylinkD.tex}}
     \caption{\label{fig:memorylink}Link memory allows processes to safely remove
       obsolete control information about past deliveries in static systems.}
   \end{center}
-\end{figure}
+\end{figure*}
 
 
 
@@ -165,36 +157,28 @@ receives it. None of processes remembers about $b$. No copy of $b$ travels in
 the system. This implementation forbids multiple delivery in static systems.
 
 
-\begin{figure}
+\begin{figure*}
   \begin{center}
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsA.tex}%
-      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
-        from both Process~B and Process~C.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
+    from both Process~B and Process~C.]
+    {\input{input/figmemorylinkfailsA.tex}}
     ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsB.tex}%
-      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
-        forwards $a$. It does not expect additional copies.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkfailsB}Process C receives, delivers, and
+    forwards $a$. It does not expect additional copies.]
+    {\input{input/figmemorylinkfailsB.tex}}
     ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsC.tex}%
-      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
-        Then it receives, delivers, and forwards $a$.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
+    Then it receives, delivers, and forwards $a$.]
+    {\input{input/figmemorylinkfailsC.tex}}
     ~
-    \begin{subfigure}[t]{0.23\textwidth}
-      \centering\input{input/figmemorylinkfailsD.tex}%
-      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
-        for a new message. It delivers, and forwards $a$.}
-    \end{subfigure}
+    \subfloat[\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
+    for a new message. It delivers, and forwards $a$.]
+    {\input{input/figmemorylinkfailsD.tex}}
     \caption{\label{fig:memorylinkfails}Reliable broadcast
       (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
       in dynamic systems. }
   \end{center}
-\end{figure}
+\end{figure*}
 
 
 
@@ -330,7 +314,7 @@ Process~B, and starts to gather control information about its delivered messages
 in a buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
 
-\begin{figure}
+\begin{figure*}
   \begin{center}
     \input{input/figtimelineproof.tex}
     \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
@@ -343,7 +327,7 @@ $B_\alpha$.
       are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
       messages to expect.}
   \end{center}
-\end{figure}
+\end{figure*}
 
   
 \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
@@ -477,89 +461,73 @@ process broadcasting a message sends the message to an out-view of safe links
 that cannot lead to causal order violations. \RPCBROADCAST embeds safe link
 establishment in its link memory initialization.
 
-\begin{figure}
+\begin{figure*}
   \begin{center}
-    \begin{subfigure}[t]{0.31\textwidth}
-      \centering\input{input/figsolveA.tex}%
-      \caption{\label{fig:solveA}Process~B adds a link to
-        Process~C. \RPCBROADCAST ensures its safety. Process~B sends a first
-        control message $\alpha$ to Process~C using Process~A as mediator.}
-    \end{subfigure}
+    \subfloat[\label{fig:solveA}Process~B adds a link to
+    Process~C. \RPCBROADCAST ensures its safety. Process~B sends a first
+    control message $\alpha$ to Process~C using Process~A as mediator.]
+    {\input{input/figsolveA.tex}}
     ~
-    \begin{subfigure}[t]{0.31\textwidth}
-      \centering\input{input/figsolveB.tex}%
-      \caption{\label{fig:solveB}Process~A receives $\alpha$ and routes it to
-        Process~C.}
-    \end{subfigure}
+    \subfloat[\label{fig:solveB}Process~A receives $\alpha$ and routes it to
+    Process~C.]
+    {\input{input/figsolveB.tex}}
     ~
-    \begin{subfigure}[t]{0.31\textwidth}
-      \centering\input{input/figsolveC.tex}%
-      \caption{\label{fig:solveC}Process~C receives $\alpha$ and answers by
-        sending $\beta$ to Process~B using Process~A as mediator. Then,
-        Process~C broadcasts $c_1$ and registers it in $B_\alpha$.}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.48\textwidth}
-      \centering\input{input/figsolveD.tex}%
-      \caption{\label{fig:solveD}Process~A receives $\beta$ and routes it to
-        Process~B.  Process~A receives $c_1$ and forwards it to both its
-        neighbors.}
-    \end{subfigure}
+    \subfloat[\label{fig:solveC}Process~C receives $\alpha$ and answers by
+    sending $\beta$ to Process~B using Process~A as mediator. Then,
+    Process~C broadcasts $c_1$ and registers it in $B_\alpha$.]
+    {\input{input/figsolveC.tex}}
+    \\
+    \subfloat[\label{fig:solveD}Process~A receives $\beta$ and routes it to
+    Process~B.  Process~A receives $c_1$ and forwards it to both its
+    neighbors.]
+    {\input{input/figsolveD.tex}}
     ~
-    \begin{subfigure}[t]{0.48\textwidth}
-      \centering\input{input/figsolveE.tex}%
-      \caption{\label{fig:solveE}Process~C receives and discards
-        $c_1$.  Process~B receives $\beta$ and replies $\pi$ to
-        Process~C using Process~A as mediator.  Process~B receives
-        $c_1$ and forwards it to its neighbor.  Process~B broadcasts
-        $b_1$. It registers $c_1$ and $b_1$ in $B_\beta$.}
-    \end{subfigure}    
-    \begin{subfigure}[t]{0.48\textwidth}
-      \centering\input{input/figsolveF.tex}%
-      \caption{\label{fig:solveF}Process~A receives $c_1$ and discards it.
-        Process~A receives $\pi$ and routes it to Process~C. Process~A receives
-        $b_1$ and forwards it to its neighbors. Process~C broadcasts $c_2$ and
-        registers it in $B_\alpha$}
-    \end{subfigure}
+    \subfloat[\label{fig:solveE}Process~C receives and discards
+    $c_1$.  Process~B receives $\beta$ and replies $\pi$ to
+    Process~C using Process~A as mediator.  Process~B receives
+    $c_1$ and forwards it to its neighbor.  Process~B broadcasts
+    $b_1$. It registers $c_1$ and $b_1$ in $B_\beta$.]
+    {\input{input/figsolveE.tex}}
+    \\
+    \subfloat[\label{fig:solveF}Process~A receives $c_1$ and discards it.
+    Process~A receives $\pi$ and routes it to Process~C. Process~A receives
+    $b_1$ and forwards it to its neighbors. Process~C broadcasts $c_2$ and
+    registers it in $B_\alpha$.]
+    {\input{input/figsolveF.tex}}
     ~
-    \begin{subfigure}[t]{0.48\textwidth}
-      \centering\input{input/figsolveG.tex}%
-      \caption{\label{fig:solveG}Process~A receives $c_2$ and forwards it to
-        its neighbors.  Process~B broadcasts $b_2$ and registers it in
-        $B_\beta$. Process~C receives $\pi$ and replies $\rho$ to Process~B
-        using Process~A as mediator. Then it receives and forwards $b_1$. Then
-        it broadcasts $c_3$. It registers $b_1$ and $c_3$ in $B_\pi$.}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.48\textwidth}
-      \centering\input{input/figsolveH.tex}%
-      \caption{\label{fig:solveH}Process~A receives and discards $b_1$.
-        Process~A receives and routes $\rho$ to Process~B.  Process~A receives
-        and forwards $b_2$ then $c_3$. Process~B receives, forwards, and
-        registers $c_2$. Then Process~B receives $\rho$ and sends $B_\beta$ to
-        Process~C using the new link.}
-    \end{subfigure}
+    \subfloat[\label{fig:solveG}Process~A receives $c_2$ and forwards it to
+    its neighbors.  Process~B broadcasts $b_2$ and registers it in
+    $B_\beta$. Process~C receives $\pi$ and replies $\rho$ to Process~B
+    using Process~A as mediator. Then it receives and forwards $b_1$. Then
+    it broadcasts $c_3$. It registers $b_1$ and $c_3$ in $B_\pi$.]
+    {\input{input/figsolveG.tex}}
+    \\
+    \subfloat[\label{fig:solveH}Process~A receives and discards $b_1$.
+    Process~A receives and routes $\rho$ to Process~B.  Process~A receives
+    and forwards $b_2$ then $c_3$. Process~B receives, forwards, and
+    registers $c_2$. Then Process~B receives $\rho$ and sends $B_\beta$ to
+    Process~C using the new link.]
+    {\input{input/figsolveH.tex}}
     ~
-    \begin{subfigure}[t]{0.48\textwidth}
-      \centering\input{input/figsolveI.tex}%
-      \caption{\label{fig:solveI}Once Process~A sent $B_\beta$, the new link is
-        safe.  Process~C receives $B_\beta$. Process~C does not deliver $c_1$, $b_1$
-        and $c_2$, for it already delivered them. Process~C delivers $b_2$ and
-        expects another copy from Process~A, for it constitutes a new message.
-        Process~C expects to eventually receive $c_3$ from Process~B.}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.99\textwidth}
-      \centering\input{input/figsolveJ.tex}%
-      \caption{\label{fig:solveJ}Process~C categorizes each message of $B_\beta$
-        and $B_\pi$ to maintain and initialize safe link memory.}
-    \end{subfigure}
+    \subfloat[\label{fig:solveI}Once Process~A sent $B_\beta$, the new link is
+    safe.  Process~C receives $B_\beta$. Process~C does not deliver $c_1$, $b_1$
+    and $c_2$, for it already delivered them. Process~C delivers $b_2$ and
+    expects another copy from Process~A, for it constitutes a new message.
+    Process~C expects to eventually receive $c_3$ from Process~B.]
+    {\input{input/figsolveI.tex}}
+    \\
+    \subfloat[\label{fig:solveJ}Process~C categorizes each message of $B_\beta$
+    and $B_\pi$ to maintain and initialize safe link memory.]
+    {\input{input/figsolveJ.tex}}
     \caption{\label{fig:solve}Using buffers and control messages, \RPCBROADCAST 
       provides reliable causal broadcast.}
   \end{center}
-\end{figure}
+\end{figure*}
 
-\begin{algorithm}[h]
+\begin{algorithm*}[h]
   \input{./input/algorpcbroadcast.tex}
   \caption{\label{algo:rpcbroadcast}\RPCBROADCAST at Process $p$.}
-\end{algorithm}
+\end{algorithm*}
 
 
 Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST. 

@@ -20,37 +20,27 @@ view. Broadcast messages reach all processes either directly or transitively.
 
 \begin{figure*}
   \begin{center}
-    \begin{subfigure}
-      \input{input/figgeneralpurgeA.tex}
-      \caption{\label{fig:generalpurgeA}Process~A broadcasts $a$. It expects 
-        two copies of the message $a$.}
-    \end{subfigure}
+    \subfloat[\label{fig:generalpurgeA}Process~A broadcasts $a$. It expects 
+    two copies of the message $a$.]
+    {\input{input/figgeneralpurgeA.tex}}
     \hspace{10pt}
-    \begin{subfigure}
-      \input{input/figgeneralpurgeB.tex}
-      \caption{\label{fig:generalpurgeB}Process~B and Process~C receive
-        and deliver $a$. Process~C expected an additional copy of the message $a$
-        while Process~B does not.}
-    \end{subfigure}
+    \subfloat[\label{fig:generalpurgeB}Process~B and Process~C receive
+    and deliver $a$. Process~C expected an additional copy of the message $a$
+    while Process~B does not.]
+    {\input{input/figgeneralpurgeB.tex}}
     \hspace{10pt}
-    \begin{subfigure}
-      \input{input/figgeneralpurgeC.tex}
-      \caption{\label{fig:generalpurgeC}Process~B and Process~C forward $a$ 
-        to their neighbors in a gossip fashion.}
-    \end{subfigure}
+    \subfloat[\label{fig:generalpurgeC}Process~B and Process~C forward $a$ 
+    to their neighbors in a gossip fashion.]
+    {\input{input/figgeneralpurgeC.tex}}
     \hspace{10pt}
-    \begin{subfigure}
-      \input{input/figgeneralpurgeD.tex}
-      \caption{\label{fig:generalpurgeD}Process~A and Process~C receive a copy
-        of $a$. Process~C does not expect additional copies of the message $a$. 
-        Process~A still expects a copy.}
-    \end{subfigure}
+    \subfloat[\label{fig:generalpurgeD}Process~A and Process~C receive a copy
+    of $a$. Process~C does not expect additional copies of the message $a$. 
+    Process~A still expects a copy.]
+    {\input{input/figgeneralpurgeD.tex}}
     \hspace{10pt}
-    \begin{subfigure}
-      \input{input/figgeneralpurgeE.tex}
-      \caption{\label{fig:generalpurgeE}Process~A receives the last 
-        awaited copy of the message $a$. It purges its structure from this message.}
-    \end{subfigure}
+    \subfloat[\label{fig:generalpurgeE}Process~A receives the last 
+    awaited copy of the message $a$. It purges its structure from this message.]
+    {\input{input/figgeneralpurgeE.tex}}
     \caption{\label{fig:generalpurge}Broadcast that guarantees to deliver 
       messages exactly once using counters.}
   \end{center}
