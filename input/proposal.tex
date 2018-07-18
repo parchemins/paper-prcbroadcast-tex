@@ -8,7 +8,7 @@ bound that remained on space complexity at the cost of few lightweight control
 messages. The key ideas are:
 \begin{enumerate}
 \item Each process broadcasts or forwards a message once, hence each link
-  conveys a message once. After the first receipt, the process expects to
+  carries a message once. After the first receipt, the process expects to
   receive another copy of this message from each other link pointing to
   itself. Once the process received all copies, the control information
   associated to the message is entirely and safely removed.
@@ -85,7 +85,7 @@ non-monotonic link-wise memory to forbid multiple delivery.
 
 
 \begin{theorem}[Link memory forbids multiple delivery]
-  Assuming that each link conveys each message at most once, link memory is
+  Assuming that each link carries each message at most once, link memory is
   sufficient to forbid multiple delivery.
 \end{theorem}
 
@@ -99,7 +99,7 @@ non-monotonic link-wise memory to forbid multiple delivery.
   from Process~A; or it did not received $m$ from any process. In the former
   case, it cannot receive, hence deliver $m$ from Process~A; in the latter
   case, receiving $m$ from Process~A leads to the delivery of $m$. Again, since
-  a link conveys a message at most once, it cannot receive another $m$ from
+  a link carries a message at most once, it cannot receive another $m$ from
   Process~A that would lead to another delivery.
 \end{proof}
 
@@ -337,7 +337,7 @@ $B_\alpha$.
 \end{lemma}
 
 \begin{proof}
-  Since causal broadcast ensures causal order among messages it conveys, all
+  Since causal broadcast ensures causal order among messages it sends, all
   messages delivered by Process~A before the sending of $\alpha$ precede the
   buffering:
   $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies m \not \in

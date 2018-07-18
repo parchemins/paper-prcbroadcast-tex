@@ -5,10 +5,10 @@
   distributed protocols and applications. However, state-of-the-art
   implementations do not scale in large and dynamic systems.  In this paper, we
   propose a novel implementation of causal broadcast. Message overhead is
-  constant. Local space complexity is non-monotonic and depends on system
-  settings and current usage. We prove that all and only obsolete control
-  information is discarded, at the cost of few lightweight control messages.
-  Our implementation constitutes a better and sustainable communication
+  constant. Local space complexity is not monotonically increasing and depends
+  on system settings and use. We prove that all and only obsolete control
+  information is safely discarded, at cost of a few lightweight control
+  messages.  Our implementation constitutes a sustainable communication
   primitive for causal broadcast in large and dynamic systems.
 \end{abstract}
 }

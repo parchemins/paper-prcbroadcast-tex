@@ -18,45 +18,26 @@ sees multiple occurrences of Alice's comment or Bob's picture.
 
 However, causal broadcast implementations do not scale in large and dynamic
 systems comprising from hundreds to millions of processes joining, leaving, and
-self-reconfiguring at any time.
-%
-%PASCAL: idea, gossip is for our proposal... keep it for our approach.
-%In such context, Causal broadcast implementations rely on gossiping to efficiently propagate
-%broadcast messages to all processes in dynamic systems comprising from hundreds
-%to millions of processes joining, leaving, and self-reconfiguring at any
-%time. 
-%In such systems, as no process can afford to maintain an up-to-date knowledge
-%of the full membership, ~\cite{birman1999bimodal,demers1987epidemic}. Instead,
-%each process builds a partial view of neighbors to communicate
-%with~\cite{jelasity2007gossip}. Gossiping exploits these neighborhoods to
-%efficiently broadcast a message to all processes. To broadcast a message, a
-%process sends the message to its neighbors; each process receiving such message
-%forwards it to its own neighbors. Processes receive the message either directly
-%or transitively.
-%Processes may receive a broadcast message multiples times from different
-%sources. 
-Causal broadcast rely on reliable broadcast to forbid multiple
-delivery~\cite{hadzilacos1994modular}. % Unfortunately, reliable broadcast
-% implementations do not scale in large and dynamic systems.
-Either they build a specific dissemination topology (e.g. tree or ring) that
-ensures single receipt hence single
-delivery~\cite{bravo2017saturn,raynal2013distributed} but such topologies are
-difficult to maintain in dynamic systems subject to
-failures~\cite{krasikova2016hashtable}; or they maintain a local structure to
-identify and discard additional copies of an original message at receipt. These
-structures are either based on physical
-clocks~\cite{cachin2011introduction,demers1987epidemic} or on vectors of logical
-clocks~\cite{malkhi2007concise,mukund2014optimized}. Physical clocks allow to
-remove obsolete control information over time. However, they may remove useful
-information leading to multiple deliveries with cascading effects in the
-system. Vectors of logical clocks forbid multiple delivery in dynamic
-systems. However, their size increases linearly and monotonically with the
-number of processes that ever broadcast a message. Processes pay for their past
-usage. Vector-based approaches eventually become inefficient, for processes
-cannot safely reclaim entries without running an overcostly distributed garbage
-collecting protocol~\cite{abdullahi1998garbage}. State-of-the-art causal
-broadcast implementations do not scale in large and dynamic systems.
-
+self-reconfiguring at any time. While ensuring causal delivery can be
+lightweight~\cite{nedelec2018pcbroadcast}, forbidding multiple delivery is
+overly space consuming. Every process delivers every message exactly-once by
+either 
+\begin{inparaenum}[(i)]
+\item building a specific dissemination topology such as a tree or a ring that
+  ensures single receipt hence single
+  delivery~\cite{bravo2017saturn,raynal2013distributed}. However, such
+  topologies are difficult to maintain in dynamic systems subject to
+  failures~\cite{krasikova2016hashtable};
+\item or they maintain a local structure to identify and discard additional
+  copies of an original message at receipt. In asynchronous systems, these
+  structures use logical clocks~\cite{malkhi2007concise,mukund2014optimized}.
+  However, such structures suffer from linearly and monotonically increasing
+  size with the number of processes that ever broadcast a message.
+  Logical-clock-based approaches eventually become inefficient, for processes
+  cannot safely reclaim entries without running an overcostly distributed
+  garbage collecting protocol~\cite{abdullahi1998garbage}. State-of-the-art
+  causal broadcast implementations do not scale in large and dynamic systems.
+\end{inparaenum}
 
 \begin{table*}
   \begin{center}
