@@ -586,6 +586,19 @@ broadcast implementation.
 \subsection{Complexity}
 \label{subsec:complexity}
 
+\begin{table*}
+  \begin{center}
+    \caption{\label{table:complexity} Complexity of broadcast algorithms at each
+      process (detailed in Section~\ref{subsec:complexity}). $N$ the number of
+      processes that ever broadcast a message. $P$ the number of processes in
+      the system. $W$ the number of messages received but not delivered
+      yet. $Q_i$ is the number of incoming links. $M$ is the number of
+      messages already delivered that will be received again from at least one
+      link in $Q_i$.}
+  \input{input/tablecomplexity.tex}
+  \end{center}
+\end{table*}
+
 In this section, we analyze the complexity of \RPCBROADCAST in terms of
 broadcast message overhead, delivery execution time, local space consumption,
 and number of control messages.

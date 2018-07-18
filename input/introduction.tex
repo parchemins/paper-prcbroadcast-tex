@@ -20,8 +20,8 @@ However, causal broadcast implementations do not scale in large and dynamic
 systems comprising from hundreds to millions of processes joining, leaving, and
 self-reconfiguring at any time. While ensuring causal delivery can be
 lightweight~\cite{nedelec2018pcbroadcast}, forbidding multiple delivery is
-overly space consuming. Every process delivers every message exactly-once by
-either 
+either restrictive in terms of system topology, or overly space consuming. Every
+process delivers every message exactly-once by either
 \begin{inparaenum}[(i)]
 \item building a specific dissemination topology such as a tree or a ring that
   ensures single receipt hence single
@@ -32,67 +32,60 @@ either
   copies of an original message at receipt. In asynchronous systems, these
   structures use logical clocks~\cite{malkhi2007concise,mukund2014optimized}.
   However, such structures suffer from linearly and monotonically increasing
-  size with the number of processes that ever broadcast a message.
-  Logical-clock-based approaches eventually become inefficient, for processes
-  cannot safely reclaim entries without running an overcostly distributed
-  garbage collecting protocol~\cite{abdullahi1998garbage}. State-of-the-art
-  causal broadcast implementations do not scale in large and dynamic systems.
+  size with the number of processes that ever broadcast a message.  These
+  approaches eventually become inefficient, for processes cannot safely reclaim
+  consumed space without running an overcostly distributed garbage collecting
+  protocol~\cite{abdullahi1998garbage}. State-of-the-art causal broadcast
+  implementations do not scale in large and dynamic systems.
 \end{inparaenum}
 
-\begin{table*}
-  \begin{center}
-    \caption{\label{table:complexity} Complexity of broadcast algorithms at each
-      process (detailed in Section~\ref{subsec:complexity}). $N$ the number of
-      processes that ever broadcast a message. $P$ the number of processes in
-      the system. $W$ the number of messages received but not delivered
-      yet. $Q_i$ is the number of incoming links. $M$ is the number of
-      messages already delivered that will be received again from at least one
-      link in $Q_i$.}
-  \input{input/tablecomplexity.tex}
-  \end{center}
-\end{table*}
-
 In this paper, we introduce an implementation of causal broadcast that belongs
-to approaches forbidding multiple delivery by using local structures. A process
-belongs to an overlay network and has neighbors to communicate with via incoming
-and outgoing links.  Broadcast efficiently disseminates messages by
-gossiping~\cite{jelasity2007gossip}: the broadcaster sends the message by its
-outgoing links; each process receiving such message forwards it by its own
-outgoing links. Processes receive the message either directly or
-transitively. Our contribution is threefold:
+to approaches forbidding multiple delivery by using local structures and
+logical clocks.
+% A process belongs to an overlay network and has neighbors to communicate with
+% via incoming and outgoing links.  Broadcast efficiently disseminates messages by
+% gossiping~\cite{jelasity2007gossip}: the broadcaster sends the message by its
+% outgoing links; each process receiving such message forwards it by its own
+% outgoing links. Processes receive the message either directly or
+%transitively. 
+Our contribution is threefold:
 \begin{itemize}[leftmargin=*]
 \item We define link memory as a mean for each process to forbid multiple
-  delivery using a non-monotonic local structure. Link memory allows each
-  process to identify neighbors that will send a broadcast message while
-  removing obsolete control information about broadcast messages that will never
-  be received again. Assuming causal order, we prove that each process can build
-  such knowledge even in dynamic systems where processes join, leave, or
-  self-reconfigure their neighborhood at any time.
-\item Our implementation provides a novel tradeoff that actually depends on
-  the system and its current usage. Quiescent systems enjoy no
-  overhead. Table~\ref{table:complexity} shows that it keeps constant size
-  overhead on messages while its space consumption is non-monotonic. It exploits
-  causal order to purge all and only obsolete control information. This costs
-  only a few lightweight control messages in dynamic systems.  Our implementation
-  does not maintain any specific topology. However, the number of control
-  messages depends on routing capabilities of the system and its dynamicity. For
-  instance, gossip-based peer-sampling
+  delivery. A process may receive a message multiple times from different
+  processes. Despite multiple receipts, a process must deliver a message exactly
+  once.  Link memory allows each process to identify processes from which it
+  will receive a copy of an already delivered message. This allows each process
+  to safely remove obsolete control information about broadcast messages that
+  will never be received again. Assuming causal order, we prove that each
+  process can build such knowledge even in dynamic systems where processes join,
+  leave, or self-reconfigure at any time.
+\item We analyze the complexity of our implementation of link memory for causal
+  broadcast. Our implementation offers a novel trade-off between speed, memory,
+  and traffic that actually depends on system settings and current use: the
+  number of communication links, and the number of broadcast messages currently
+  spreading in the system (the spreading time being upper bounded by the
+  diameter of the system). Quiescent systems where no process broadcasts any
+  message enjoy no overhead. Our implementation does not assume any specific
+  topology. However, to implement link memory in dynamic systems, we require
+  lightweight control messages the number of which depends on routing
+  capabilities of the system and its dynamicity.  For instance, gossip-based
+  peer-sampling
   protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} need
-  only 8 control messages per added link. % during periodic shuffles.
-\item Our experiments highlight the space consumed and the traffic generated by
-  our protocol in dynamic systems with varying latency. The results confirm that
-  the proposed approach scales with the system settings instead of past
-  broadcast messages.
+  only 8 control messages per added link.
+\item We evaluate our implementation using large scale simulations. The
+  experiments highlight the space consumed and the traffic generated by our
+  protocol in dynamic systems with varying latency. The results confirm that the
+  proposed approach scales with system settings and use.
 \end{itemize}
-Instead of encoding the global state of the system in a vector of logical
-clocks, our implementation only maintains its receipt state with its direct
-neighborhood. Neighborhood being far smaller than the full system membership,
-this scales in large and dynamic systems.  Our implementation offers an
-advantageous tradeoff that makes causal broadcast a lightweight and efficient
-middleware in large and dynamic systems. This tradeoff even makes a lightweight
-and efficient implementation of reliable broadcast.
+Every process maintains a local state registering receipts from processes that
+actually send it messages instead of maintaining a global state registering
+receipts from all processes of the system in a vector of logical clocks. The
+former set of processes being far smaller than the set of processes in the
+system, our approach scales in large and dynamic systems.  Our implementation
+offers an advantageous trade-off that makes causal broadcast a lightweight and
+efficient middleware in large and dynamic systems.
 
-The rest of this paper is organized as follows. 
+The rest of this paper is organized as follows.
 % Section~\ref{sec:motivations}
 % shows the issue and motivates this work.
 Section~\ref{sec:proposal} describes the model, highlights the issue, introduces
