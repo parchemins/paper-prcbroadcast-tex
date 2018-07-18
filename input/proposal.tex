@@ -3,21 +3,21 @@
 \label{sec:proposal}
 
 In this section, we present a causal broadcast protocol providing a novel
-tradeoff in terms of complexity. It removes the last linear and monotonic upper
-bound that remained on space complexity at the cost of few lightweight control
-messages. The key ideas are:
+trade-off between speed, memory, and traffic. Among others, its memory
+consumption grows and shrinks depending on system settings and use. It safely
+removes obsolete control information about broadcast messages. The key ideas
+are:
 \begin{enumerate}
 \item Each process broadcasts or forwards a message once, hence each link
-  carries a message once. After the first receipt, the process expects to
-  receive another copy of this message from each other link pointing to
-  itself. Once the process received all copies, the control information
-  associated to the message is entirely and safely removed.
-\item Adding links between processes adds uncertainty. Processes cannot tell if
-  they should expect a message from a link any longer.
+  carries a message once. After the first receipt of a message, a process
+  expects to receive one copy of this message per link pointing to itself. Once
+  a process received all expected copies, it can safely remove the control
+  information associated to this broadcast message.
+\item Adding links between pair of processes adds uncertainty. The receiver
+  cannot state any longer when it should expect a message from a link.
 \item By exploiting causal order, processes remove this uncertainty. Causal
-  order allows to remove batches of obsolete information while reasoning about
-  temporarily buffered broadcast messages. In this paper, we exploit causal
-  broadcast to improve its underlying reliable broadcast.
+  order allows a process to remove batches of obsolete information while
+  reasoning about temporarily buffered broadcast messages.
 \end{enumerate}
 
 \subsection{Model}
@@ -27,8 +27,8 @@ other using messages. Processes may not have full knowledge of the membership of
 the system. Instead, processes build and maintain overlay networks: each process
 updates a local partial view of logical communication links, i.e., a set of
 processes to communicate with. The partial view is usually much smaller than the
-actual system size. We speak of overlay networks, networks, or distributed
-systems indifferently.
+actual system size. We use the terms of overlay networks, networks, and
+distributed systems interchangeably.
 
 \begin{definition}[Overlay network]
   An overlay network $G = (P,\, E)$ comprises a set of processes $P$ and a set
@@ -42,13 +42,13 @@ systems indifferently.
 \begin{definition}[Process]
   A process runs a set of instructions sequentially. Processes communicate with
   each other using asynchronous message passing. A process~A can send a message
-  to another process~B $s_{AB}(m)$, or to any process $s_A(m)$; receive a
-  message from another process~B $r_{AB}(m)$, or from any process $r_A(m)$. A
-  process sends messages to the set of links departing from it, called
-  neighborhood, or partial view, or out-view $Q_o$. A process receives messages
-  from the set of links arriving to it, called in-view $Q_i$.  Processes are
-  faulty if they crash, otherwise they are correct. We do not consider Byzantine
-  processes.
+  to a process~B $s_{AB}(m)$, or to any process $s_A(m)$; receive a message from
+  a process~B $r_{AB}(m)$, or from any process $r_A(m)$. A process sends
+  messages using the set of links departing from it, called out-view
+  $Q_o$. Processes reachable via these links are called neighbors.  A process
+  receives messages from the set of links arriving to it, called in-view $Q_i$.
+  Processes are faulty if they crash, otherwise they are correct. We do not
+  consider Byzantine processes.
 \end{definition}
 
 Causal broadcast relies on reliable broadcast that provides guarantees on
@@ -354,15 +354,15 @@ $B_\alpha$.
   ($\mathcal{B}_2$).
 \end{proof}
 
-\noindent Upon receipt of $\pi$, Process~B continues to gather control information about
-its delivered messages in another buffer $B_\pi$. Some messages in this buffer
-will be expected from Process~A, but Process~B cannot determine which ones just
-yet. It sends the last acknowledgment $\rho$ to Process~A. Upon receipt of this
-acknowledgment, Process~A closes its buffer and sends it using the new
-link. Afterwards, Process~A uses the new link for causal broadcast, for it knows
-that Process~B will receive $B_\beta$ before upcoming broadcast messages on this
-new link, and the receipt of $B_\beta$ will allow Process~B to initialize this
-new link memory.
+\noindent Upon receipt of $\pi$, Process~B continues to gather control
+information about its delivered messages in another buffer $B_\pi$. Some
+messages in this buffer will be expected from Process~A, but Process~B cannot
+determine which ones just yet. It sends the last acknowledgment $\rho$ to
+Process~A. Upon receipt of this acknowledgment, Process~A closes its buffer and
+sends it using the new link. Afterwards, Process~A uses the new link for causal
+broadcast, for it knows that Process~B will receive $B_\beta$ before upcoming
+broadcast messages on this new link, and the receipt of $B_\beta$ will allow
+Process~B to initialize this new link memory.
 
 \begin{lemma}[\label{lem:bbeta}Messages in buffer $B_\beta$]
   The buffer $B_\beta$ contains messages delivered by Process~A after the
@@ -641,9 +641,9 @@ $O(4P^2)$ control messages when Process~A adds Process~B without knowledge of
 any route. Process~A and Process~B fall back to reliable broadcast instead of
 routing to disseminate control messages.
 
-This complexity analysis shows that \RPCBROADCAST proposes a novel tradeoff
-in terms of complexity. In systems allowing a form of routing, it constitutes an
-advantageous tradeoff that depends on the actual system instead of past
+This complexity analysis shows that \RPCBROADCAST proposes a novel trade-off in
+terms of complexity. In systems allowing a form of routing, it constitutes an
+advantageous trade-off that depends on the actual system instead of past
 deliveries. The next section describes an experiment highlighting the effects of
 the system settings on the space consumed by processes.
 
