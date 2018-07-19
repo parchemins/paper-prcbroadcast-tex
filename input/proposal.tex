@@ -3,10 +3,9 @@
 \label{sec:proposal}
 
 In this section, we present a causal broadcast protocol providing a novel
-trade-off between speed, memory, and traffic. Among others, its memory
-consumption grows and shrinks depending on system settings and use. It safely
-removes obsolete control information about broadcast messages. The key ideas
-are:
+trade-off between speed, memory, and traffic. Among others, It safely removes
+obsolete control information about broadcast messages. Its memory consumption
+grows and shrinks depending on system settings and use.  The key ideas are:
 \begin{enumerate}
 \item Each process broadcasts or forwards a message once, hence each link
   carries a message once. After the first receipt of a message, a process
@@ -23,12 +22,12 @@ are:
 \subsection{Model}
 
 A distributed system comprises a set of processes that can communicate with each
-other using messages. Processes may not have full knowledge of the membership of
+other using messages. Processes may not have the knowledge of all processes in
 the system. Instead, processes build and maintain overlay networks: each process
 updates a local partial view of logical communication links, i.e., a set of
 processes to communicate with. The partial view is usually much smaller than the
-actual system size. We use the terms of overlay networks, networks, and
-distributed systems interchangeably.
+actual system size. We use the terms of overlay networks, and distributed
+systems interchangeably.
 
 \begin{definition}[Overlay network]
   An overlay network $G = (P,\, E)$ comprises a set of processes $P$ and a set
@@ -51,9 +50,10 @@ distributed systems interchangeably.
   consider Byzantine processes.
 \end{definition}
 
-Causal broadcast relies on reliable broadcast that provides guarantees on
-message delivery. Each process receives each broadcast message at least once and
-delivers it once despite possible multiple receipts.
+Causal broadcast ensures properties specific to reliable broadcast. Each process
+may receive each broadcast message multiple times but delivers it once.
+% receives each broadcast message at least once, and delivers it once despite
+% possible multiple receipts.
 
 \begin{definition}[\label{def:reliablebroadcast}Uniform reliable broadcast] 
   When a process~A broadcasts a message to all processes of its system $b_A(m)$,
