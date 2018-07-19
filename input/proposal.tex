@@ -50,8 +50,9 @@ systems interchangeably.
   consider Byzantine processes.
 \end{definition}
 
-Causal broadcast ensures properties specific to reliable broadcast. Each process
-may receive each broadcast message multiple times but delivers it once.
+Causal broadcast ensures properties similar to that of reliable broadcast. Each
+process may receive each broadcast message multiple times but delivers it
+once. In this paper, we tackle the issue of implementing these properties.
 % receives each broadcast message at least once, and delivers it once despite
 % possible multiple receipts.
 
@@ -69,10 +70,49 @@ may receive each broadcast message multiple times but delivers it once.
   \end{itemize}
 \end{definition}
 
-Definition~\ref{def:reliablebroadcast} suggests the use of data structures that
-save delivered messages to ignore additional receipts. In static systems, such
-data structure can be non-monotonic~\cite{raynal2013distributed}. We define a
-non-monotonic link-wise memory to forbid multiple delivery.
+% Definition~\ref{def:reliablebroadcast} suggests the use of data structures that
+% save delivered messages to ignore additional receipts. 
+% In static systems, such data structure can be
+% non-monotonic~\cite{raynal2013distributed}. We define a non-monotonic link-wise
+% memory to forbid multiple delivery.
+
+In static systems, implementing these properties only requires a local structure
+the size of which grows and shrinks over receipts~\cite{raynal2013distributed}.
+Every process knows the number of copies of each delivered message it should
+expect. When this number drops down to $0$, the process safely removes the
+control information associated to the delivered messages. This forbids multiple
+delivery for the process will never receive -- hence deliver -- this message
+again.
+
+However, in dynamic systems where processes join, leave, or self-reconfigure
+their out-view at any time, the removal of a link may impair the consistency of
+the number of expected messages. Either processes cannot safely garbage collect
+obsolete control information, or processes suffer from multiple delivery.
+
+In this paper, we solve this issue by exploiting causal broadcast's ability to
+ensure a specific order on message delivery. To characterize the order among
+events such as send, or receive, we define time in a logical sense using
+Lamport’s definition.
+
+\begin{definition}[Happen before~\cite{lamport1978time}]
+  Happen before is a transitive, irreflexive, and antisymmetric relation
+  $\rightarrow$ that defines a strict partial orders of events. The sending of a
+  message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
+  messages are concurrent if none happens before the other.
+\end{definition}
+
+\begin{definition}[Causal order]
+  The delivery order of messages follows the happen before relationships of the
+  corresponding broadcasts.
+  $d_A(m) \rightarrow b_A(m') \implies d_B(m) \rightarrow d_B(m')$
+\end{definition}
+
+\begin{definition}[Causal broadcast]
+  Causal broadcast is a uniform reliable broadcast ensuring causal order.
+\end{definition}
+
+
+\subsection{Link-wise memory}
 
 \begin{definition}[\label{def:memory}Link memory]
   A link from Process~A to Process~B remembers among Process~B's delivered
@@ -198,28 +238,6 @@ receives $a$ again. However, it did not keep control information about this
 message. It mistakes it for a first receipt. It delivers and forwards $a$. Not
 only Process~C suffers multiple delivery but this has cascading effects over the
 whole system.
-
-In this paper, we solve this issue by exploiting causal broadcast's ability to
-ensure a specific order on message delivery. To characterize the order among
-events such as send, or receive, we define time in a logical sense using
-Lamport’s definition.
-
-\begin{definition}[Happen before~\cite{lamport1978time}]
-  Happen before is a transitive, irreflexive, and antisymmetric relation
-  $\rightarrow$ that defines a strict partial orders of events. The sending of a
-  message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
-  messages are concurrent if none happens before the other.
-\end{definition}
-
-\begin{definition}[Causal order]
-  The delivery order of messages follows the happen before relationships of the
-  corresponding broadcasts.
-  $d_A(m) \rightarrow b_A(m') \implies d_B(m) \rightarrow d_B(m')$
-\end{definition}
-
-\begin{definition}[Causal broadcast]
-  Causal broadcast is a uniform reliable broadcast ensuring causal order.
-\end{definition}
 
 % \begin{figure}
 %   \begin{center}

@@ -59,7 +59,7 @@ dynamic systems where any process can broadcast a message at any
 time~\cite{nedelec2016crate}. \RPCBROADCAST's core uses logical clocks
 too. Instead of encoding the global state of the system in a vector, it only
 maintains its receipt state with its direct out-view. Out-views being far
-smaller than the full system membership,
+smaller than the set of all processes in the system,
 \RPCBROADCAST scales in large and dynamic systems. \\
 However, vector of logical clocks allow each process to perform anti-entropy
 with any other process at any time. The former identifies its missing messages
