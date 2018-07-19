@@ -50,7 +50,7 @@ systems interchangeably.
   consider Byzantine processes.
 \end{definition}
 
-Causal broadcast ensures properties similar to that of reliable broadcast. Each
+Causal broadcast ensures properties similar to those of reliable broadcast. Each
 process may receive each broadcast message multiple times but delivers it
 once. In this paper, we tackle the issue of implementing these properties.
 % receives each broadcast message at least once, and delivers it once despite
@@ -114,14 +114,37 @@ Lamport’s definition.
 
 \subsection{Link-wise memory}
 
-\begin{definition}[\label{def:memory}Link memory]
-  A link from Process~A to Process~B remembers among Process~B's delivered
-  messages those that will be received from Process~A; and forgets among
-  Process~B's delivered messages those that will never be received from
-  Process~A.\\
-  $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$ \\
-  $\forall m,\, remember_{BA}(m) \implies r_{BA}(m)$
+We define link-wise memory as a mean for processes to forbid multiple delivery
+while safely removing obsolete control information. They attach control
+information about expected messages to each link of their respective in-view.
+\TODO{This comes from the fact that everyone broadcasts and forwards so we can
+  tag links accordingly.}
+
+
+\begin{definition}[\label{def:memory}Link-wise memory]
+  Assuming a link $(A,\, B)$, Process~B remembers among its delivered messages
+  those that it will receive from this link; and forgets among its delivered
+  messages those that it will never receive from this link.
+  \begin{itemize}
+  \item \small First delivery: upon delivery, Process~B tags other links in its
+    in-view in order to remember $m$:
+    $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$
+  \item Eventual receipt: Process~B eventually receives messages tagged on links:
+    $\forall m,\, remember_{BA}(m) \rightarrow r_{BA}(m)$
+  \end{itemize}
 \end{definition}
+
+% \begin{definition}[\label{def:memory}Link memory]
+%   A link from Process~A to Process~B remembers among Process~B's delivered
+%   messages those that will be received from Process~A; and forgets among
+%   Process~B's delivered messages those that will never be received from
+%   Process~A.
+%   \begin{itemize}
+%   \item First delivery:
+%     \small{$\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$}
+%   \item Eventual receipt: $\forall m,\, remember_{BA}(m) \implies r_{BA}(m)$
+%   \end{itemize}
+% \end{definition}
 
 
 \begin{theorem}[Link memory forbids multiple delivery]
@@ -280,7 +303,7 @@ The rest of this section describes how reliable broadcast can exploit causal
 order to initialize safe link memory. Then, we provide an implementation of such
 broadcast along with its complexity analysis.
 
-\subsection{Principle}
+\subsection{Initializing link memory}
 
 This section demonstrates that reliable broadcast can use causal order brought
 by causal broadcast to initialize safe link memory, hence provide a
