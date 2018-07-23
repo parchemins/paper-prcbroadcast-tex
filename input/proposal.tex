@@ -112,16 +112,65 @@ Lamport’s definition.
 \end{definition}
 
 
-\subsection{Link-wise memory}
+\subsection{Link memory}
 
-We define link-wise memory as a mean for processes to forbid multiple delivery
+\begin{figure*}
+  \begin{center}
+    \subfloat[\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
+    of $b$ from Process~A.]
+    {\input{input/figmemorylinkA.tex}}
+    \hspace{30pt}
+    \subfloat[\label{fig:memorylinkB}Process~A receives, delivers, and forwards
+    $b$. It expects a copy from Process~C.]
+    {\input{input/figmemorylinkB.tex}}
+    \hspace{30pt}
+    \subfloat[\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
+    do not expect additional copies. Process~C delivers and forwards $b$.]
+    {\input{input/figmemorylinkC.tex}}
+    \hspace{30pt}
+    \subfloat[\label{fig:memorylinkD}Process~A receives its last expected copy
+    of $b$. The message $b$ is completely removed from the system.]
+    {\input{input/figmemorylinkD.tex}}
+    \caption{\label{fig:memorylink}Link memory allows processes to safely remove
+      obsolete control information about past deliveries in static systems.}
+  \end{center}
+\end{figure*}
+
+\begin{figure*}
+  \begin{center}
+    \subfloat[\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
+    from both Process~B and Process~C.]
+    {\input{input/figmemorylinkfailsA.tex}}
+    \hspace{30pt}
+    \subfloat[\label{fig:memorylinkfailsB}Process C receives, delivers, and
+    forwards $a$. It does not expect additional copies.]
+    {\input{input/figmemorylinkfailsB.tex}}
+    \hspace{30pt}
+    \subfloat[\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
+    Then it receives, delivers, and forwards $a$.]
+    {\input{input/figmemorylinkfailsC.tex}}
+    \hspace{30pt}
+    \subfloat[\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
+    for a new message. It delivers, and forwards $a$.]
+    {\input{input/figmemorylinkfailsD.tex}}
+    \caption{\label{fig:memorylinkfails}Reliable broadcast
+      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
+      in dynamic systems. }
+  \end{center}
+\end{figure*}
+
+
+
+
+
+We define link memory as a mean for processes to forbid multiple delivery
 while safely removing obsolete control information. They attach control
 information about expected messages to each link of their respective in-view.
 \TODO{This comes from the fact that everyone broadcasts and forwards so we can
   tag links accordingly.}
 
 
-\begin{definition}[\label{def:memory}Link-wise memory]
+\begin{definition}[\label{def:memory}Link memory]
   Assuming a link $(A,\, B)$, Process~B remembers among its delivered messages
   those that it will receive from this link; and forgets among its delivered
   messages those that it will never receive from this link.
@@ -153,101 +202,66 @@ information about expected messages to each link of their respective in-view.
 \end{theorem}
 
 \begin{proof}
-  We must show that
-  $\nexists m, d_B(m) \rightarrow r_{BA}(m) \wedge r_{BA}(m) \rightarrow
-  d_B(m)$.
-  The delivery $d_B(m)$ implies a prior receipt $r_B(m)$.  To deliver $m$ after
-  its receipt from Process~A, Process~B must not remember $m$ on this link.  If
-  Process~B does not remember $m$ from Process~A, either it already received $m$
-  from Process~A; or it did not received $m$ from any process. In the former
-  case, it cannot receive, hence deliver $m$ from Process~A; in the latter
-  case, receiving $m$ from Process~A leads to the delivery of $m$. Again, since
-  a link carries a message at most once, it cannot receive another $m$ from
-  Process~A that would lead to another delivery.
+  We must show that, for any message $m$, its receipt cannot lead to its
+  delivery if a copy of $m$ has already been delivered before:
+  $\nexists m,\, d_B(m) \rightarrow r_{BA}(m) \wedge r_{BA}(m) \rightarrow
+  d_B(m)$.\\
+  The delivery $d_B(m)$ implies a prior receipt $r_B(m) \rightarrow d_B(m)$.  If
+  this receipt comes from link $(A,\, B)$, then Process~B cannot receive, hence
+  deliver, $m$ from $(A,\, B)$ again:
+  $\nexists m,\, r_{BA}(m) \rightarrow d_B(m) \wedge d_B(m) \rightarrow
+  r_{BA}(m) \wedge r_{BA}(m) \rightarrow d_{BA}(m)$.\\
+  If this receipt comes from any other link $(C,\, B),\, C\neq A$, Process~B
+  remembers $m$ on other links, and among others, on link $(A,\, B)$:
+  $\forall m,\, r_{BC}(m) \rightarrow remember_{BA}(m)$. Process~B eventually
+  receives a copy of $m$ from link $(A,\,B)$:
+  $remember_{BA}(m) \rightarrow r_{BA}(m)$. Since remembering a message forbids
+  its delivery, this cannot lead to another delivery of $m$:
+  $\nexists m,\, r_{BA}(m) \rightarrow d_{B}(m)$.
+  % To deliver $m$ after its receipt from Process~A, Process~B must not remember
+  % $m$ on this link.  If Process~B does not remember $m$ from Process~A, either
+  % it already received $m$ from Process~A; or it did not received $m$ from any
+  % process. In the former case, it cannot receive, hence deliver $m$ from
+  % Process~A; in the latter case, receiving $m$ from Process~A leads to the
+  % delivery of $m$. Again, since a link carries a message at most once, it cannot
+  % receive another $m$ from Process~A that would lead to another delivery.
 \end{proof}
 
 
 \begin{algorithm}[h]
   \input{./input/algoreliablebroadcast.tex}
-  \caption{\label{algo:reliablebroadcast}R-broadcast at Process $p$.}
+  \caption{\label{algo:reliablebroadcast}Causal broadcast for static systems.}
 \end{algorithm}
 
-\begin{figure*}
-  \begin{center}
-    \subfloat[\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
-    of $b$ from Process~A.]
-    {\input{input/figmemorylinkA.tex}}
-    \hspace{30pt}
-    \subfloat[\label{fig:memorylinkB}Process~A receives, delivers, and forwards
-    $b$. It expects a copy from Process~C.]
-    {\input{input/figmemorylinkB.tex}}
-    \hspace{30pt}
-    \subfloat[\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
-    do not expect additional copies. Process~C delivers and forwards $b$.]
-    {\input{input/figmemorylinkC.tex}}
-    \hspace{30pt}
-    \subfloat[\label{fig:memorylinkD}Process~A receives its last expected copy
-    of $b$. The message $b$ is completely removed from the system.]
-    {\input{input/figmemorylinkD.tex}}
-    \caption{\label{fig:memorylink}Link memory allows processes to safely remove
-      obsolete control information about past deliveries in static systems.}
-  \end{center}
-\end{figure*}
-
-
-
-%Vector clocks implement remembering but fail to remove obsolete control
-%information. 
-
-Algorithm~\ref{algo:reliablebroadcast} shows an implementation of uniform
-reliable broadcast that uses link memory to forbid multiple delivery in static
-systems. The link memory is non-monotonic. The first receipt of a broadcast
-message from a link tags the other links (see Line~\ref{line:remembers}). The
-receipt on other links of this broadcast message removes the corresponding tag
-(see Line~\ref{line:forgets}). Figure~\ref{fig:memorylink} depicts its
-functioning in a system comprising 3 processes. In Figure~\ref{fig:memorylinkA},
-Process~B broadcasts $b$. It awaits a copy of $b$ from the only link in its
-in-view. In Figure~\ref{fig:memorylinkB}, Process~A receives $b$. It delivers
-it, for no link in its in-view is tagged with $b$, meaning this is a first
-receipt. It tags the other link in its in-view with $b$ and forwards $b$ to its
-out-view. In Figure~\ref{fig:memorylinkC}, Process~B receives the awaited copy
-of $b$ from Process~A. It removes the corresponding entry. Process~B does not
-consume space anymore for reliable broadcast. Process~C receives $b$. It detects
-a first receipt so it delivers and forwards $b$. It does not tag any link, for
-the only link from its in-view is the link from which it just received $b$. In
+Algorithm~\ref{algo:reliablebroadcast} shows a set of instructions that
+implements causal broadcast for static systems. It uses FIFO reliable links to
+ensure causal order~\cite{friedman2004causal}, and implements link memory
+to forbid multiple delivery. Every process maintains a local structure the size
+of which increases and decreases over receipts.  The first receipt of a
+broadcast message from a link tags the other links (see
+Line~\ref{line:remembers}). The receipt on other links of this broadcast message
+removes the corresponding tag (see
+Line~\ref{line:forgets}). Figure~\ref{fig:memorylink} depicts its functioning in
+a system comprising 3 processes. In Figure~\ref{fig:memorylinkA}, Process~B
+broadcasts $b$. It awaits a copy of $b$ from the only link in its in-view. In
+Figure~\ref{fig:memorylinkB}, Process~A receives $b$. It delivers it, for no
+link in its in-view is tagged with $b$, meaning this is a first receipt. It tags
+the other link in its in-view with $b$ and forwards $b$ to its out-view. In
+Figure~\ref{fig:memorylinkC}, Process~B receives the awaited copy of $b$ from
+Process~A. It removes the corresponding entry. The broadcast protocol at
+Process~B does not consume space anymore. Process~C receives $b$. It detects a
+first receipt so it delivers and forwards $b$. It does not tag any link, for the
+only link from its in-view is the link from which it just received $b$. In
 Figure~\ref{fig:memorylinkD}, the last process to await a copy of $b$ finally
 receives it. None of processes remembers about $b$. No copy of $b$ travels in
-the system. This implementation forbids multiple delivery in static systems.
-
-
-\begin{figure*}
-  \begin{center}
-    \subfloat[\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
-    from both Process~B and Process~C.]
-    {\input{input/figmemorylinkfailsA.tex}}
-    \hspace{30pt}
-    \subfloat[\label{fig:memorylinkfailsB}Process C receives, delivers, and
-    forwards $a$. It does not expect additional copies.]
-    {\input{input/figmemorylinkfailsB.tex}}
-    \hspace{30pt}
-    \subfloat[\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
-    Then it receives, delivers, and forwards $a$.]
-    {\input{input/figmemorylinkfailsC.tex}}
-    \hspace{30pt}
-    \subfloat[\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
-    for a new message. It delivers, and forwards $a$.]
-    {\input{input/figmemorylinkfailsD.tex}}
-    \caption{\label{fig:memorylinkfails}Reliable broadcast
-      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
-      in dynamic systems. }
-  \end{center}
-\end{figure*}
+the system. This implementation forbids multiple delivery in static systems
+while safely removing obsolete control information.
 
 
 
-However, implementing link memory becomes more challenging in dynamic systems
-where processes can start sending messages to any other process at any time. Any
-process can receive an already forgotten message from any other
+However, implementing link memory becomes more challenging in dynamic
+systems where processes can start sending messages to any other process at any
+time. Any process can receive an already forgotten message from any other
 process. Figure~\ref{fig:memorylinkfails} illustrates the issue. In
 Figure~\ref{fig:memorylinkfailsA}, Process~A broadcasts $a$. It expects a copy
 from both Process~B and Process~C. In Figure~\ref{fig:memorylinkfailsB},
@@ -262,74 +276,44 @@ message. It mistakes it for a first receipt. It delivers and forwards $a$. Not
 only Process~C suffers multiple delivery but this has cascading effects over the
 whole system.
 
-% \begin{figure}
-%   \begin{center}
-%     \input{input/figtimelinepcbroadcast.tex}
-%     \caption{\label{fig:timelinepcbroadcast}Process~A ensures the safety of a
-%       link to Process~B. $\pi$ travels using safe links through intermediary
-%       processes that are hidden for the sake of clarity. $\rho$ reaches
-%       Process~A by any communication mean. Process~A sends the array of buffered
-%       messages via the new link. The link becomes safe.}
-%   \end{center}
-% \end{figure}
-
-% \begin{problem*}
-%   Figure~\ref{fig:problemstatement} depicts this problem. Assuming Process~A
-%   sends a buffer of messages to Process~B in order to finalize the safety of
-%   this link. Upon receipt of this buffer by Process~B, the scientific problem
-%   consists in:
-%   \begin{itemize}[leftmargin=*]
-%   \item Identifying the array of messages from the buffer that are delivered by
-%     Process~A but not delivered by Process~B in order to deliver them;
-%   \item Identifying the set of messages from the buffer that are delivered by
-%     Process~A and Process~B in order to forget them;
-%   \item Identifying the set of messages delivered by Process~B that Process~B will
-%     receive by this safe link in order to remember them.
-%   \end{itemize}%
-% %  These are the array of messages to deliver, the set of messages to ignore, and
-% %  the set of messages to expect, respectively.
-% \end{problem*}
-
-% \begin{figure}
-%   \begin{center}
-%     \input{input/figproblemstatement.tex}
-%     \caption{\label{fig:problemstatement}For each message in the buffer,
-%       Process~B must identify its category and assign awaited messages on the
-%       new safe link.}
-%   \end{center}
-% \end{figure}
-
-The rest of this section describes how reliable broadcast can exploit causal
-order to initialize safe link memory. Then, we provide an implementation of such
+The rest of this section describes how causal broadcast can exploit causal order
+to initialize safe link memory. Then, we provide an implementation of such
 broadcast along with its complexity analysis.
 
-\subsection{Initializing link memory}
+\subsection{Link memory for dynamic systems}
 
-This section demonstrates that reliable broadcast can use causal order brought
-by causal broadcast to initialize safe link memory, hence provide a
-non-monotonic local structure that removes all and only obsolete information in
-large and dynamic systems.
 
-Figure~\ref{fig:memorylink} shows that Algorithm~\ref{algo:reliablebroadcast}
-already implements the maintenance of link memory over receipts. Processes
-discard obsolete control information over receipts.  However,
-Figure~\ref{fig:memorylinkfails} shows that new links lack of consistent
-initialization. The challenge consists in initializing such memory without
-history of past messages. Causal broadcast starts to build the knowledge
-on-demand, i.e., when a process wants to add a link to another process.  The
-protocol disables the new link until it is initialized. This initialization
-requires round-trips of control messages and message buffering.  Causal
-broadcast takes advantage of causal order to provide guarantees on messages
-included in buffers.
+\begin{figure*}
+  \begin{center}
+    \input{input/figtimelineproof.tex}
+    \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
+      memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
+      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not.
+      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
+      are messages to ignore;
+      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
+      \mathcal{A}_3'$
+      are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
+      messages to expect.}
+  \end{center}
+\end{figure*}
 
-% \begin{figure*}
-%   \begin{center}
-%     \input{input/figtimelinerpcbroadcast.tex}
-%     \caption{\label{fig:timeline}Timeline of \RPCBROADCAST when Process~A adds a
-%       link to Process~B in its out-view. We hide intermediate processes for the
-%       purpose of clarity. Messages arrive in causal order.}
-%   \end{center}
-% \end{figure*}
+This section demonstrates that causal broadcast can use causal order to
+initialize safe link memory, thereby enabling the use of link memory in dynamic
+systems.
+
+%Figure~\ref{fig:memorylink} shows that 
+Algorithm~\ref{algo:reliablebroadcast} already implements the maintenance of
+link memory over receipts. Every process safely removes obsolete control
+information over receipts.  However, Figure~\ref{fig:memorylinkfails} highlights
+that new links lack of consistent initialization. The challenge consists in
+initializing such memory without history of past messages. Causal broadcast
+starts to build the knowledge on-demand, i.e., when a process wants to add a
+link to another process.  The protocol disables the new link until
+initialized. This initialization requires round-trips of control messages and
+message buffering.  Causal broadcast takes advantage of causal order to provide
+guarantees on messages included in buffers.
+
 
 Figure~\ref{fig:timelineproof} depicts the principle of the approach. When a
 Process~A adds a link to Process~B, Process~A notifies Process~B using a control
@@ -350,22 +334,6 @@ initialize link memory.  Process~A sends a control message $\pi$ to Process~B,
 and starts to gather control information about its delivered messages in a
 buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
-
-\begin{figure*}
-  \begin{center}
-    \input{input/figtimelineproof.tex}
-    \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
-      memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
-      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not.
-      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
-      are messages to ignore;
-      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
-      \mathcal{A}_3'$
-      are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
-      messages to expect.}
-  \end{center}
-\end{figure*}
-
   
 \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
   The buffer $B_\alpha$ contains messages delivered by Process~B after the
@@ -479,24 +447,22 @@ initialize link memory.
 
 \subsection{Implementation}
 
-\RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents
-causal order violation and multiple delivery by using all and only links that
-\begin{inparaenum}[(i)]
-\item have been proven safe to use and
-\item the memory of which is correctly initialized and maintained.
-\end{inparaenum}
-This guarantees causal order and non-monotonic local data structure in large and
-dynamic systems. 
+\RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents both
+causal order violations and multiple delivery by using all and only links that
+are safe~\cite{nedelec2018pcbroadcast}, and the memory of which is correctly
+initialized and maintained.  \RPCBROADCAST uses a local structure the size of
+which increases and decreases over receipts. Every process safely removes
+obsolete control information about past broadcast messages.
 
 %% Table~\ref{table:complexity} shows that it keeps constant size message overhead
 %% while discarding local control information about messages over receipts.
 
-To provide causal order at marginal cost, \RPCBROADCAST uses the principle of
-\PCBROADCAST~\cite{nedelec2018pcbroadcast}. It uses FIFO links, gossiping,
-control messages, and buffers to ensure causal order in dynamic systems. A
-process broadcasting a message sends the message to an out-view of safe links
-that cannot lead to causal order violations. \RPCBROADCAST embeds safe link
-establishment in its link memory initialization.
+% To provide causal order at marginal cost, \RPCBROADCAST uses the principle of
+% \PCBROADCAST~\cite{nedelec2018pcbroadcast}. It uses FIFO links, gossiping,
+% control messages, and buffers to ensure causal order in dynamic systems. A
+% process broadcasting a message sends the message to an out-view of safe links
+% that cannot lead to causal order violations. \RPCBROADCAST embeds safe link
+% establishment in its link memory initialization.
 
 \begin{figure*}
   \begin{center}
@@ -619,48 +585,38 @@ This set constitutes the memory of the new safe link.  Afterwards, messages
 received by this new link are processed normally.
 
 
-\RPCBROADCAST builds safe link memory using control messages that follow causal
-order. Link memory forbids multiple delivery and implies non-monotonic space
-complexity. In the next section, we analyze the complexity of our causal
+\RPCBROADCAST builds link memory using control messages that follow causal
+order. Every process safely removes obsolete control information about past
+broadcast messages.  The size of the local structure increases and decreases
+over receipts.  In the next section, we analyze the complexity of this causal
 broadcast implementation.
 
 \subsection{Complexity}
 \label{subsec:complexity}
 
-\begin{table*}
-  \begin{center}
-    \caption{\label{table:complexity} Complexity of broadcast algorithms at each
-      process (detailed in Section~\ref{subsec:complexity}). $N$ the number of
-      processes that ever broadcast a message. $P$ the number of processes in
-      the system. $W$ the number of messages received but not delivered
-      yet. $Q_i$ is the number of incoming links. $M$ is the number of
-      messages already delivered that will be received again from at least one
-      link in $Q_i$.}
-  \input{input/tablecomplexity.tex}
-  \end{center}
-\end{table*}
-
 In this section, we analyze the complexity of \RPCBROADCAST in terms of
 broadcast message overhead, delivery execution time, local space consumption,
 and number of control messages.
 
-\noindent The \textbf{broadcast message overhead} is constant $O(1)$. Messages
-must travel using FIFO links.
+\noindent The \textbf{broadcast message overhead} is constant $O(1)$. The
+protocol uses FIFO links to transmit messages.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
-receipt function is $O(Q_i)$. It checks and update control information
-associated to each link in the in-view.
+receipt function is $O(Q_i)$. The protocol checks and updates control
+information associated to each link in the in-view. \TODO{$Q_i$ is generally far
+  smaller that $P$, the number of processes in the system +\REF.}
 
 \noindent The \textbf{local space consumption} depends on the size of buffers
 and the size of the in-view. Each link in the in-view has its buffer of control
 information about messages. A message appears in the structure after its first
 receipt and disappears at its last receipt. So the local space complexity is
-$O(Q_i \cdot M)$ where $M$ is the number of messages already delivered that should be
-received again from at least one process in $Q_i$. A process stores the control
-information of a message during at most $D$ time where $D$ is the diameter of
-the system. The local space consumption depends on the system (e.g. ring or tree
-topologies do not consume any space) and its usage (e.g. when no process
-broadcasts any message, processes do not consume any space).
+$O(Q_i \cdot M)$ where $M$ is the number of messages already delivered that will
+be received again from at least a link in the in-view $Q_i$. A process stores the
+control information of a message during at most $D$ time where $D$ is the
+diameter of the system. The local space consumption depends on system settings
+(e.g. processes do not consume space when the system topology is a ring or a
+tree) and use (e.g. processes do not consume space when no process broadcasts
+any message).
 % Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
 % intermediate processes are faulty. Control messages never reach their
 % destination. \PCBROADCAST handles such crashes using a timeout and retry
@@ -683,10 +639,14 @@ any route. Process~A and Process~B fall back to reliable broadcast instead of
 routing to disseminate control messages.
 
 This complexity analysis shows that \RPCBROADCAST proposes a novel trade-off in
-terms of complexity. In systems allowing a form of routing, it constitutes an
-advantageous trade-off that depends on the actual system instead of past
-deliveries. The next section describes an experiment highlighting the effects of
-the system settings on the space consumed by processes.
+terms of complexity. In systems allowing a form of routing, processes only send
+a few control messages to handle dynamicity. Every process maintains a local
+structure the size of which increases and decreases over receipts. Every process
+safely removes obsolete control information about past messages. It constitutes
+an advantageous trade-off that depends on the actual system settings and use
+instead of past deliveries. The next section describes an experiment
+highlighting the effects of the system settings on the space consumed by
+processes.
 
 %%% Local Variables:
 %%% mode: latex

@@ -2,16 +2,34 @@
 \section{Related work}
 \label{sec:relatedwork}
 
-Causal broadcast protocols rely on reliable
-broadcast~\cite{hadzilacos1994modular}. Uniform reliable broadcast must ensure
-that
-\begin{inparaenum}[(i)]
-\item all processes receive broadcast messages and
-\item each process delivers each broadcast message once despite multiple
-  receipts.
-\end{inparaenum} This section reviews state-of-the-art from probabilistic
-dissemination approaches to deterministic ones; from physical clock techniques
-to vector-based approaches.
+\begin{table*}
+  \begin{center}
+    \caption{\label{table:complexity} Complexity of broadcast algorithms at each
+      process. $N$ the number of processes that ever broadcast a message. $P$
+      the number of processes in the system. $W$ the number of messages received
+      but not delivered yet. $Q_i$ is the number of incoming links. $M$ is the
+      number of messages already delivered that will be received again from at
+      least one link in $Q_i$.}
+  \input{input/tablecomplexity.tex}
+  \end{center}
+\end{table*}
+
+Causal broadcast ensures causal order and properties similar to those of uniform
+reliable broadcast~\cite{hadzilacos1994modular}. \RPCBROADCAST uses causal order
+to improve on complexity in regards to those properties. 
+% Causal broadcast protocols rely on reliable
+% broadcast~. Uniform reliable broadcast must ensure
+% that
+% \begin{inparaenum}[(i)]
+% \item all processes receive broadcast messages and
+% \item each process delivers each broadcast message once despite multiple
+%   receipts.
+% \end{inparaenum} 
+This section reviews state-of-the-art implementations that forbid multiple
+delivery in asynchronous and dynamic systems. 
+% This extends from probabilistic
+% dissemination approaches to deterministic ones; from physical clock techniques
+% to vector-based approaches.
 
 In large and dynamic systems comprising from hundreds to millions of processes,
 gossiping constitutes the mean to disseminate
