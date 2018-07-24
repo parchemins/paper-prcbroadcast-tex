@@ -5,17 +5,18 @@
 In this section, we present a causal broadcast protocol providing a novel
 trade-off between speed, memory, and traffic. Among others, It safely removes
 obsolete control information about broadcast messages. Its memory consumption
-grows and shrinks depending on system settings and use.  The key ideas are:
-\begin{enumerate}
-\item Each process broadcasts or forwards a message once, hence each link
-  carries a message once. After the first receipt of a message, a process
-  expects to receive one copy of this message per link pointing to itself. Once
-  a process received all expected copies, it can safely remove the control
-  information associated to this broadcast message.
+increases and decreases depending on system settings and use.  The key ideas
+are:
+\begin{enumerate}[leftmargin=*]
+\item Every process broadcasts or forwards a message once, hence every link
+  carries a message once. A process expects to receive as many copies of a
+  message as its number of links. Once a process received all expected copies,
+  it can safely remove the control information associated to this broadcast
+  message.
 \item Adding links between pair of processes adds uncertainty. The receiver
   cannot state any longer when it should expect a message from a link.
 \item By exploiting causal order, processes remove this uncertainty. Causal
-  order allows a process to remove batches of obsolete information while
+  order allows processes to remove batches of obsolete information while
   reasoning about temporarily buffered broadcast messages.
 \end{enumerate}
 
@@ -234,7 +235,7 @@ information about expected messages to each link of their respective in-view.
 \end{algorithm}
 
 Algorithm~\ref{algo:reliablebroadcast} shows a set of instructions that
-implements causal broadcast for static systems. It uses FIFO reliable links to
+implements causal broadcast for static systems. It uses reliable FIFO links to
 ensure causal order~\cite{friedman2004causal}, and implements link memory
 to forbid multiple delivery. Every process maintains a local structure the size
 of which increases and decreases over receipts.  The first receipt of a
@@ -602,9 +603,12 @@ and number of control messages.
 protocol uses FIFO links to transmit messages.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
-receipt function is $O(Q_i)$. The protocol checks and updates control
-information associated to each link in the in-view. \TODO{$Q_i$ is generally far
-  smaller that $P$, the number of processes in the system +\REF.}
+receipt function is $O(Q_i)$.  The protocol checks and updates control
+information associated to each link in the in-view $Q_i$. The size of in-views
+can be much smaller than the number of processes in the system $P$. For
+instance, peer-sampling approaches~\cite{ganesh2001scamp,nedelec2017adaptive}
+provides every process an in-view the size of which is logarithmically scaling
+with the number of processes in the systems $O(\ln(P))$.
 
 \noindent The \textbf{local space consumption} depends on the size of buffers
 and the size of the in-view. Each link in the in-view has its buffer of control
