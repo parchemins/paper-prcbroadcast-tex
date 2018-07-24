@@ -3,13 +3,13 @@
 \label{sec:conclusion}
 
 
-In this paper, we proposed a novel causal broadcast implementation that removes
-the last linear and monotonic upper bound that remained on local space
-complexity. Our approach exploits causal order brought by causal broadcast to
-improve the underlying reliable broadcast. The local space complexity depends on
-the system and its usage. The overhead in terms of number of control messages
-depends on the dynamicity of the system and remains low upon the assumption that
-the overlay network allows a form of routing.
+In this paper, we proposed a causal broadcast implementation that provides a
+novel trade-off between speed, memory, and traffic.  Our approach exploits
+causal order to improve on the space complexity of the implementation that
+forbids multiple delivery. The space complexity depends on system settings and
+use. The overhead in terms of number of control messages depends on the
+dynamicity of the system and remains low upon the assumption that the overlay
+network allows a form of routing.
 % Processes pay at the height of
 % their usage.
 % This approach only uses buffers of messages that grow and shrink when
@@ -20,7 +20,7 @@ the overlay network allows a form of routing.
 % traffic overhead remains small.
 This advantageous trade-off makes causal broadcast a lightweight and efficient
 middleware for group communication in distributed systems. This advantageous
-trade-off even makes \RPCBROADCAST a lightweight and efficient implementation for
+trade-off even makes \RPCBROADCAST a lightweight and efficient implementation of
 reliable broadcast. %As consequence, causal broadcast and reliable broadcast can
 %run in large and dynamic systems even on most humble devices such as Raspberry
 %Pi’s.

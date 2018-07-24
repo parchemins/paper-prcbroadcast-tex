@@ -5,11 +5,11 @@
 
 \small
 
-\begin{tabularx}{1.68\columnwidth}{@{}Xcccc@{}}
+\begin{tabularx}{1.78\columnwidth}{@{}Xcccc@{}}
   & \makecell{message\\overhead} &  \makecell{delivery\\execution time} & \makecell{local space\\consumption} & \makecell{\# control messages\\per added link} \\ \cmidrule{2-5}
-  vector-based R-broadcast~\cite{hadzilacos1994modular} & $O(1)$ & $O(1)$ & $O(N)$ & $0$ \\
-  vector-based C-broadcast~\cite{schwarz1994detecting} & $O(N)$ & $O(W\cdot N)$ & $O(N+W\cdot N)$ & $0$ \\ 
-  \PCBROADCAST~\cite{nedelec2018pcbroadcast} & $O(1)$ & $O(1)$ & $O(N)$ & $3$ to $2P^2$ \\ \hline\hline
+  vector-based reliable broadcast~\cite{hadzilacos1994modular} & $O(1)$ & $O(1)$ & $O(N)$ & $0$ \\
+  vector-based causal broadcast~\cite{schwarz1994detecting} & $O(N)$ & $O(W\cdot N)$ & $O(N+W\cdot N)$ & $0$ \\ 
+  preventive causal broadcast~\cite{nedelec2018pcbroadcast} & $O(1)$ & $O(1)$ & $O(N)$ & $3$ to $2P^2$ \\ \hline\hline
   \textbf{this paper (\RPCBROADCAST)} & $O(1)$ & $O(Q_i)$ & $\mathbf{O(Q_i \cdot M)}$ & $\mathbf{6}$ to $\mathbf{4P^2}$ \\
 %  \bottomrule
 \end{tabularx}
