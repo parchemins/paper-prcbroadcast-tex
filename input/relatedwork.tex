@@ -14,9 +14,14 @@
   \end{center}
 \end{table*}
 
-Causal broadcast ensures causal order and properties similar to those of uniform
-reliable broadcast~\cite{hadzilacos1994modular}. \RPCBROADCAST uses causal order
-to improve on complexity in regards to those properties. 
+Causal broadcast ensures causal order and forbids multiple
+delivery. \RPCBROADCAST uses the former to improve on the complexity of the
+latter.  This section reviews state-of-the-art implementations of broadcast
+protocols that forbid multiple delivery in asynchronous and dynamic systems.
+
+% The latter property similar to those of uniform reliable
+% broadcast~\cite{hadzilacos1994modular}.
+
 % Causal broadcast protocols rely on reliable
 % broadcast~. Uniform reliable broadcast must ensure
 % that
@@ -25,69 +30,88 @@ to improve on complexity in regards to those properties.
 % \item each process delivers each broadcast message once despite multiple
 %   receipts.
 % \end{inparaenum} 
-This section reviews state-of-the-art implementations that forbid multiple
-delivery in asynchronous and dynamic systems. 
 % This extends from probabilistic
 % dissemination approaches to deterministic ones; from physical clock techniques
 % to vector-based approaches.
 
-In large and dynamic systems comprising from hundreds to millions of processes,
-gossiping constitutes the mean to disseminate
-messages. \textbf{Non-deterministic} gossip-based
-approaches~\cite{birman1999bimodal,demers1987epidemic} guarantee that each
-process receives each broadcast message with high probability. Processes must be
-able to identify and retrieve missing messages by themselves. In this paper, we
-rely on \textbf{deterministic} gossip-based
-approaches~\cite{friedman2004causal,nedelec2017adaptive} where peer-sampling
-protocols build connected graph topology. Using all provided reliable links for
-broadcast ensures that each process eventually receives each message. A process
-keeps a message as long as one of its neighbor did not receive it. Afterwards,
-it safely removes it.
+% Gossiping constitutes the most efficient mean to disseminate messages to all
+% processes in dynamic systems comprising from hundreds to millions of processes.
+% Gossiping distributes the load of dissemination among processes. Every process
+% maintains a partial view of the system and broadcasts or forwards messages using
+% these links. Assuming a strongly connected overlay network, all messages reach
+% all processes of the system either directly or transitively. While it ensures
+% the receipt of messages, it does not forbid multiple delivery.
 
-Despite possible multiple receipts, processes must deliver messages at most
-once. Approaches based on \textbf{dissemination
-  pattern~\cite{bravo2017saturn,raynal2013distributed}} build topologies such as
-tree or ring. Each process receives each message once, hence delivers it once,
-without saving any control information. However, they stay confined to systems
-where failures are uncommon~\cite{krasikova2016hashtable}. \RPCBROADCAST
-supports dynamicity without assuming any specific topology. 
-% It remains in the
-% hand of developers to choose the best peer-sampling protocol for their
-% requirement and resources.
+Building \textbf{specific dissemination topologies} such as tree or ring
+guarantees that every process receives each message
+once~\cite{bravo2017saturn,raynal2013distributed}. Processes deliver messages as
+soon as they arrive. They do not need to save any control information about
+messages, for they will never receive a copy of this message again. While these
+approaches are lightweight, they stay confined to systems where failures are
+uncommon, and where churn rate remains
+low~\cite{krasikova2016hashtable}. \RPCBROADCAST generalizes on these specific
+topologies. It follows the same principle where the topology impacts on the
+number of receipts. Its space complexity scales linearly with this number of
+receipts. In turns, \RPCBROADCAST inherits from the resilience of the underlying
+topology maintained by processes. \RPCBROADCAST supports dynamic systems without
+assuming any specific topology.
 
-When multiple receipts can occur, each process maintains a local structure to
-detect and discard copies of broadcast messages. Using \textbf{physical
-  clocks~\cite{cachin2011introduction,demers1987epidemic}} allows removing
-control information over time. Control information is considered obsolete above
-an age threshold. The structure is non-monotonic. However, defining the age
-threshold is error prone in asynchronous systems. Set too small and processes
-may suffer multiple delivery with cascading effects as in
-Figure~\ref{fig:memorylinkfailsD}.  \RPCBROADCAST maintains a non-monotonic
-structure but makes sure that it removes all and only obsolete control
-information.
 
-Using \textbf{logical clocks}~\cite{malkhi2007concise,mukund2014optimized}
-allows to discard all copies of broadcast messages at receipt. However, each
-process maintains a vector with one entry per process that ever broadcast a
-message.  Processes cannot reclaim entries, for it would require running an
-overcostly distributed garbage collection that is equivalent to a distributed
-consensus~\cite{abdullahi1998garbage}. As consequence, the vector size increases
-linearly and monotonically. Vector-based approaches do not scale in large and
-dynamic systems where any process can broadcast a message at any
-time~\cite{nedelec2016crate}. \RPCBROADCAST's core uses logical clocks
-too. Instead of encoding the global state of the system in a vector, it only
-maintains its receipt state with its direct out-view. Out-views being far
-smaller than the set of all processes in the system,
-\RPCBROADCAST scales in large and dynamic systems. \\
-However, vector of logical clocks allow each process to perform anti-entropy
-with any other process at any time. The former identifies its missing messages
-compared to the latter.  The latter sends them to keep consistent states. This
-is useful when applications can go
-offline~\cite{demers1987epidemic}. \RPCBROADCAST implicitly performs
-anti-entropy on-demand to initialize memory link but cannot provide it as a
-feature for applications. If required, this is the responsibility of
-applications to allow anti-entropy (e.g. using Merkle
-tree~\cite{merkle1988digital}).
+% In this paper, we focus on deterministic overlay
+% We focus on deterministic gossip-based
+% broadcast~\cite{friedman2004causal,nedelec2017adaptive} where peer-sampling
+% protocols build connected graph topology. Using all provided reliable links for
+% broadcast ensures that each process eventually receives each message. A process
+% keeps a message as long as one of its neighbor did not receive it. Afterwards,
+% it safely removes it.
+
+
+% \textbf{Non-deterministic} gossip-based
+% approaches~\cite{birman1999bimodal,demers1987epidemic} guarantee that each
+% process receives each broadcast message with high probability. Processes must be
+% able to identify and retrieve missing messages by themselves. 
+
+
+Without any specific dissemination topology, each process may receive each
+broadcast message multiple times. Despite multiple receipts, a process must
+deliver a message once.
+% When multiple receipts can occur, each process maintains a local structure to
+% detect and discard copies of broadcast messages. Using \textbf{physical
+%   clocks~\cite{cachin2011introduction,demers1987epidemic}} allows removing
+% control information over time. Control information is considered obsolete above
+% an age threshold. The structure is non-monotonic. However, defining the age
+% threshold is error prone in asynchronous systems. Set too small and processes
+% may suffer multiple delivery with cascading effects as in
+% Figure~\ref{fig:memorylinkfailsD}.  \RPCBROADCAST maintains a non-monotonic
+% structure but makes sure that it removes all and only obsolete control
+% information.
+Using local structures based on \textbf{logical clocks~\cite{lamport1978time}},
+every process differentiates between the first receipt of a broadcast message
+and the additionnal receipts of this message. It allows to deliver the former
+while ignoring the latter. Unfortunately, the size of these structures increases
+monotonically and linearly with the number of processes that ever broadcast a
+message~\cite{malkhi2007concise,mukund2014optimized}.  Processes cannot reclaim
+the space consumed, for it would require running an overcostly distributed
+garbage collection that is equivalent to a distributed
+consensus~\cite{abdullahi1998garbage}.  This limits their use to context where
+the number of broadcasters is known to be small.  \RPCBROADCAST uses local
+structures based on logical clocks too. However, instead of saving the past
+deliveries of broadcasters, its saves the messages expected from direct
+neighbors. The set of expected messages varies over receipts, and the number of
+neighbors can be far smaller than the set of broadcasters. \RPCBROADCAST scales
+in large and dynamic systems. Among others, \RPCBROADCAST fits contexts where
+the number of participants is unknown, such as distributed collaborative
+editing~\cite{nedelec2016crate}.
+
+% It is worth noting that  logical clocks allow each process to perform
+% anti-entropy with any other process at any time. The former identifies its
+% missing messages compared to the latter.  The latter sends them to keep
+% consistent states. This is useful when applications can go
+% offline~\cite{demers1987epidemic}. \RPCBROADCAST implicitly performs
+% anti-entropy on-demand to initialize memory link but cannot provide it as a
+% feature for applications. If required, this is the responsibility of
+% applications to allow anti-entropy (e.g. using Merkle
+% tree~\cite{merkle1988digital}).
 
 %%% Local Variables:
 %%% mode: latex
