@@ -174,13 +174,7 @@ information about expected messages to each link of their respective in-view.
   Assuming a link $(A,\, B)$, Process~B remembers among its delivered messages
   those that it will receive from this link; and forgets among its delivered
   messages those that it will never receive from this link.
-  \begin{itemize}
-  \item \small First delivery: upon delivery, Process~B tags other links in its
-    in-view in order to remember $m$:
-    $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$
-  \item Eventual receipt: Process~B eventually receives messages tagged on links:
-    $\forall m,\, remember_{BA}(m) \rightarrow r_{BA}(m)$
-  \end{itemize}
+  $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$
 \end{definition}
 
 % \begin{definition}[\label{def:memory}Link memory]
@@ -197,8 +191,8 @@ information about expected messages to each link of their respective in-view.
 
 
 \begin{theorem}[Link memory forbids multiple delivery]
-  Assuming that each link carries each message at most once, link memory is
-  sufficient to forbid multiple delivery.
+  Every process maintaining link memory delivers each broadcast message exactly
+  once.
 \end{theorem}
 
 \begin{proof}
@@ -206,18 +200,22 @@ information about expected messages to each link of their respective in-view.
   delivery if a copy of $m$ has already been delivered before:
   $\nexists m,\, d_B(m) \rightarrow r_{BA}(m) \wedge r_{BA}(m) \rightarrow
   d_B(m)$.\\
-  The delivery $d_B(m)$ implies a prior receipt $r_B(m) \rightarrow d_B(m)$.  If
-  this receipt comes from link $(A,\, B)$, then Process~B cannot receive, hence
-  deliver, $m$ from $(A,\, B)$ again:
+  The delivery $d_B(m)$ implies a prior receipt $r_B(m) \rightarrow d_B(m)$.
+  Assuming that each link carries each messages once, and this receipt comes
+  from link $(A,\, B)$, then Process~B cannot receive, hence deliver, $m$ from
+  $(A,\, B)$ again:
   $\nexists m,\, r_{BA}(m) \rightarrow d_B(m) \wedge d_B(m) \rightarrow
   r_{BA}(m) \wedge r_{BA}(m) \rightarrow d_{BA}(m)$.\\
   If this receipt comes from any other link $(C,\, B),\, C\neq A$, Process~B
   remembers $m$ on other links, and among others, on link $(A,\, B)$:
-  $\forall m,\, r_{BC}(m) \rightarrow remember_{BA}(m)$. Process~B eventually
-  receives a copy of $m$ from link $(A,\,B)$:
-  $remember_{BA}(m) \rightarrow r_{BA}(m)$. Since remembering a message forbids
-  its delivery, this cannot lead to another delivery of $m$:
-  $\nexists m,\, r_{BA}(m) \rightarrow d_{B}(m)$.
+  $\forall m,\, r_{BC}(m) \rightarrow remember_{BA}(m)$. Assuming that each link
+  carries each message once, Process~B eventually receives a copy of $m$ from
+  link $(A,\,B)$: $remember_{BA}(m) \rightarrow r_{BA}(m)$. Since remembering a
+  message forbids its delivery, this cannot lead to another
+  delivery of $m$: $\nexists m,\, r_{BA}(m) \rightarrow d_{B}(m)$.\\
+  Finally, since every process delivers, hence forwards each message once, each
+  link carries each messages once.
+  
   % To deliver $m$ after its receipt from Process~A, Process~B must not remember
   % $m$ on this link.  If Process~B does not remember $m$ from Process~A, either
   % it already received $m$ from Process~A; or it did not received $m$ from any
@@ -413,8 +411,10 @@ messages in $B_\beta$ it must deliver against messages it must ignore, and
 messages in $B_\pi$ it must receive from Process~A. This allows Process~B to
 initialize link memory.
 
-\begin{theorem}[$B_\alpha$, $B_\beta$, and $B_\pi$ build link memory]
-  The memory of a new link becomes correct at receipt of $B_\beta$.
+\begin{theorem}[$B_\alpha$, $B_\beta$, and $B_\pi$ initialize link memory]
+  A process consistently initializes link memory at receipt of $B_\beta$ using
+  $B_\alpha$ and $B_\pi$.
+  % The memory of a new link becomes correct at receipt of $B_\beta$.
 \end{theorem}
 
 \begin{proof}
@@ -433,7 +433,7 @@ initialize link memory.
   Second, for the initialization of link memory, we must show that Process~B
   initializes the new link memory with all and only messages from $B_\pi$ that
   Process~A did not deliver at the sending of $B_\beta$:
-  $m \in \mathcal{B}_3 \Leftrightarrow d_B(m) \neg r_{BA}(m)$ and
+  $m \in \mathcal{B}_3 \Leftrightarrow d_B(m) \wedge \neg r_{BA}(m)$ and
   $m \in \mathcal{B}_3 \implies r_{BA}(m)$.  Since
   $B_\pi \cap B_\alpha = \varnothing$,
   $B_\pi \setminus (B_\beta \setminus B_\alpha)= B_\pi \setminus B_\beta =
