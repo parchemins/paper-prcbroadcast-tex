@@ -87,7 +87,7 @@ deliver a message once.
 % information.
 Using local structures based on \textbf{logical clocks~\cite{lamport1978time}},
 every process differentiates between the first receipt of a broadcast message
-and the additionnal receipts of this message. It allows to deliver the former
+and the additional receipts of this message. It allows to deliver the former
 while ignoring the latter. Unfortunately, the size of these structures increases
 monotonically and linearly with the number of processes that ever broadcast a
 message~\cite{malkhi2007concise,mukund2014optimized}.  Processes cannot reclaim
@@ -114,9 +114,16 @@ editing~\cite{nedelec2016crate}.
 % tree~\cite{merkle1988digital}).
 
 Table~\ref{table:complexity} summarizes the complexity of broadcast
-implementations that handle asynchronous and dynamic systems. Up to our
+implementations that handle asynchronous and dynamic systems. To the best of our
 knowledge, all causal broadcast implementations use an underlying reliable
-broadcast in order to forbid multiple delivery. \TODO{Miaw meow miaw.}
+broadcast in order to forbid multiple delivery. Their local space complexity
+comprises $O(N)$ where $N$ is the number of processes that ever broadcast a
+message. Compared to preventive causal broadcast~\cite{nedelec2018pcbroadcast},
+\RPCBROADCAST slightly increases the delivery execution time, and doubles the
+number of control message per added link. In turns, \RPCBROADCAST keeps a
+constant overhead on broadcast message, and changes the terms of local space
+complexity. Most importantly, the local space consumed does not monotonically
+increase anymore. 
 
 %%% Local Variables:
 %%% mode: latex

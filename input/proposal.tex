@@ -162,13 +162,12 @@ Lamport’s definition.
 
 
 
-
-
-We define link memory as a mean for processes to forbid multiple delivery
-while safely removing obsolete control information. They attach control
+We define link memory as a mean for processes to forbid multiple delivery while
+safely removing obsolete control information. Processes attach control
 information about expected messages to each link of their respective in-view.
-\TODO{This comes from the fact that everyone broadcasts and forwards so we can
-  tag links accordingly.}
+% Since each link eventually carries each message once, a process receiving a
+% message from a link knows that it will never receive this message from this link
+% again.
 
 
 \begin{definition}[\label{def:memory}Link memory]
