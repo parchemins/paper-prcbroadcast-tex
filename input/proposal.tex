@@ -154,7 +154,7 @@ Lamport’s definition.
     \subfloat[\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
     for a new message. It delivers, and forwards $a$.]
     {\input{input/figmemorylinkfailsD.tex}}
-    \caption{\label{fig:memorylinkfails}Reliable broadcast
+    \caption{\label{fig:memorylinkfails}Causal broadcast
       (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
       in dynamic systems. }
   \end{center}
@@ -191,8 +191,10 @@ information about expected messages to each link of their respective in-view.
 
 
 \begin{theorem}[Link memory forbids multiple delivery]
-  Every process maintaining link memory delivers each broadcast message exactly
-  once.
+  % Every process maintaining link memory delivers each broadcast message
+  % exactly once.
+  A process that delivers only messages it does not remember using link memory
+  delivers each broadcast message exactly once.
 \end{theorem}
 
 \begin{proof}
@@ -215,7 +217,7 @@ information about expected messages to each link of their respective in-view.
   delivery of $m$: $\nexists m,\, r_{BA}(m) \rightarrow d_{B}(m)$.\\
   Finally, since every process delivers, hence forwards each message once, each
   link carries each messages once.
-  
+  %
   % To deliver $m$ after its receipt from Process~A, Process~B must not remember
   % $m$ on this link.  If Process~B does not remember $m$ from Process~A, either
   % it already received $m$ from Process~A; or it did not received $m$ from any
@@ -420,29 +422,28 @@ initialize link memory.
 \begin{proof}
   From Lemma~\ref{lem:balpha}, $B_\alpha = \mathcal{A}_2 \cup \mathcal{B}_2$.
   From Lemma~\ref{lem:bbeta}, $B_\beta= \mathcal{B}_2 \cup \mathcal{A}_3$. From
-  Lemma~\ref{lem:bpi}, $B_\pi = \mathcal{A}_3' \cup \mathcal{B}_3$. \\ First,
-  for the maintenance of link memory, we must show that Process~B delivers all
-  and only messages from $B_\beta$ it did not deliver yet:
-  $\mathcal{A}_3 \setminus \mathcal{A}_3'$. Since
+  Lemma~\ref{lem:bpi}, $B_\pi = \mathcal{A}_3' \cup \mathcal{B}_3$. \\
+  First, we must show that Process~B delivers all and only messages from
+  $B_\beta$ it did not deliver yet:
+  $m \in \mathcal{A}_3 \setminus \mathcal{A}_3'$.\\
+  Since
   $B_\beta \setminus B_\alpha \setminus B_\pi = (\mathcal{B}_2 \cup
   \mathcal{A}_3) \setminus (\mathcal{A}_2 \cup \mathcal{B}_2) \setminus
-  (\mathcal{A}_3' \cup \mathcal{B}_3) = \mathcal{A}_3 \setminus \mathcal{A}_3'
-  \cup \mathcal{B}_3 = \mathcal{A}_3'\setminus \mathcal{A}_3$
-  (since $\mathcal{B}_3 \cap \mathcal{A}_3 = \varnothing$), Process~B identifies
-  the set of messages to deliver using $B_\alpha$, $B_\beta$, and $B_\pi$. \\
-  Second, for the initialization of link memory, we must show that Process~B
-  initializes the new link memory with all and only messages from $B_\pi$ that
-  Process~A did not deliver at the sending of $B_\beta$:
-  $m \in \mathcal{B}_3 \Leftrightarrow d_B(m) \wedge \neg r_{BA}(m)$ and
-  $m \in \mathcal{B}_3 \implies r_{BA}(m)$.  Since
-  $B_\pi \cap B_\alpha = \varnothing$,
-  $B_\pi \setminus (B_\beta \setminus B_\alpha)= B_\pi \setminus B_\beta =
-  (\mathcal{A}_3' \cup \mathcal{B}_3) \setminus (\mathcal{B}_2 \cup
-  \mathcal{A}_3) = \mathcal{B}_3$
-  (since $\mathcal{B}_3 \cap \mathcal{B}_2 = \varnothing$ and
-  $\mathcal{A}_3' \subseteq \mathcal{A}_3$), Process~B identifies the set of
-  messages to await from Process~A using $B_\pi$ and $B_\beta$. This is the new
-  link memory.
+  (\mathcal{A}_3' \cup \mathcal{B}_3) = \mathcal{A}_3 \setminus (\mathcal{A}_3'
+  \cup \mathcal{B}_3)$.
+  Since $\mathcal{B}_3 \cap \mathcal{A}_3 = \varnothing$, we have
+  $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
+  \mathcal{A}'_3$.\\
+%%  Process~B identifies
+%%  the set of messages to deliver using $B_\alpha$, $B_\beta$, and $B_\pi$. \\
+  Second, we must show that Process~B initializes the new link memory with all
+  and only messages from $B_\pi$ that Process~A did not deliver at the sending
+  of $B_\beta$: $m\in \mathcal{B}_3$.\\
+  $B_\pi \setminus B_\beta = (\mathcal{A}_3' \cup \mathcal{B}_3) \setminus
+  (\mathcal{B}_2 \cup \mathcal{A}_3)$.
+  Since $\mathcal{B}_3 \cap \mathcal{B}_2 = \varnothing$ and
+  $\mathcal{A}_3' \subseteq \mathcal{A}_3$,
+  $B_\pi \setminus (B_\beta \setminus B_\alpha) = \mathcal{B}_3$.
 \end{proof}
 
 \subsection{Implementation}
