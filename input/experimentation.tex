@@ -101,10 +101,11 @@ evolution of transmission delays.
   \RPCBROADCAST even under a latency of $300$ milliseconds. 
 \end{itemize}
 
-\noindent \RPCBROADCAST provides a novel trade-off where space complexity is
-non-monotonic and actually depends on the system and its current usage; instead
-of past usage using vectors of logical clocks. This result means that it
-constitutes an advantageous trade-off in
+\noindent \RPCBROADCAST provides a novel trade-off between speed, memory, and
+traffic. Among other, its space consumed increases and decreases depending on
+the system and its current use; instead of past use (see
+Section~\ref{sec:relatedwork}. This result means that it constitutes an
+advantageous trade-off in
 \begin{inparaenum}[(i)]
 \item dynamic systems
 \item comprising up to millions of processes
@@ -160,14 +161,20 @@ evolution of transmission delays.
 % the cost of control messages to initialize memory link.
 
 \noindent Assuming peer-sampling protocols that enable a form of routing,
-\RPCBROADCAST forbids multiple delivery at the cost of few lightweight control
+\RPCBROADCAST forbids multiple delivery at the cost of a few lightweight control
 messages in dynamic systems. In this experiment, the underlying peer-sampling
-protocol builds random graph topologies that have numerous desirable properties
-such as crash resilience, or load balancing~\cite{jelasity2007gossip}. This is
-ideal for systems where numerous processes join and leave continuously. However,
-it is worth noting that it remains in the hands of developers to choose the best
-peer-sampling protocol for their system (e.g. minimizing
-latency~\cite{dabek2004vivaldi}).
+protocol builds a random graph topology that has numerous desirable properties
+such as resilience to failures, or load balancing~\cite{jelasity2007gossip}. It
+fits dynamic systems where numerous processes join and leave
+continuously. Nonetheless, other peer-sampling protocols could be used depending
+on the configuration of the system. One could minimize latency using
+Vivaldi~\cite{dabek2004vivaldi}, or gather people based on user preferences
+using T-Man~\cite{jelasity2009tman}.
+
+
+% However, it is worth noting that it remains in the hands of developers to choose
+% the best peer-sampling protocol for their system (e.g. minimizing
+% latency~\cite{dabek2004vivaldi}).
 
 
 Overall, this section showed that \RPCBROADCAST proposes a novel trade-off in
