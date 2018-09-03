@@ -1,6 +1,6 @@
 %\documentclass{class-for-drafts}
-\documentclass[10pt,journal,compsoc]{IEEEtran}
-
+%\documentclass[10pt,journal,compsoc]{IEEEtran}
+\documentclass[english,a4paper]{lipics-v2018}
 
 %% url
 \usepackage{hyperref, url}
@@ -24,7 +24,7 @@
 \usepackage{makecell}
 %% figures
 %\usepackage{caption}
-\usepackage{subfig}
+% \usepackage{subfig}
 %\usepackage[font=small, skip=2pt]{caption}
 %\usepackage[font=small]{subfig}
 \usepackage{tikz}
@@ -55,9 +55,9 @@
 \newcommand{\RPCBROADCAST}[0]{\textup{PRC-broadcast}\xspace}
 
 \usepackage{amsthm} %% proof env
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
+% \newtheorem{definition}{Definition}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{lemma}{Lemma}
 \newtheorem*{problem*}{Problem statement}
 
 \newcommand{\EXAMPLE}[2]{\noindent \textbf{\emph{#1}} #2}
@@ -69,36 +69,37 @@
 
 \newcommand{\affLSNN}{LS2N, University of Nantes,
    2 rue de la Houssini{\`e}re,
-   BP 92208, 44322 Nantes Cedex 3, France,
-   \url{first.last@univ-nantes.fr}}
+   BP 92208, 44322 Nantes Cedex 3, France}%,
+%   \url{first.last@univ-nantes.fr}}
 
-% \author{Brice N{\'e}delec}{\affLSNN}{brice.nedelec@univ-nantes.fr}{}{}
-% \author{Pascal Molli}{\affLSNN}{pascal.molli@univ-nantes.fr}{}{}
-% \author{Achour Most{\'e}faoui}{\affLSNN}{achour.mostefaoui@univ-nantes.fr}{}{}
+ \author{Brice N{\'e}delec}{\affLSNN}{brice.nedelec@univ-nantes.fr}{}{}
+ \author{Pascal Molli}{\affLSNN}{pascal.molli@univ-nantes.fr}{}{}
+ \author{Achour Most{\'e}faoui}{\affLSNN}{achour.mostefaoui@univ-nantes.fr}{}{}
 
 %% \affil[1]{\affLSNN\\\url{brice.nedelec@univ-nantes.fr}}
 %% \affil[2]{\affLSNN\\\url{pascal.molli@univ-nantes.fr}}
 %% \affil[3]{\affLSNN\\\url{achour.mostefaoui@univ-nantes.fr}}
 
-% \authorrunning{B. N{\'e}delec, P. Molli and A. Most{\'e}faoui}
+\authorrunning{B. N{\'e}delec, P. Molli and A. Most{\'e}faoui}
 
 
-%\keywords{Causal broadcast, reliable broadcast, space complexity, large and dynamic
-%distributed systems}
+\keywords{Causal broadcast, space complexity, large and dynamic systems}
 
-% \Copyright{Brice N{\'e}delec, Pascal Molli and Achour Most{\'e}faoui}
+\Copyright{Brice N{\'e}delec, Pascal Molli and Achour Most{\'e}faoui}
 
 
 \begin{document} 
 
-\author{Brice N{\'e}delec, Pascal Molli, and Achour Most{\'e}faoui%
-  \IEEEcompsocitemizethanks{\IEEEcompsocthanksitem \affLSNN}}
+% \author{Brice N{\'e}delec, Pascal Molli, and Achour Most{\'e}faoui%
+%  \IEEEcompsocitemizethanks{\IEEEcompsocthanksitem \affLSNN}}
 
 \title{The Last Monotonic Bound of Causal Broadcast}
 
-\input{input/abstract.tex}
+
 
 \maketitle
+
+\input{input/abstract.tex}
 
 \input{input/introduction.tex}
 \input{input/proposal.tex}
@@ -107,12 +108,12 @@
 \input{input/conclusion.tex}
 
 % \newpage
-\input{input/acknowledgment.tex}
+% \input{input/acknowledgment.tex}
 
 \bibliographystyle{plainurl}
 \bibliography{bibliographie}
 
-\input{input/biography.tex}
+% \input{input/biography.tex}
   
 \end{document}
 
