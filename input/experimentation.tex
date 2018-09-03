@@ -102,8 +102,8 @@ evolution of transmission delays.
 \noindent Figure~\ref{fig:overhead} confirms that the local space consumption
   depends on network condition. The overhead increases as the latency
   increases. Latency increases the time between the first and the last receipt
-  of each message. Processes store messages longer until they can be safely
-  removed. 
+  of each message. Processes store messages longer until their safe removal.
+  %can be safely removed. 
 
 \noindent Figure~\ref{fig:overhead} confirms that the local space consumption
   depends on broadcast messages. When processes stops broadcasting, the space
@@ -192,9 +192,13 @@ protocol builds a random graph topology that has numerous desirable properties
 such as resilience to failures, or load balancing~\cite{jelasity2007gossip}. It
 fits dynamic systems where numerous processes join and leave
 continuously. Nonetheless, other peer-sampling protocols could be used depending
-on the configuration of the system. One could minimize latency using
-Vivaldi~\cite{dabek2004vivaldi}, or gather people based on user preferences
-using T-Man~\cite{jelasity2009tman}.
+on the configuration of the system.
+One could minimize latency~\cite{dabek2004vivaldi}, or gather people based on 
+user preferences~\cite{jelasity2009tman}.
+
+% One could minimize latency using
+% Vivaldi~\cite{dabek2004vivaldi}, or gather people based on user preferences
+% using T-Man~\cite{jelasity2009tman}.
 
 
 % However, it is worth noting that it remains in the hands of developers to choose
