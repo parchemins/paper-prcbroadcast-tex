@@ -121,25 +121,25 @@ Lamport’s definition.
 
 \begin{figure*}
   \begin{center}   
-    \begin{subfigure}[t]{0.24\textwidth}
+    \begin{subfigure}[t]{0.23\textwidth}
       \input{input/figmemorylinkA.tex}
       \caption{\label{fig:memorylinkA}Process~B broadcasts $b$ and awaits a copy
         of $b$ from Process~A.}
     \end{subfigure}
-    % \hspace{30pt}
-    \begin{subfigure}[t]{0.24\textwidth}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
       \input{input/figmemorylinkB.tex}%
       \caption{\label{fig:memorylinkB}Process~A receives, delivers, and forwards
         $b$. It expects a copy from Process~C.}
     \end{subfigure}
-    % \hspace{30pt}
-    \begin{subfigure}[t]{0.24\textwidth}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
       \input{input/figmemorylinkC.tex}%
       \caption{\label{fig:memorylinkC}Process~B and Process~C receive $b$. They
         do not expect additional copies. Process~C delivers and forwards $b$.}
     \end{subfigure}
-    % \hspace{30pt}
-    \begin{subfigure}[t]{0.24\textwidth}
+    ~
+    \begin{subfigure}[t]{0.23\textwidth}
       \input{input/figmemorylinkD.tex}
       \caption{\label{fig:memorylinkD}Process~A receives its last expected copy
       of $b$. The message $b$ is completely removed from the system.}
@@ -151,25 +151,25 @@ Lamport’s definition.
 
 \begin{figure*}
   \begin{center}
-    \begin{subfigure}{0.24\textwidth}
+    \begin{subfigure}{0.23\textwidth}
       \input{input/figmemorylinkfailsA.tex}
       \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
         from both Process~B and Process~C.}
     \end{subfigure}
-    % \hspace{30pt}
-    \begin{subfigure}{0.24\textwidth}
+    ~
+    \begin{subfigure}{0.23\textwidth}
       \input{input/figmemorylinkfailsB.tex}
       \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
         forwards $a$. It does not expect additional copies.}
     \end{subfigure}
-    % \hspace{30pt}
-    \begin{subfigure}{0.24\textwidth}
+    ~
+    \begin{subfigure}{0.23\textwidth}
       \input{input/figmemorylinkfailsC.tex}
       \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
         Then it receives, delivers, and forwards $a$.}
     \end{subfigure}
-    % \hspace{30pt}
-    \begin{subfigure}{0.24\textwidth}
+    ~
+    \begin{subfigure}{0.23\textwidth}
       \input{input/figmemorylinkfailsD.tex}
       \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
         for a new message. It delivers, and forwards $a$.}
@@ -297,7 +297,7 @@ only Process~C suffers multiple delivery but this has cascading effects over the
 whole system.
 
 The rest of this section describes how causal broadcast can exploit causal order
-to initialize safe link memory. Then, we provide an implementation of such
+to initialize link memory. Then, we provide an implementation of such
 broadcast along with its complexity analysis.
 
 \subsection{Link memory for dynamic systems}
@@ -319,7 +319,7 @@ broadcast along with its complexity analysis.
 \end{figure*}
 
 This section demonstrates that causal broadcast can use causal order to
-initialize safe link memory, thereby enabling the use of link memory in dynamic
+initialize link memory, thereby enabling the use of link memory in dynamic
 systems.
 
 %Figure~\ref{fig:memorylink} shows that 
@@ -487,12 +487,13 @@ obsolete control information about past broadcast messages.
 
 \begin{figure*}
   \begin{center}
-    \begin{subfigure}[t]{0.37\textwidth}
+    \begin{subfigure}[t]{0.36\textwidth}
       \input{input/figsolveA.tex}%
       \caption{\label{fig:solveA}Process~B adds a link to
         Process~C. \RPCBROADCAST ensures its safety. Process~B sends a first
         control message $\alpha$ to Process~C using Process~A as mediator.}
     \end{subfigure}
+    ~
     \begin{subfigure}[t]{0.27\textwidth}
       \begin{center}
         \input{input/figsolveB.tex}%
@@ -500,6 +501,7 @@ obsolete control information about past broadcast messages.
           Process~C.}
       \end{center}
     \end{subfigure}
+    ~
     \begin{subfigure}[t]{0.32\textwidth}
       \input{input/figsolveC.tex}%
       \caption{\label{fig:solveC}Process~C receives $\alpha$ and answers by

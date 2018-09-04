@@ -61,10 +61,10 @@ number of processes in the system. Each process of the 100-processes system has
 an out-view of $\approx 10$ neighbors. Each process of the 1k-processes system
 has an out-view of $\approx 13.5$ neighbors. Each process of the 10k-processes
 system has a out-view of $\approx 15$ neighbors. Each process dynamically
-re-configures its out-view every minute by exchanging safe links with a chosen
-neighbor: it gives half of its safe links to the chosen neighbor; the latter
-gives half of its safe links to the former as well. Each exchange leads to link
-memory initialization and safety checks of the new links,
+re-configures its out-view every minute by exchanging correctly initialized
+links with a chosen neighbor: it gives half of its links to the chosen
+neighbor; the latter gives half of its links to the former as well. Each
+exchange leads to link memory initialization and safety checks of the new links,
 and removal of given links.\\
 Links are bidirectional, their safety must be checked in both directions but the
 overhead remains minor. Links have transmission delay, i.e., the time between

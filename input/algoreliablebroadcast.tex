@@ -21,7 +21,7 @@
 
   \begin{multicols}{2}
 
-  \Function{$\textup{R-broadcast}(m)$} { %\tcp*[f]{$b_p(m)$}} { 
+  \Function{$\textup{C-broadcast}(m)$} { %\tcp*[f]{$b_p(m)$}} { 
     % $\textup{received}(m,\, \_)$ \;
     % \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
     % \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
@@ -34,7 +34,7 @@
     \If {$\neg\textup{received}(m,\,l)$} {
       \lForEach {$q \in Q_o$} {\textup{sendTo}($q,\, m$)}
       % \tcp*[f]{broadcast or forward}}
-      \textup{R-deliver}($m$) \; % \tcp*{$d_p(m)$}
+      \textup{C-deliver}($m$) \; % \tcp*{$d_p(m)$}
     }
   }
 

@@ -1,7 +1,7 @@
 \SetKwProg{Function}{function}{}{}
 \SetKwProg{Upon}{upon}{}{}
 \SetKwProg{Initially}{INITIALLY:}{}{}
-\SetKwProg{Safety}{SAFETY:}{}{}
+\SetKwProg{Safety}{LINK MEMORY:}{}{}
 \SetKwProg{Dissemination}{DISSEMINATION:}{}{}
 
 \SetKwComment{EmptyComment}{}{}
@@ -28,12 +28,12 @@
   \begin{multicols}{2}
   \Function{$\RPCBROADCAST(m)$} { %\tcp*[f]{$b_p(m)$}} {
 %    $\textup{buffering}(m)$ \;
-    $\textup{R-broadcast}(m)$
+    $\textup{C-broadcast}(m)$
   }
 
 %  \BlankLine
   
-  \Upon{$\textup{R-deliver}(m)$} {
+  \Upon{$\textup{C-deliver}(m)$} {
     $\textup{buffering}(m)$ \;
     $\textup{PRC-deliver}(m)$
   }
