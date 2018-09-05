@@ -308,13 +308,14 @@ broadcast along with its complexity analysis.
     \input{input/figtimelineproof.tex}
     \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
       memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
-      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not.
+      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not. At
+      receipt of $B_\beta$, Process~B classifies the messages:
       $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
       are messages to ignore;
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
       \mathcal{A}_3'$
       are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
-      messages to expect.}
+      messages to expect from Process~A.}
   \end{center}
 \end{figure*}
 
@@ -360,7 +361,7 @@ $B_\alpha$.
   sending of $\beta$ and before the receipt of $\pi$.\\
   This includes all messages delivered by Process~A before the sending of $\pi$
   that were not delivered by Process~B before the sending of $\beta$:
-  $\mathcal{A}_2$. Most importantly, this also includes all messages delivered
+  $\mathcal{A}_2$. Above all, this also includes all messages delivered
   by Process~B that were not delivered by Process~A at the sending of $\pi$:
   $\mathcal{B}_2$.
 \end{lemma}
