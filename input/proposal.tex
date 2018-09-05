@@ -3,7 +3,7 @@
 \label{sec:proposal}
 
 In this section, we present a causal broadcast protocol providing a novel
-trade-off between speed, memory, and traffic. Among others, It safely removes
+trade-off between speed, memory, and traffic. Among others, it safely removes
 obsolete control information about broadcast messages. Its memory consumption
 increases and decreases depending on system settings and use.  The key ideas
 are:
@@ -12,8 +12,8 @@ are:
 \item Every process broadcasts or forwards a message once, hence every link
   carries a message once. A process expects to receive as many copies of a
   message as its number of links. Once a process received all expected copies,
-  it can safely remove the control information associated to this broadcast
-  message.
+  it can forget about this broadcast message, i.e., it can safely remove the
+  control information associated to this broadcast message.
 \item Adding links between pair of processes adds uncertainty. The receiver
   cannot state any longer when it should expect a message from a link.
 \item By exploiting causal order, processes remove this uncertainty. Causal
