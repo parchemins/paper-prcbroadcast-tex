@@ -15,41 +15,46 @@ delivery following Lamport's happen before
 relationship~\cite{lamport1978time}. When Alice comments on Bob's picture,
 nobody sees Alice's comment without Bob's picture, and nobody sees multiple
 occurrences of Alice's comment or Bob's picture.
-% If the sending of a message $m$ precedes the sending of a message $m'$ then all
-% processes that deliver these two messages need to deliver $m$ before
-% $m'$. Otherwise they deliver them in any order.
 
-Large and dynamic systems can comprise from hundreds to millions of processes
-joining, leaving, and self-reconfiguring at any time. Gossiping enables
-efficient propagation of broadcast messages to all processes of such systems:
-processes broadcast and forward messages to a subset of processes --~their
-neighbors~-- which can be significantly smaller than the number of processes in
-the system. The forwarding implies that processes may receive multiple copies a
-broadcast message from different neighbors.
+PR-Broadcast~\cite{SRDS} is the best implementation of causal
+broadcast in large scale and dynamic system. However, PR-Broadcast is
+unable to forget any of its information control.  
 
-To forbid multiple delivery despite multiple receipts, processes must remember
-delivered messages as long as they may receive them again. Afterwards, processes
-can safely forget about these messages.
-% Causal broadcast forbids multiple delivery of a broadcast message despite its
-% possible multiple receipts. Keeping all delivered messages to discard
-% additional copies at receipt is overly space consuming. Instead, processes
-% must remember their delivered messages as long as they might receive them
-% again.  Afterwards, processes can safely forget about them.  How to forget
-% delivered messages in asynchronous, large, and dynamic systems?
-Building a specific dissemination topology such as a tree or a ring ensures
-single receipt hence single
-delivery~\cite{bravo2017saturn,raynal2013distributed}. Processes forget about
-broadcast messages as soon as they receive them. However, such topologies are
-difficult to maintain in dynamic systems subject to
-failures~\cite{krasikova2016hashtable}.  Using local structures based on logical
-clocks~\cite{malkhi2007concise,mukund2014optimized} allows to build a summary of
-delivered messages. Processes remember the last delivered message coming from
-every other process in the system.  These structures suffer from linearly and
-monotonically increasing size with the number of processes that ever broadcast a
-message.  These approaches eventually become inefficient, for processes cannot
-safely reclaim consumed space without running an overcostly distributed garbage
-collecting protocol~\cite{abdullahi1998garbage}. State-of-the-art causal
-broadcast implementations do not scale in large and dynamic systems.
+% Large and dynamic systems can comprise from hundreds to millions of processes
+% joining, leaving, and self-reconfiguring at any time. Gossiping enables
+% efficient propagation of broadcast messages to all processes of such systems:
+% processes broadcast and forward messages to a subset of processes --~their
+% neighbors~-- which can be significantly smaller than the number of processes in
+% the system. The forwarding implies that processes may receive multiple copies a
+% broadcast message from different neighbors.
+
+% To forbid multiple delivery despite multiple receipts, processes must remember
+% delivered messages as long as they may receive them again. Afterwards, processes
+% can safely forget about these messages.
+
+% % Causal broadcast forbids multiple delivery of a broadcast message despite its
+% % possible multiple receipts. Keeping all delivered messages to discard
+% % additional copies at receipt is overly space consuming. Instead, processes
+% % must remember their delivered messages as long as they might receive them
+% % again.  Afterwards, processes can safely forget about them.  How to forget
+% % delivered messages in asynchronous, large, and dynamic systems?
+% % Building a specific dissemination topology such as a tree or a ring ensures
+% % single receipt hence single
+% % delivery~\cite{bravo2017saturn,raynal2013distributed}. Processes forget about
+% % broadcast messages as soon as they receive them. However, such topologies are
+% % difficult to maintain in dynamic systems subject to
+% % failures~\cite{krasikova2016hashtable}.  
+
+
+% Using local structures based on logical
+% clocks~\cite{malkhi2007concise,mukund2014optimized} allows to build a summary of
+% delivered messages. Processes remember the last delivered message coming from
+% every other process in the system.  These structures suffer from linearly and
+% monotonically increasing size with the number of processes that ever broadcast a
+% message.  These approaches eventually become inefficient, for processes cannot
+% safely reclaim consumed space without running an overcostly distributed garbage
+% collecting protocol~\cite{abdullahi1998garbage}. 
+
 
 % However, causal broadcast implementations do not scale in large and dynamic
 % systems comprising from hundreds to millions of processes joining, leaving, and
@@ -78,11 +83,23 @@ broadcast implementations do not scale in large and dynamic systems.
 % to approaches forbidding multiple delivery by using local structures and
 % logical clocks.
 
-In this paper, we introduce an implementation of causal broadcast that remember
-about delivered messages of direct neighbors instead of all processes in the
-system.  The former set being far smaller than the latter, our implementation
-offers an advantageous trade-off that makes causal broadcast a lightweight and
-efficient middleware in large and dynamic systems.
+
+In this paper, we propose PRC-Broadcast; a causal broadcast that is
+able to forget all its information control. In PRC-Broadcast, a
+process receives a message on all its incoming communication links
+$Q_i$. A process delivers the message after the first reception and
+forget the message after the last reception. Consequently, the message
+exist onliny in the process between the first reception and last
+reception. The main advantage of PRC-causal is that when all broadcast
+terminates, processes forget all its information control. Compared to
+ PRC-broadcast, vector clock cannot forget its control
+ information. They have to keep information control that grow monotonocally.
+
+% In this paper, we introduce an implementation of causal broadcast that remember
+% about delivered messages of direct neighbors instead of all processes in the
+% system.  The former set being far smaller than the latter, our implementation
+% offers an advantageous trade-off that makes causal broadcast a lightweight and
+% efficient middleware in large and dynamic systems.
 % A process belongs to an overlay network and has neighbors to communicate with
 % via incoming and outgoing links.  Broadcast efficiently disseminates messages by
 % gossiping~\cite{jelasity2007gossip}: the broadcaster sends the message by its
@@ -92,28 +109,14 @@ efficient middleware in large and dynamic systems.
 Our contribution is threefold:
 \begin{itemize}[leftmargin=*]
 \item We define link memory as a mean for each process to forbid multiple
-  delivery. % A process may receive a message multiple times from different
-  % processes. Despite multiple receipts, a process must deliver a message exactly
-  % once.
+  delivery. 
   Link memory allows each process to identify processes from which it
   will receive a copy of an already delivered message. This allows each process
   to safely remove obsolete control information about broadcast messages that
   will never be received again. Assuming causal order, we prove that each
   process can build such knowledge even in dynamic systems where processes join,
   leave, or self-reconfigure at any time.
-\item We analyze the complexity of our implementation of link memory for causal
-  broadcast. Our implementation offers a novel trade-off between speed, memory,
-  and traffic that actually depends on system settings and current use: the
-  number of communication links, and the number of broadcast messages currently
-  spreading in the system (the spreading time being upper bounded by the
-  diameter of the system). Quiescent systems where no process broadcasts any
-  message enjoy no overhead. Our implementation does not assume any specific
-  topology. However, to implement link memory in dynamic systems, we require
-  lightweight control messages the number of which depends on routing
-  capabilities of the system and its dynamicity.  For instance, gossip-based
-  peer-sampling
-  protocols~\cite{jelasity2007gossip,jelasity2009tman,nedelec2017adaptive} need
-  only 8 control messages per added link.
+\item We analyze the complexity of our implementation.
 \item We evaluate our implementation using large scale simulations. The
   experiments highlight the space consumed and the traffic generated by our
   protocol in dynamic systems with varying latency. The results confirm that the
