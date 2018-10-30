@@ -11,22 +11,6 @@
 %   \end{center}
 % \end{figure*}
 
-\begin{figure*}
-  \begin{center}
-    \begin{subfigure}[t]{0.495\textwidth}
-    \includegraphics[width=1\textwidth]{./img/overhead.eps}
-    \caption{\label{fig:overhead}Local space overhead.}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.495\textwidth}      
-      \includegraphics[width=1\textwidth]{./img/controlmessages.eps}
-      \caption{\label{fig:controlmessages}Generated traffic overhead (includes
-        routing).}
-    \end{subfigure}
-    \caption{Overhead of \RPCBROADCAST required to ensure causal order and
-      forbid multiple delivery in dynamic systems with varying latency.}
-  \end{center}
-\end{figure*}
-
 
 \RPCBROADCAST proposes a novel trade-off between speed, memory, and
 traffic. Most importantly, its space consumed varies over receipts. In this
@@ -75,6 +59,24 @@ $40$ minutes,
 links reach $2.5$ seconds transmission delay and it stops increasing.\\
 From $2$ minutes to $50$ minutes, every second, 10 processes chosen uniformly at
 random among all processes broadcast a message.
+
+\begin{figure*}
+  \begin{center}
+    \begin{subfigure}[t]{0.495\textwidth}
+    \includegraphics[width=1\textwidth]{./img/overhead.eps}
+    \caption{\label{fig:overhead}Local space overhead.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.495\textwidth}      
+      \includegraphics[width=1\textwidth]{./img/controlmessages.eps}
+      \caption{\label{fig:controlmessages}Generated traffic overhead (includes
+        routing).}
+    \end{subfigure}
+    \caption{Overhead of \RPCBROADCAST required to ensure causal order and
+      forbid multiple delivery in dynamic systems with varying latency.}
+  \end{center}
+\end{figure*}
+
+
 
 \noindent \textbf{Results:} Figure~\ref{fig:overhead} shows the results of this
 experiment. The x-axis denotes the time in minute. The top part of the figure

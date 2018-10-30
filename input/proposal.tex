@@ -101,7 +101,7 @@ Lamport’s definition.
 
 \begin{definition}[Happen before~\cite{lamport1978time}]
   Happen before is a transitive, irreflexive, and antisymmetric relation
-  $\rightarrow$ that defines a strict partial orders of events. The sending of a
+  $\rightarrow$ that defines a strict partial order of events. The sending of a
   message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
   messages are concurrent if none happens before the other.
 \end{definition}
@@ -148,38 +148,6 @@ Lamport’s definition.
       obsolete control information about past deliveries in static systems.}
   \end{center}
 \end{figure*}
-
-\begin{figure*}[t]
-  \begin{center}
-    \begin{subfigure}{0.23\textwidth}
-      \input{input/figmemorylinkfailsA.tex}
-      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
-        from both Process~B and Process~C.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}{0.23\textwidth}
-      \input{input/figmemorylinkfailsB.tex}
-      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
-        forwards $a$. It does not expect additional copies.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}{0.23\textwidth}
-      \input{input/figmemorylinkfailsC.tex}
-      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
-        Then it receives, delivers, and forwards $a$.}
-    \end{subfigure}
-    ~
-    \begin{subfigure}{0.23\textwidth}
-      \input{input/figmemorylinkfailsD.tex}
-      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
-        for a new message. It delivers, and forwards $a$.}
-    \end{subfigure}
-    \caption{\label{fig:memorylinkfails}Causal broadcast
-      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
-      in dynamic systems. }
-  \end{center}
-\end{figure*}
-
 
 
 We define link memory as a mean for processes to forbid multiple delivery while
@@ -278,6 +246,39 @@ the system. This implementation forbids multiple delivery in static systems
 while safely removing obsolete control information.
 
 
+\begin{figure*}[t]
+  \begin{center}
+    \begin{subfigure}{0.23\textwidth}
+      \input{input/figmemorylinkfailsA.tex}
+      \caption{\label{fig:memorylinkfailsA}Process~A broadcasts $a$ and expects a copy
+        from both Process~B and Process~C.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{0.23\textwidth}
+      \input{input/figmemorylinkfailsB.tex}
+      \caption{\label{fig:memorylinkfailsB}Process C receives, delivers, and
+        forwards $a$. It does not expect additional copies.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{0.23\textwidth}
+      \input{input/figmemorylinkfailsC.tex}
+      \caption{\label{fig:memorylinkfailsC}Process~B adds a link to Process~C. 
+        Then it receives, delivers, and forwards $a$.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}{0.23\textwidth}
+      \input{input/figmemorylinkfailsD.tex}
+      \caption{\label{fig:memorylinkfailsD}Process~C receives and mistakes $a$
+        for a new message. It delivers, and forwards $a$.}
+    \end{subfigure}
+    \caption{\label{fig:memorylinkfails}Causal broadcast
+      (Algorithm~\ref{algo:reliablebroadcast}) fails to forbid multiple delivery
+      in dynamic systems. }
+  \end{center}
+\end{figure*}
+
+
+
 
 However, implementing link memory becomes more challenging in dynamic
 systems where processes can start sending messages to any other process at any
@@ -302,22 +303,6 @@ broadcast along with its complexity analysis.
 
 \subsection{Link memory for dynamic systems}
 
-
-\begin{figure*}
-  \begin{center}
-    \input{input/figtimelineproof.tex}
-    \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
-      memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
-      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not. At
-      receipt of $B_\beta$, Process~B classifies the messages:
-      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
-      are messages to ignore;
-      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
-      \mathcal{A}_3'$
-      are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
-      messages to expect from Process~A.}
-  \end{center}
-\end{figure*}
 
 This section demonstrates that causal broadcast can use causal order to
 initialize link memory, thereby enabling the use of link memory in dynamic
@@ -355,6 +340,24 @@ initialize link memory.  Process~A sends a control message $\pi$ to Process~B,
 and starts to gather control information about its delivered messages in a
 buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
 $B_\alpha$.
+
+\begin{figure*}
+  \begin{center}
+    \input{input/figtimelineproof.tex}
+    \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
+      memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
+      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not. At
+      receipt of $B_\beta$, Process~B classifies the messages:
+      $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
+      are messages to ignore;
+      $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
+      \mathcal{A}_3'$
+      are messages to deliver; $B_\pi \setminus B_\beta = \mathcal{B}_3$ are
+      messages to expect from Process~A.}
+  \end{center}
+\end{figure*}
+
+
   
 \begin{lemma}[\label{lem:balpha}Messages in buffer $B_\alpha$]
   The buffer $B_\alpha$ contains messages delivered by Process~B after the

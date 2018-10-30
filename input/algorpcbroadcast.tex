@@ -101,7 +101,7 @@
   }
 
   \Upon{$\textup{receive-}\pi(from,\,to)$}{ % \tcp*[f]{$to=p$}} {
-    \textbf{let} $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
+    $\langle B_\alpha ,\, B_\pi ,\, \_ \rangle \leftarrow S[from]$ \;
     $S[from] \leftarrow \langle B_\alpha,\, B_\pi,\, true \rangle$ \; % \tcp*{initialize $B_\pi$}
     $\textup{send-}\rho(from,\, to)$ \label{line:sendrho} \; % \tcp*{$\rho$}
   }
@@ -118,7 +118,7 @@
     \EmptyComment*[r]{to expect $\rightarrow$\hspace{2.2em}}
     \columnbreak
   \Upon{$\textup{receive-}B_\beta(from,\, to,\, B_\beta)$} {
-    \textbf{let} $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
+    $\langle B_\alpha,\, B_\pi,\, \_ \rangle \leftarrow S[from]$ \;
     $S \leftarrow S \setminus from$ \;
 %    \textbf{let} $potential \leftarrow buf \setminus B_\alpha$ \;
     \ForEach {$m \in B_\beta\setminus B_\alpha \setminus B_\pi$ }
