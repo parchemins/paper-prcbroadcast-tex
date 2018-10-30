@@ -2,7 +2,7 @@
 
 _Keywords: Causal broadcast, complexity trade-off, large and dynamic systems_
 
-_Authors: Brice Nédelec, Pascal Molli, Achour Mostéfaoui
+_Authors: Brice Nédelec, Pascal Molli, Achour Mostéfaoui_
 
 Causal broadcast constitutes a fundamental communication primitive of many
 distributed protocols and applications. However, state-of-the-art
