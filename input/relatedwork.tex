@@ -2,17 +2,7 @@
 \section{Related work}
 \label{sec:relatedwork}
 
-\begin{table*}
-  \begin{center}
-    \caption{\label{table:complexity} Complexity of broadcast algorithms at each
-      process. $N$ the number of processes that ever broadcast a message. $P$ is
-      the set of processes in the system. $w$ the number of messages received
-      but not delivered yet. $Q_i$ is the set of incoming links. $M$ is the
-      set of messages already delivered that will be received again from at
-      least one link in $Q_i$.}
-  \input{input/tablecomplexity.tex}
-  \end{center}
-\end{table*}
+
 
 Causal broadcast ensures causal order and forbids multiple
 delivery. \RPCBROADCAST uses the former to improve on the complexity of the
