@@ -516,9 +516,11 @@ obsolete control information about past broadcast messages.
     \end{subfigure}
     \\
     \begin{subfigure}{1\textwidth}
+      \begin{center}
       \input{input/figsolveJ.tex}%
       \caption{\label{fig:solveJ}Process~C categorizes each message of $B_\beta$
         and $B_\pi$.}% to maintain and initialize safe link memory.}
+      \end{center}
     \end{subfigure}%
     \caption{\label{fig:solve}Using buffers and control messages, \RPCBROADCAST 
       provides reliable causal broadcast.}
@@ -611,7 +613,7 @@ scaling with the number of processes $O(\ln(|P|))$.
 and the size of the in-view. Each link in the in-view has its buffer of control
 information about messages. A message appears in the structure after its first
 receipt and disappears at its last receipt. So the local space complexity is
-$O(|Q_i| \cdot |M|)$ where $M$ is the set of messages already delivered that
+$O(|Q_i| \cdot M)$ where $M$ is the number of messages already delivered that
 will be received again from at least a link in the in-view $Q_i$. 
 The local space consumption depends on system settings (e.g. processes do not
 consume space when the system topology is a ring or a tree) and use
