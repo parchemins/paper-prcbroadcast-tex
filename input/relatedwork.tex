@@ -5,10 +5,10 @@
 \begin{table*}
   \begin{center}
     \caption{\label{table:complexity} Complexity of broadcast algorithms at each
-      process. $N$ the number of processes that ever broadcast a message. $P$
-      the number of processes in the system. $W$ the number of messages received
-      but not delivered yet. $Q_i$ is the number of incoming links. $M$ is the
-      number of messages already delivered that will be received again from at
+      process. $N$ the number of processes that ever broadcast a message. $P$ is
+      the set of processes in the system. $w$ the number of messages received
+      but not delivered yet. $Q_i$ is the set of incoming links. $M$ is the
+      set of messages already delivered that will be received again from at
       least one link in $Q_i$.}
   \input{input/tablecomplexity.tex}
   \end{center}
@@ -18,29 +18,6 @@ Causal broadcast ensures causal order and forbids multiple
 delivery. \RPCBROADCAST uses the former to improve on the complexity of the
 latter.  This section reviews state-of-the-art broadcast protocols that forbid
 multiple delivery in asynchronous and dynamic systems.
-
-% The latter property similar to those of uniform reliable
-% broadcast~\cite{hadzilacos1994modular}.
-
-% Causal broadcast protocols rely on reliable
-% broadcast~. Uniform reliable broadcast must ensure
-% that
-% \begin{inparaenum}[(i)]
-% \item all processes receive broadcast messages and
-% \item each process delivers each broadcast message once despite multiple
-%   receipts.
-% \end{inparaenum} 
-% This extends from probabilistic
-% dissemination approaches to deterministic ones; from physical clock techniques
-% to vector-based approaches.
-
-% Gossiping constitutes the most efficient mean to disseminate messages to all
-% processes in dynamic systems comprising from hundreds to millions of processes.
-% Gossiping distributes the load of dissemination among processes. Every process
-% maintains a partial view of the system and broadcasts or forwards messages using
-% these links. Assuming a strongly connected overlay network, all messages reach
-% all processes of the system either directly or transitively. While it ensures
-% the receipt of messages, it does not forbid multiple delivery.
 
 Building \textbf{specific dissemination topologies} such as tree or ring
 guarantees that every process receives each message
@@ -56,40 +33,14 @@ receipts. In turns, \RPCBROADCAST inherits from the resilience of the underlying
 topology maintained by processes. \RPCBROADCAST supports dynamic systems without
 assuming any specific topology.
 
-
-% In this paper, we focus on deterministic overlay
-% We focus on deterministic gossip-based
-% broadcast~\cite{friedman2004causal,nedelec2017adaptive} where peer-sampling
-% protocols build connected graph topology. Using all provided reliable links for
-% broadcast ensures that each process eventually receives each message. A process
-% keeps a message as long as one of its neighbor did not receive it. Afterwards,
-% it safely removes it.
-
-
-% \textbf{Non-deterministic} gossip-based
-% approaches~\cite{birman1999bimodal,demers1987epidemic} guarantee that each
-% process receives each broadcast message with high probability. Processes must be
-% able to identify and retrieve missing messages by themselves. 
-
-
 Without any specific dissemination topology, each process may receive each
 broadcast message multiple times. Despite multiple receipts, a process must
-deliver a message once.
-% When multiple receipts can occur, each process maintains a local structure to
-% detect and discard copies of broadcast messages. Using \textbf{physical
-%   clocks~\cite{cachin2011introduction,demers1987epidemic}} allows removing
-% control information over time. Control information is considered obsolete above
-% an age threshold. The structure is non-monotonic. However, defining the age
-% threshold is error prone in asynchronous systems. Set too small and processes
-% may suffer multiple delivery with cascading effects as in
-% Figure~\ref{fig:memorylinkfailsD}.  \RPCBROADCAST maintains a non-monotonic
-% structure but makes sure that it removes all and only obsolete control
-% information.
-Using local structures based on \textbf{logical clocks~\cite{lamport1978time}},
-every process differentiates between the first receipt of a broadcast message
-and the additional receipts of this message. It allows to deliver the former
-while ignoring the latter. Unfortunately, the size of these structures increases
-monotonically and linearly with the number of processes that ever broadcast a
+deliver a message once.  Using local structures based on \textbf{logical
+  clocks~\cite{lamport1978time}}, every process differentiates between the first
+receipt of a broadcast message and the additional receipts of this message. It
+allows to deliver the former while ignoring the latter. Unfortunately, the size
+of these structures increases monotonically and linearly with the number of
+processes that ever broadcast a
 message~\cite{malkhi2007concise,mukund2014optimized}.  Processes cannot reclaim
 the space consumed, for it would require running an overcostly distributed
 garbage collection that is equivalent to a distributed
@@ -102,16 +53,6 @@ neighbors can be far smaller than the set of broadcasters. \RPCBROADCAST scales
 in large and dynamic systems. Among others, \RPCBROADCAST fits contexts where
 the number of participants is unknown, such as distributed collaborative
 editing~\cite{nedelec2016crate}.
-
-% It is worth noting that  logical clocks allow each process to perform
-% anti-entropy with any other process at any time. The former identifies its
-% missing messages compared to the latter.  The latter sends them to keep
-% consistent states. This is useful when applications can go
-% offline~\cite{demers1987epidemic}. \RPCBROADCAST implicitly performs
-% anti-entropy on-demand to initialize memory link but cannot provide it as a
-% feature for applications. If required, this is the responsibility of
-% applications to allow anti-entropy (e.g. using Merkle
-% tree~\cite{merkle1988digital}).
 
 Table~\ref{table:complexity} summarizes the complexity of broadcast
 implementations that handle asynchronous and dynamic systems. To the best of our

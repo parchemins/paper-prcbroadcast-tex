@@ -4,10 +4,8 @@
 
 In this section, we present a causal broadcast protocol providing a novel
 trade-off between speed, memory, and traffic. Among others, it safely removes
-obsolete control information about broadcast messages. Its memory consumption
-increases and decreases depending on system settings and use.  The key ideas
-are:
-%\begin{enumerate}[leftmargin=*]
+obsolete control information about broadcast messages.  Its memory consumption
+increases and decreases over receipts. The key ideas are:
 \begin{inparaenum}[(1)]
 \item Every process broadcasts or forwards a message once, hence every link
   carries a message once. A process expects to receive as many copies of a
@@ -20,7 +18,6 @@ are:
   order allows processes to remove batches of obsolete information while
   reasoning about temporarily buffered broadcast messages.
 \end{inparaenum}
-%\end{enumerate}
 
 \subsection{Model}
 
@@ -63,7 +60,6 @@ once. In this paper, we tackle the issue of implementing these properties.
   When a process~A broadcasts a message to all processes of its system $b_A(m)$,
   each correct process~B eventually receives it and delivers it
   $d_B(m)$. Uniform reliable broadcast guarantees 3 properties:
-  % \begin{itemize}[leftmargin=*]
   \begin{inparaenum}[(1)]
   \item Validity: If a correct process broadcasts a message, then it
     eventually delivers it.
@@ -72,14 +68,7 @@ once. In this paper, we tackle the issue of implementing these properties.
   \item Uniform Integrity: A process delivers a message at most once, and only if
     it was previously broadcast.
   \end{inparaenum}
-  % \end{itemize}
 \end{definition}
-
-% Definition~\ref{def:reliablebroadcast} suggests the use of data structures that
-% save delivered messages to ignore additional receipts. 
-% In static systems, such data structure can be
-% non-monotonic~\cite{raynal2013distributed}. We define a non-monotonic link-wise
-% memory to forbid multiple delivery.
 
 In static systems, implementing these properties only requires a local structure
 the size of which grows and shrinks over receipts~\cite{raynal2013distributed}.
@@ -153,9 +142,6 @@ Lamport’s definition.
 We define link memory as a mean for processes to forbid multiple delivery while
 safely removing obsolete control information. Processes attach control
 information about expected messages to each link of their respective in-view.
-% Since each link eventually carries each message once, a process receiving a
-% message from a link knows that it will never receive this message from this link
-% again.
 
 
 \begin{definition}[\label{def:memory}Link memory]
@@ -165,22 +151,7 @@ information about expected messages to each link of their respective in-view.
   $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$
 \end{definition}
 
-% \begin{definition}[\label{def:memory}Link memory]
-%   A link from Process~A to Process~B remembers among Process~B's delivered
-%   messages those that will be received from Process~A; and forgets among
-%   Process~B's delivered messages those that will never be received from
-%   Process~A.
-%   \begin{itemize}
-%   \item First delivery:
-%     \small{$\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$}
-%   \item Eventual receipt: $\forall m,\, remember_{BA}(m) \implies r_{BA}(m)$
-%   \end{itemize}
-% \end{definition}
-
-
 \begin{theorem}[Link memory forbids multiple delivery]
-  % Every process maintaining link memory delivers each broadcast message
-  % exactly once.
   A process that delivers only messages it does not remember using link memory
   delivers each broadcast message exactly once.
 \end{theorem}
@@ -205,14 +176,6 @@ information about expected messages to each link of their respective in-view.
   delivery of $m$: $\nexists m,\, r_{BA}(m) \rightarrow d_{B}(m)$.\\
   Finally, since every process delivers, hence forwards each message once, each
   link carries each messages once.
-  %
-  % To deliver $m$ after its receipt from Process~A, Process~B must not remember
-  % $m$ on this link.  If Process~B does not remember $m$ from Process~A, either
-  % it already received $m$ from Process~A; or it did not received $m$ from any
-  % process. In the former case, it cannot receive, hence deliver $m$ from
-  % Process~A; in the latter case, receiving $m$ from Process~A leads to the
-  % delivery of $m$. Again, since a link carries a message at most once, it cannot
-  % receive another $m$ from Process~A that would lead to another delivery.
 \end{proof}
 
 
@@ -308,7 +271,6 @@ This section demonstrates that causal broadcast can use causal order to
 initialize link memory, thereby enabling the use of link memory in dynamic
 systems.
 
-%Figure~\ref{fig:memorylink} shows that 
 Algorithm~\ref{algo:reliablebroadcast} already implements the maintenance of
 link memory over receipts. Every process safely removes obsolete control
 information over receipts.  However, Figure~\ref{fig:memorylinkfails} highlights
@@ -440,7 +402,6 @@ initialize link memory.
 \begin{theorem}[$B_\alpha$, $B_\beta$, and $B_\pi$ initialize link memory]
   A process consistently initializes link memory at receipt of $B_\beta$ using
   $B_\alpha$ and $B_\pi$.
-  % The memory of a new link becomes correct at receipt of $B_\beta$.
 \end{theorem}
 
 \begin{proof}
@@ -458,8 +419,6 @@ initialize link memory.
   Since $\mathcal{B}_3 \cap \mathcal{A}_3 = \varnothing$, we have
   $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
   \mathcal{A}'_3$.\\
-%%  Process~B identifies
-%%  the set of messages to deliver using $B_\alpha$, $B_\beta$, and $B_\pi$. \\
   Second, we must show that Process~B initializes the new link memory with all
   and only messages from $B_\pi$ that Process~A did not deliver at the sending
   of $B_\beta$: $m\in \mathcal{B}_3$.\\
@@ -478,16 +437,6 @@ are safe~\cite{nedelec2018pcbroadcast}, and the memory of which is correctly
 initialized and maintained.  \RPCBROADCAST uses a local structure the size of
 which increases and decreases over receipts. Every process safely removes
 obsolete control information about past broadcast messages.
-
-%% Table~\ref{table:complexity} shows that it keeps constant size message overhead
-%% while discarding local control information about messages over receipts.
-
-% To provide causal order at marginal cost, \RPCBROADCAST uses the principle of
-% \PCBROADCAST~\cite{nedelec2018pcbroadcast}. It uses FIFO links, gossiping,
-% control messages, and buffers to ensure causal order in dynamic systems. A
-% process broadcasting a message sends the message to an out-view of safe links
-% that cannot lead to causal order violations. \RPCBROADCAST embeds safe link
-% establishment in its link memory initialization.
 
 \begin{figure*}
   \begin{center}
@@ -651,44 +600,35 @@ and number of control messages.
 protocol uses FIFO links to transmit messages.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
-receipt function is $O(Q_i)$.  The protocol checks and updates control
+receipt function is $O(|Q_i|)$.  The protocol checks and updates control
 information associated to each link in the in-view $Q_i$. The size of in-views
-can be much smaller than the number of processes in the system $P$. For
+can be much smaller than the number of processes in the system $|P|$. For
 instance, peer-sampling approaches~\cite{ganesh2001scamp,nedelec2017adaptive}
 provides every process with an in-view the size of which is logarithmically
-scaling with the number of processes $O(\ln(P))$.
+scaling with the number of processes $O(\ln(|P|))$.
 
 \noindent The \textbf{local space consumption} depends on the size of buffers
 and the size of the in-view. Each link in the in-view has its buffer of control
 information about messages. A message appears in the structure after its first
 receipt and disappears at its last receipt. So the local space complexity is
-$O(Q_i \cdot M)$ where $M$ is the number of messages already delivered that will
-be received again from at least a link in the in-view $Q_i$. A process stores the
-control information of a message during at most $D$ time where $D$ is the
-diameter of the system. The local space consumption depends on system settings
-(e.g. processes do not consume space when the system topology is a ring or a
-tree) and use (e.g. processes do not consume space when no process broadcasts
-any message).
-% Similarly to \PCBROADCAST, the size of buffers may increase unbounded when
-% intermediate processes are faulty. Control messages never reach their
-% destination. \PCBROADCAST handles such crashes using a timeout and retry
-% policy. Such strategy fits \RPCBROADCAST as well. Both involved processes can
-% halt and retry the safety check of the new link. Either the origin process does
-% not send its buffer $B_\beta$, or the destination process does not accept
-% incoming messages. 
+$O(|Q_i| \cdot |M|)$ where $M$ is the set of messages already delivered that
+will be received again from at least a link in the in-view $Q_i$. 
+The local space consumption depends on system settings (e.g. processes do not
+consume space when the system topology is a ring or a tree) and use
+(e.g. processes do not consume space when no process broadcasts any message).
 
 \noindent The overhead in terms of \textbf{number of control messages} per added
-link in an out-view varies from $6$ to $4P^2$ depending on the overlay network;
-$P$ being the number of processes in the system. It achieves $6$ messages when
-Process~A adds Process~B using Process~C as mediator, and Process~B has
-Process~A in its out-view.  It achieves $8$ control messages when peer-sampling
-protocols build out-views using neighbor-to-neighbor
+link in an out-view varies from $6$ to $4 \cdot |P|^2$ depending on the overlay
+network; $P$ being the set of processes currently in the system. It achieves $6$
+messages when Process~A adds Process~B using Process~C as mediator, and
+Process~B has Process~A in its out-view.  It achieves $8$ control messages when
+peer-sampling protocols build out-views using neighbor-to-neighbor
 interactions~\cite{jelasity2007gossip,nedelec2017adaptive}. It achieves
-$O(\log(P))$ control messages when peer-sampling protocols allows processes to
-route their messages~\cite{jelasity2009tman,stoica2001chord}.  It achieves
-$O(4P^2)$ control messages when Process~A adds Process~B without knowledge of
-any route. Process~A and Process~B fall back to reliable broadcast instead of
-routing to disseminate control messages.
+$O(4 \cdot \log(|P|))$ control messages when peer-sampling protocols allows
+processes to route their messages~\cite{jelasity2009tman,stoica2001chord}.  It
+achieves $O(4 \cdot |P|^2)$ control messages when Process~A adds Process~B
+without knowledge of any route. Process~A and Process~B fall back to reliable
+broadcast instead of routing to disseminate control messages.
 
 This complexity analysis shows that \RPCBROADCAST proposes a novel trade-off in
 terms of complexity. In systems allowing a form of routing, processes only send
