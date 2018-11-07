@@ -138,8 +138,8 @@ Lamport’s definition.
       \caption{\label{fig:memorylinkD}Process~A receives its last expected copy
       of $b$. The message $b$ is completely removed from the system.}
     \end{subfigure}
-    \caption{\label{fig:memorylink}Link memory allows processes to safely remove
-      obsolete control information about past deliveries in static systems.}
+    \caption{\label{fig:memorylink}Link memory allows to safely remove obsolete
+      control information in static systems.}
   \end{center}
 \end{figure*}
 
@@ -153,7 +153,7 @@ information about expected messages to each link of their respective in-view.
   Assuming a link $(A,\, B)$, Process~B remembers among its delivered messages
   those that it will receive from this link; and forgets among its delivered
   messages those that it will never receive from this link.
-  $\forall m,\, remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$
+  $remember_{BA}(m) \equiv d_B(m) \wedge \neg r_{BA}(m)$
 \end{definition}
 
 \begin{theorem}[Link memory forbids multiple delivery]
@@ -266,8 +266,8 @@ only Process~C suffers multiple delivery but this has cascading effects over the
 whole system.
 
 The rest of this section describes how causal broadcast can exploit causal order
-to initialize link memory. Then, we provide an implementation of such
-broadcast along with its complexity analysis.
+to initialize link memory, an implementation of such broadcast, and its
+complexity analysis.
 
 
 \subsection{Link memory for dynamic systems}
@@ -452,64 +452,6 @@ obsolete control information about past broadcast messages.
 \end{algorithm*}
 
 
-Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST. 
-Figure~\ref{fig:solve} illustrates its operation in a scenario involving 3
-processes. In this example, Process~B adds a link to Process~C. Process~B
-disables the new link for causal broadcast until it is safe and guaranteed that
-Process~C correctly initialized its memory.
-
-\noindent Process~B sends a first control message $\alpha$ to Process~B using
-safe links (see Line~\ref{line:sendalpha} and Figure~\ref{fig:solveA}).
-
-\noindent After being routed to Process~C by intermediary processes (see
-Figure~\ref{fig:solveB}), $\alpha$ reaches Process~C (see
-Figure~\ref{fig:solveC}).  Process~C starts to register messages it delivers in
-a buffer $B_\alpha$.  Process~C acknowledges the receipt of $\alpha$ by sending
-a second control message $\beta$ to Process~B using safe links (see
-Line~\ref{line:sendbeta}). In Figure~\ref{fig:solveC}, Process~C broadcasts
-$c_1$ and registers it in $B_\alpha$.
-
-\noindent After being routed to Process~B (see Figure~\ref{fig:solveD}), $\beta$
-reaches Process~B. Process~B starts to register messages it delivers in a buffer
-$B_\beta$. Process~B sends a third control message $\pi$ to Process~C using safe
-links (see Line~\ref{line:sendpi}). In Figure~\ref{fig:solveE}, Process~B delivers
-$c_1$ then broadcasts $b_1$. It registers them in $B_\beta$. In Figure~\ref{fig:solveF},
-Process~C broadcasts $c_2$ and registers it in $B_\alpha$.
-
-\noindent After being routed to Process~C by intermediary processes (see
-Figure~\ref{fig:solveF}), $\pi$ reaches Process~C. Process~C ends its first
-buffer $B_\alpha$.  Process~C starts to register messages it delivers in
-$B_\pi$.  Process~C sends a fourth and last control message $\rho$ to Process~B
-using safe links (see Line~\ref{line:sendrho}). In Figure~\ref{fig:solveG}
-Process~C delivers $b_1$, broadcasts $c_3$, and registers them in $B_\pi$. In
-the meantime, Process~B broadcasts $b_2$ and registers it in $B_\beta$.
-
-\noindent After being routed to Process~B, $\rho$ reaches Process~B (see
-Figure~\ref{fig:solveH}).  Process~B stops buffering and sends its buffer of
-messages $B_\beta$ using the new link $s_{BC}(B_\beta)$ (see
-Line~\ref{line:sendbuffer}). In Figure~\ref{fig:solveI}, this buffer contains
-$b_1$, $b_2$, and $c_2$. The new link is safe. Process~B starts to use this link
-normally for causal broadcast using Algorithm~\ref{algo:reliablebroadcast}.
-
-\noindent Once Process~C receives the buffer, it ends its buffer $B_\pi$ (see
-Figure~\ref{fig:solveI}). Using $B_\alpha$, and $B_\pi$, Process~C identifies
-among messages from $B_\beta$ the array of messages to deliver (see
-Line~\ref{line:todeliver}). In Figure~\ref{fig:solveJ}, this array only includes
-$b_2$.  Using $B_\alpha$, and $B_\pi$, Process~C also identifies the set of
-messages to ignore which is the rest of the buffer. In Figure~\ref{fig:solveJ},
-this set includes $c_1$, $b_1$ and $c_2$. Finally, Process~C identifies among its own
-delivered messages the messages to expect from Process~B (see
-Line~\ref{line:toexpect}). In Figure~\ref{fig:solveJ}, this set includes $c_3$.
-This set constitutes the memory of the new safe link.  Afterwards, messages
-received by this new link are processed normally.
-
-
-\RPCBROADCAST builds link memory using control messages that acknowledges the
-delivery of preceding messages. Every process safely removes obsolete control
-information about past broadcast messages.  The size of the local structure
-increases and decreases over receipts.  In the next section, we analyze the
-complexity of this causal broadcast implementation.
-
 \begin{figure*}
   \begin{center}
     \begin{subfigure}[t]{0.36\textwidth}
@@ -600,6 +542,66 @@ complexity of this causal broadcast implementation.
 \end{figure*}
 
 
+
+
+
+Algorithm~\ref{algo:rpcbroadcast} shows the instructions of \RPCBROADCAST. 
+Figure~\ref{fig:solve} illustrates its operation in a scenario involving 3
+processes. In this example, Process~B adds a link to Process~C. Process~B
+disables the new link for causal broadcast until it is safe and guaranteed that
+Process~C correctly initialized its memory.
+
+\noindent Process~B sends a first control message $\alpha$ to Process~B using
+safe links (see Line~\ref{line:sendalpha} and Figure~\ref{fig:solveA}).
+
+\noindent After being routed to Process~C by intermediary processes (see
+Figure~\ref{fig:solveB}), $\alpha$ reaches Process~C (see
+Figure~\ref{fig:solveC}).  Process~C starts to register messages it delivers in
+a buffer $B_\alpha$.  Process~C acknowledges the receipt of $\alpha$ by sending
+a second control message $\beta$ to Process~B using safe links (see
+Line~\ref{line:sendbeta}). In Figure~\ref{fig:solveC}, Process~C broadcasts
+$c_1$ and registers it in $B_\alpha$.
+
+\noindent After being routed to Process~B (see Figure~\ref{fig:solveD}), $\beta$
+reaches Process~B. Process~B starts to register messages it delivers in a buffer
+$B_\beta$. Process~B sends a third control message $\pi$ to Process~C using safe
+links (see Line~\ref{line:sendpi}). In Figure~\ref{fig:solveE}, Process~B delivers
+$c_1$ then broadcasts $b_1$. It registers them in $B_\beta$. In Figure~\ref{fig:solveF},
+Process~C broadcasts $c_2$ and registers it in $B_\alpha$.
+
+\noindent After being routed to Process~C by intermediary processes (see
+Figure~\ref{fig:solveF}), $\pi$ reaches Process~C. Process~C ends its first
+buffer $B_\alpha$.  Process~C starts to register messages it delivers in
+$B_\pi$.  Process~C sends a fourth and last control message $\rho$ to Process~B
+using safe links (see Line~\ref{line:sendrho}). In Figure~\ref{fig:solveG}
+Process~C delivers $b_1$, broadcasts $c_3$, and registers them in $B_\pi$. In
+the meantime, Process~B broadcasts $b_2$ and registers it in $B_\beta$.
+
+\noindent After being routed to Process~B, $\rho$ reaches Process~B (see
+Figure~\ref{fig:solveH}).  Process~B stops buffering and sends its buffer of
+messages $B_\beta$ using the new link $s_{BC}(B_\beta)$ (see
+Line~\ref{line:sendbuffer}). In Figure~\ref{fig:solveI}, this buffer contains
+$b_1$, $b_2$, and $c_2$. The new link is safe. Process~B starts to use this link
+normally for causal broadcast using Algorithm~\ref{algo:reliablebroadcast}.
+
+\noindent Once Process~C receives the buffer, it ends its buffer $B_\pi$ (see
+Figure~\ref{fig:solveI}). Using $B_\alpha$, and $B_\pi$, Process~C identifies
+among messages from $B_\beta$ the array of messages to deliver (see
+Line~\ref{line:todeliver}). In Figure~\ref{fig:solveJ}, this array only includes
+$b_2$.  Using $B_\alpha$, and $B_\pi$, Process~C also identifies the set of
+messages to ignore which is the rest of the buffer. In Figure~\ref{fig:solveJ},
+this set includes $c_1$, $b_1$ and $c_2$. Finally, Process~C identifies among its own
+delivered messages the messages to expect from Process~B (see
+Line~\ref{line:toexpect}). In Figure~\ref{fig:solveJ}, this set includes $c_3$.
+This set constitutes the memory of the new safe link.  Afterwards, messages
+received by this new link are processed normally.
+
+
+\RPCBROADCAST builds link memory using control messages that acknowledges the
+delivery of preceding messages. Every process safely removes obsolete control
+information about past broadcast messages.  The size of the local structure
+increases and decreases over receipts.  In the next section, we analyze the
+complexity of this causal broadcast implementation.
 
 \subsection{Complexity}
 \label{subsec:complexity}
