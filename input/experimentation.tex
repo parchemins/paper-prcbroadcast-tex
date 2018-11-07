@@ -27,13 +27,13 @@ logarithmically scaling with the number of processes in the system. Each process
 of the 100-processes system has an out-view of $\approx 10$ neighbors. Each
 process of the 1k-processes system has an out-view of $\approx 13.5$
 neighbors. Each process of the 10k-processes system has a out-view of
-$\approx 15$ neighbors.  Each process dynamically re-configures its out-view: it
+$\approx 15$ neighbors.  Each process dynamically reconfigures its out-view: it
 gives half of its correctly initialized links to a chosen neighbor; the latter
 gives half of its correctly initialized links to the former as well. Each
 exchange leads to link memory initialization and safety checks of the new links,
-and removal of given links. Each process starts to re-configures its out-view as
-soon as it joins the system and re-configures its out-view every minute. This
-uniformly spreads re-configurations over the duration of the
+and removal of given links. Each process starts to reconfigures its out-view as
+soon as it joins the system and reconfigures its out-view every minute. This
+uniformly spreads reconfigurations over the duration of the
 experiment.\\
 Links are bidirectional, their safety must be checked in both directions but the
 overhead remains minor. Since the peer-sampling protocol that builds the system
