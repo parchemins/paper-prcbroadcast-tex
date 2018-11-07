@@ -264,8 +264,8 @@ The rest of this section describes how causal broadcast can exploit causal order
 to initialize link memory. Then, we provide an implementation of such
 broadcast along with its complexity analysis.
 
-\subsection{Link memory for dynamic systems}
 
+\subsection{Link memory for dynamic systems}
 
 This section demonstrates that causal broadcast can use causal order to
 initialize link memory, thereby enabling the use of link memory in dynamic
@@ -282,34 +282,33 @@ initialized. This initialization requires round-trips of control messages and
 message buffering.  Causal broadcast takes advantage of causal order to provide
 guarantees on messages included in buffers.
 
-
 Figure~\ref{fig:timelineproof} depicts the principle of the approach. When a
 Process~A adds a link to Process~B, Process~A notifies Process~B using a control
 message $\alpha$. This control message $\alpha$, as all control messages that
-will follow ($\beta$, $\pi$, $\rho$), is delivered in causal order regarding
-broadcast messages. Hence, at receipt, Process~B implicitly removes obsolete
-information: messages delivered by Process~A before the sending of the
-notification $\mathcal{A}_1$.  At receipt of $\alpha$, Process~B can start
-gathering control information about its delivered messages in a buffer
-$B_\alpha$. Among other, Process~B wants to identify messages concurrent to the
-correct establishment of the new link. Process~B acknowledges Process~A's
-notification using a control message $\beta$. At receipt of $\beta$, Process~A
-removes obsolete information: messages delivered by Process~B before the sending
-of the acknowledgment $\mathcal{A}_1 \cup \mathcal{B}_1$. This solves the issue
-identified in Figure~\ref{fig:memorylinkfails}, for $a$ would belong to
-$\mathcal{A}_1$ or $\mathcal{B}_1$. However, this is not sufficient to
-initialize link memory.  Process~A sends a control message $\pi$ to Process~B,
-and starts to gather control information about its delivered messages in a
-buffer $B_\beta$. Upon receipt of $\pi$, Process~B closes its first buffer
-$B_\alpha$.
+will follow ($\beta$, $\pi$, $\rho$), is delivered after all its preceding
+messages. Hence, at receipt, Process~B implicitly removes obsolete information:
+messages delivered by Process~A before the sending of the notification
+$\mathcal{A}_1$.  At receipt of $\alpha$, Process~B can start gathering control
+information about its delivered messages in a buffer $B_\alpha$. Among other,
+Process~B wants to identify messages concurrent to the correct establishment of
+the new link. Process~B acknowledges Process~A's notification using a control
+message $\beta$. At receipt of $\beta$, Process~A removes obsolete information:
+messages delivered by Process~B before the sending of the acknowledgment
+$\mathcal{A}_1 \cup \mathcal{B}_1$. This solves the issue identified in
+Figure~\ref{fig:memorylinkfails}, for $a$ would belong to $\mathcal{A}_1$ or
+$\mathcal{B}_1$. However, this is not sufficient to initialize link memory.
+Process~A sends a control message $\pi$ to Process~B, and starts to gather
+control information about its delivered messages in a buffer $B_\beta$. Upon
+receipt of $\pi$, Process~B closes its first buffer $B_\alpha$.
 
 \begin{figure*}
   \begin{center}
     \input{input/figtimelineproof.tex}
     \caption{\label{fig:timelineproof}\label{fig:timeline}Initializing the link
       memory from Process~A to Process~B. Control messages $\alpha$, $\beta$,
-      $\pi$, and $\rho$ are delivered in causal order while $B_\beta$ is not. At
-      receipt of $B_\beta$, Process~B classifies the messages:
+      $\pi$, and $\rho$ are delivered after all preceding messages while
+      $B_\beta$ is not. At receipt of $B_\beta$, Process~B classifies the
+      messages:
       $B_\beta \cap (B_\alpha \cup B_\pi) = \mathcal{B}_2 \cup \mathcal{A}_3'$
       are messages to ignore;
       $B_\beta \setminus B_\alpha \setminus B_\pi = \mathcal{A}_3\setminus
@@ -332,9 +331,11 @@ $B_\alpha$.
 \end{lemma}
 
 \begin{proof}
-  Since causal broadcast ensures causal order among messages it sends, all
-  messages delivered by Process~A before the sending of $\alpha$ precede the
-  buffering:
+  Since control messages are delivered after preceding messages,
+  % Since causal broadcast ensures causal order among broadcast messages it sends,
+  % and control messages are delivered after preceding broadcast messages
+  all broadcast messages delivered by Process~A before the sending of $\alpha$
+  precede the buffering:
   $\forall m,\, d_A(m) \rightarrow s_A(\alpha_{AB}) \implies m \not \in
   B_\alpha$.
   Since messages are delivered once,
@@ -388,10 +389,10 @@ Process~B to initialize this new link memory.
 
 \begin{proof}
   The proof is similar to that of Lemmas~\ref{lem:bbeta}~and~\ref{lem:bpi}. The
-  difference being that $B_\beta$ is not causally delivered. Hence, the receipt
-  of $B_\beta$ follows the sending of $\rho$ but Process~B cannot state if it
-  received all, part, or none of messages in $\mathcal{A}_3$. Thus,
-  $\mathcal{A}_3' \subseteq \mathcal{A}_3$.
+  difference being that $B_\beta$ is not necessarily delivered after preceding
+  messages. Hence, the receipt of $B_\beta$ follows the sending of $\rho$ but
+  Process~B cannot state if it received all, part, or none of messages in
+  $\mathcal{A}_3$. Thus, $\mathcal{A}_3' \subseteq \mathcal{A}_3$.
 \end{proof}
 
 \noindent Using $B_\alpha$, $B_\beta$, and $B_\pi$ buffers, Process~B identifies
@@ -585,11 +586,11 @@ This set constitutes the memory of the new safe link.  Afterwards, messages
 received by this new link are processed normally.
 
 
-\RPCBROADCAST builds link memory using control messages that follow causal
-order. Every process safely removes obsolete control information about past
-broadcast messages.  The size of the local structure increases and decreases
-over receipts.  In the next section, we analyze the complexity of this causal
-broadcast implementation.
+\RPCBROADCAST builds link memory using control messages that acknowledges the
+delivery of preceding messages. Every process safely removes obsolete control
+information about past broadcast messages.  The size of the local structure
+increases and decreases over receipts.  In the next section, we analyze the
+complexity of this causal broadcast implementation.
 
 \subsection{Complexity}
 \label{subsec:complexity}
