@@ -88,11 +88,16 @@ ensure a specific order on message delivery. To characterize the order among
 events such as send, or receive, we define time in a logical sense using
 Lamport’s definition.
 
-\begin{definition}[Happen before~\cite{lamport1978time}]
-  Happen before is a transitive, irreflexive, and antisymmetric relation
-  $\rightarrow$ that defines a strict partial order of events. The sending of a
+\begin{definition}[Happens-before~\cite{lamport1978time}]
+  The happens-before relationship defines a strict partial order of events. The
+  happens-before relationship $\rightarrow$ is transitive
+  ($e_1 \rightarrow e_2 \wedge e_2 \rightarrow e_3 \implies e_1 \rightarrow
+  e_3$),
+  irreflexive ($e_1 \not\rightarrow e_1$), and antisymmetric
+  ($e_1 \rightarrow e_2 \implies e_2 \not\rightarrow e_1$).  The sending of a
   message always precedes its receipt $s_{AB}(m) \rightarrow r_{BA}(m)$. Two
-  messages are concurrent if none happens before the other.
+  messages are concurrent if none happens before the other
+  ($r_A(m_1) \not\rightarrow s_A(m_2) \wedge r_A(m_2) \not\rightarrow s_A(m_1)$).
 \end{definition}
 
 \begin{definition}[Causal order]
@@ -285,7 +290,7 @@ guarantees on messages included in buffers.
 Figure~\ref{fig:timelineproof} depicts the principle of the approach. When a
 Process~A adds a link to Process~B, Process~A notifies Process~B using a control
 message $\alpha$. This control message $\alpha$, as all control messages that
-will follow ($\beta$, $\pi$, $\rho$), is delivered after all its preceding
+will follow ($\beta$, $\pi$, $\rho$), must be delivered after all its preceding
 messages. Hence, at receipt, Process~B implicitly removes obsolete information:
 messages delivered by Process~A before the sending of the notification
 $\mathcal{A}_1$.  At receipt of $\alpha$, Process~B can start gathering control
@@ -435,8 +440,10 @@ initialize link memory.
 \RPCBROADCAST stands for Preventive Reliable Causal broadcast. It prevents both
 causal order violations and multiple delivery by using all and only links that
 are safe~\cite{nedelec2018pcbroadcast}, and the memory of which is correctly
-initialized and maintained.  \RPCBROADCAST uses a local structure the size of
-which increases and decreases over receipts. Every process safely removes
+initialized and maintained. \RPCBROADCAST ensures that control messages are
+delivered after all their preceding messages by sending them on reliable FIFO
+links used for causal broadcast. \RPCBROADCAST uses a local structure the size
+of which increases and decreases over receipts. Every process safely removes
 obsolete control information about past broadcast messages.
 
 \begin{figure*}
@@ -600,7 +607,7 @@ broadcast message overhead, delivery execution time, local space consumption,
 and number of control messages.
 
 \noindent The \textbf{broadcast message overhead} is constant $O(1)$. The
-protocol uses FIFO links to transmit messages.
+protocol uses reliable FIFO links to transmit messages.
 
 \noindent The \textbf{delivery execution time}, i.e., the time complexity of the
 receipt function is $O(|Q_i|)$.  The protocol checks and updates control
