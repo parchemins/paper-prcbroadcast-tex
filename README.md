@@ -1,4 +1,4 @@
-# Causal Broadcast: How to Forget?
+# Causal Broadcast: How to Forget? [[pdf](https://hal.archives-ouvertes.fr/hal-01923830v2/document)]
 
 _Keywords: Causal broadcast, complexity trade-off, large and dynamic systems_
 
